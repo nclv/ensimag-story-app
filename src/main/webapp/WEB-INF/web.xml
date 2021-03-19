@@ -18,21 +18,21 @@
     <welcome-file>index.html</welcome-file>
   </welcome-file-list>
 
-  <servlet>
+  <!-- <servlet>
     <servlet-name>controller</servlet-name>
     <servlet-class>servlets.Controller</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>controller</servlet-name>
     <url-pattern>/controller</url-pattern>
-  </servlet-mapping>
+  </servlet-mapping> -->
 
 
   <!-- <error-page>
     <location>/ErrorHandler</location>
   </error-page> -->
 
-  <filter>
+  <!-- <filter>
     <filter-name>AuthenticationFilter</filter-name>
     <filter-class>filters.AuthenticationFilter</filter-class>
   </filter>
@@ -40,6 +40,6 @@
   <filter-mapping>
     <filter-name>AuthenticationFilter</filter-name>
     <url-pattern>/*</url-pattern>
-  </filter-mapping>
+  </filter-mapping> -->
 
 </web-app>
