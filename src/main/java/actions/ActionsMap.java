@@ -28,7 +28,7 @@ public class ActionsMap {
 
     public static Action get(String actionName) {
         if (actionName == null)
-            return actions.get("home");
+            return actions.get("about");
         if (!actions.containsKey(actionName)) {
             LOG.trace("Command not found, name --> " + actionName);
             return actions.get("invalid");

@@ -23,24 +23,22 @@ public class Controller extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         LOG.debug("doGet() was called");
-        response.getWriter().println("Hello");
-        // try {
-        //     process(request, response);
-        // } catch (ServletException | IOException e) {
-        //     LOG.error("Cannot process GET request", e);
-        // }
+        try {
+            process(request, response);
+        } catch (ServletException | IOException e) {
+            LOG.error("Cannot process GET request", e);
+        }
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         LOG.debug("doGet() was called");
-        response.getWriter().println("Hello");
-        // try {
-        //     process(request, response);
-        // } catch (ServletException | IOException e) {
-        //     LOG.error("Cannot process POST request", e);
-        // }
+        try {
+            process(request, response);
+        } catch (ServletException | IOException e) {
+            LOG.error("Cannot process POST request", e);
+        }
     }
 
     private void process(HttpServletRequest request, HttpServletResponse response)
@@ -51,7 +49,7 @@ public class Controller extends HttpServlet {
         LOG.trace("Request parameter: action --> " + actionName);
 
         Action action = ActionsMap.get(actionName);
-        LOG.trace("Obtained action --> " + action.getClass().getSimpleName());
+        LOG.trace("Obtained action --> " + action);
 
         String forward = action.execute(request, response);
         LOG.trace("Forward address --> " + forward);
