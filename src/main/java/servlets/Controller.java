@@ -8,10 +8,12 @@ import org.apache.logging.log4j.Logger;
 import actions.Action;
 import actions.ActionsMap;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+@WebServlet("/controller")
 public class Controller extends HttpServlet {
 
     private static final long serialVersionUID = 7353100868310154108L;
@@ -21,22 +23,24 @@ public class Controller extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         LOG.debug("doGet() was called");
-        try {
-            process(request, response);
-        } catch (ServletException | IOException e) {
-            LOG.error("Cannot process GET request", e);
-        }
+        response.getWriter().println("Hello");
+        // try {
+        //     process(request, response);
+        // } catch (ServletException | IOException e) {
+        //     LOG.error("Cannot process GET request", e);
+        // }
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         LOG.debug("doGet() was called");
-        try {
-            process(request, response);
-        } catch (ServletException | IOException e) {
-            LOG.error("Cannot process POST request", e);
-        }
+        response.getWriter().println("Hello");
+        // try {
+        //     process(request, response);
+        // } catch (ServletException | IOException e) {
+        //     LOG.error("Cannot process POST request", e);
+        // }
     }
 
     private void process(HttpServletRequest request, HttpServletResponse response)
