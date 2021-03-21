@@ -16,8 +16,8 @@ end;
 /
 CREATE TABLE "Story" (
 	"story_id" NUMBER(10) NOT NULL,
-	"open" NUMBER(1) NOT NULL DEFAULT "0",
-	"published" NUMBER(1) NOT NULL DEFAULT "0",
+	"open" NUMBER(1) DEFAULT "0" NOT NULL ,
+	"published" NUMBER(1) DEFAULT "0" NOT NULL,
 	"user_id" NUMBER(10) NOT NULL,
 	constraint STORY_PK PRIMARY KEY ("story_id"));
 
@@ -35,7 +35,7 @@ CREATE TABLE "Paragraphe" (
 	"story_id" NUMBER(10) NOT NULL,
 	"para_id" NUMBER(10) NOT NULL,
 	"content" CLOB NOT NULL,
-	"is_final" NUMBER(1) NOT NULL DEFAULT "0",
+	"is_final" NUMBER(1) DEFAULT "0" NOT NULL,
 	constraint PARAGRAPHE_PK PRIMARY KEY ("story_id","para_id"));
 
 CREATE sequence "PARAGRAPHE_PARA_ID_SEQ";
