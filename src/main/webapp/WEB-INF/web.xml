@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app xmlns="https://jakarta.ee/xml/ns/jakartaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_5_0.xsd" version="5.0" metadata-complete="true">
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd" version="4.0">
 
   <description></description>
   <display-name>Story-App</display-name>
@@ -14,19 +14,9 @@
   </resource-ref>
 
   <welcome-file-list>
-    <welcome-file>index.jsp</welcome-file>
+    <welcome-file>jsp/index.jsp</welcome-file>
     <welcome-file>index.html</welcome-file>
   </welcome-file-list>
-
-  <!-- <servlet>
-    <servlet-name>controller</servlet-name>
-    <servlet-class>servlets.Controller</servlet-class>
-  </servlet>
-  <servlet-mapping>
-    <servlet-name>controller</servlet-name>
-    <url-pattern>/controller</url-pattern>
-  </servlet-mapping> -->
-
 
   <!-- <error-page>
     <location>/ErrorHandler</location>
