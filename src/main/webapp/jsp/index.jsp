@@ -10,31 +10,45 @@
 <html lang="fr">
 
 <head>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/style.css">
+
     <meta charset="utf-8">
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <title>User List</title>
 </head>
 
 <body>
-    <p> Hello </p>
-    <div align="center">
-        <table border="1" cellpadding="5">
-            <caption><h2>List of users</h2></caption>
-            <tr>
-                <th>Name</th>
-                <th>Password</th>
-            </tr>
-            <c:forEach var="user" items="${listUsers.rows}">
-                <tr>
-                    <td><c:out value="${user.username}" /></td>
-                    <td><c:out value="${user.password}" /></td>
-                </tr>
-            </c:forEach>
-        </table>
-    </div>
-
-    <p> Pensez à vous <a href="jsp/register.jsp"> enregistrer </a>. </p>
-
+    <header>
+         <p> index.jsp </p>
+    </header>
+    <main>
+        <hr>
+        <section>
+            <table>
+                <caption><h2>List of users</h2></caption>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Password</th>
+                    </tr>
+                </thead>
+                <c:forEach var="user" items="${listUsers.rows}">
+                    <tr>
+                        <td><c:out value="${user.username}" /></td>
+                        <td><c:out value="${user.password}" /></td>
+                    </tr>
+                </c:forEach>
+            </table>
+        </section>
+        <p> Pensez à vous <a href="jsp/register.jsp"> enregistrer </a>. </p>
+    </main>
+    <footer>
+        <hr>
+        <p>
+            <small>@story-app</small>
+        </p>
+    </footer>
 </body>
 
 </html>

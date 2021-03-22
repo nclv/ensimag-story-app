@@ -2,13 +2,26 @@
 <html lang="fr">
 
 <head>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/style.css">
+    
     <meta charset="utf-8">
-    <link rel="stylesheet" href="style.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <title>Login</title>
 </head>
 
 <body>
-    <p> login.jsp </p>
+    <header>
+         <p> login.jsp </p>
+    </header>
+    <main>
+    </main>
+    <footer>
+        <hr>
+        <p>
+            <small>@story-app</small>
+        </p>
+    </footer>
 </body>
 
 </html>
