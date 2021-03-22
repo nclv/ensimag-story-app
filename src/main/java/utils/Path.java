@@ -15,5 +15,6 @@ public final class Path {
     public static final String APP = "/story-app";
 
     public static final String REDIRECT_LOGIN = APP + "/controller?action=login";
+    public static final String REDIRECT_LOGOUT = APP + "/controller?action=logout";
     public static final String REDIRECT_REGISTER = APP + "/controller?action=register";
 }

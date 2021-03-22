@@ -8,17 +8,32 @@ import org.apache.logging.log4j.Logger;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import models.User;
+import utils.Path;
 
 public class LogoutAction implements Action {
     private static final Logger LOG = LogManager.getLogger();
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -6166985392326198420L;
 
+    
     @Override
     public String execute(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // TODO Auto-generated method stub
-        return null;
-    }
+        LOG.debug("Logout Action starts");
 
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+
+        LOG.info("User [username --> [" + user.getName() + "], [password --> " + user.getPassword()
+                + "] successfully signed out");
+
+        LOG.trace("Session invalidated");
+        session.invalidate();
+
+        LOG.debug("Logout Action finished");
+
+        return Path.PAGE_HOME;
+    }
 }

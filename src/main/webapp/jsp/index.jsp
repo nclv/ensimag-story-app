@@ -1,7 +1,8 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/sql" prefix="sql"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-     
+<%@ page import="utils.Path"%>
+
 <sql:query var="listUsers" dataSource="jdbc/story-app">
     select "username", "password" from "User"
 </sql:query>
@@ -20,7 +21,15 @@
 
 <body>
     <header>
-         <p> index.jsp </p>
+        <nav>
+            <a> </a>
+            <ul>
+                <c:if test="${not empty user}">
+                    <li><a href=<%= Path.REDIRECT_LOGOUT %>> Logout </a></li>
+                </c:if>
+            </ul>
+        </nav>
+        <h1> index.jsp </h1>
     </header>
     <main>
         <hr>
