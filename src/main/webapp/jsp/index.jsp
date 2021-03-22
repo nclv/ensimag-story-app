@@ -32,6 +32,9 @@
             </c:forEach>
         </table>
     </div>
+
+    <p> Pensez à vous <a href="jsp/register.jsp"> enregistrer </a>. </p>
+
 </body>
 
 </html>
