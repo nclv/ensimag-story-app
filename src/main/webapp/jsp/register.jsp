@@ -1,3 +1,4 @@
+<%@ page import="utils.Path"%>
 <!doctype html>
 <html lang="fr">
 
@@ -9,12 +10,12 @@
 
 <body>
     <p> register.jsp </p>
-    <form action="../controller?action=register" method="post">
+    <form action=<%= Path.REDIRECT_REGISTER %> method="post">
         <strong>Username</strong>:<input type="text" name="username"><br>
         <strong>Password</strong>:<input type="password" name="password"><br>
         <input type="submit" value="Register">
     </form>
-    <p> Si vous êtes déjà enregistré, pensez à vous <a href="jsp/login.jsp"> identifier </a>. </p>
+    <p> Si vous êtes déjà enregistré, pensez à vous <a href="login.jsp"> identifier </a>. </p>
 </body>
 
 </html>

@@ -35,7 +35,7 @@ public class RegisterAction implements Action {
         LOG.info("User [username --> [" + username + "], [password --> " + password + "] successfully signed up");
         LOG.debug("Register Action finished");
 
-        return Path.REDIRECT_LOGIN;
+        return Path.PAGE_LOGIN;
     }
 
 }
