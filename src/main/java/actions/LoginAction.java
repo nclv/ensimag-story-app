@@ -31,7 +31,7 @@ public class LoginAction implements Action {
         UserDAO userDao = new UserDAOimpl();
         User user = userDao.findUser(username);
 
-        String forward = Path.REDIRECT_HOME;
+        String forward = Path.PAGE_HOME;
 
         request.setAttribute("usernameNotFound", username);
         if (user == null) {

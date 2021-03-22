@@ -1,3 +1,5 @@
+<%@ page import="utils.Path"%>
+
 <!doctype html>
 <html lang="fr">
 
@@ -15,6 +17,11 @@
          <p> login.jsp </p>
     </header>
     <main>
+        <form action=<%= Path.REDIRECT_LOGIN %> method="post">
+            <strong>Username</strong>:<input type="text" name="username"><br>
+            <strong>Password</strong>:<input type="password" name="password"><br>
+            <input type="submit" value="Login">
+        </form>
     </main>
     <footer>
         <hr>

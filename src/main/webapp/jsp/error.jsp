@@ -15,6 +15,7 @@
          <p> error.jsp </p>
     </header>
     <main>
+        <p> ${error_message} </p>
     </main>
     <footer>
         <hr>
