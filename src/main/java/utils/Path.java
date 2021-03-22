@@ -12,4 +12,5 @@ public final class Path {
     public static final String PAGE_LOGIN = "jsp/login.jsp";
 
     public static final String REDIRECT_HOME = "/controller?action=home";
+    public static final String REDIRECT_LOGIN = "/controller?action=login";
 }

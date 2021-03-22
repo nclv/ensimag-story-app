@@ -19,6 +19,7 @@ public class ActionsMap {
         actions.put("show_login", (request, response) -> Path.PAGE_LOGIN);
         actions.put("login", new LoginAction());
         actions.put("logout", new LogoutAction());
+        actions.put("register", new RegisterAction());
 
         LOG.debug("Command container was successfully initialized");
         LOG.trace("Number of actions --> " + actions.size());

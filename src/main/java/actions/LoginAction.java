@@ -16,13 +16,12 @@ import utils.Path;
 
 public class LoginAction implements Action {
     private static final Logger LOG = LogManager.getLogger();
-
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = -7377459693380607305L;
 
     @Override
     public String execute(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        LOG.debug("Command starts");
+        LOG.debug("Login Action starts");
 
         HttpSession session = request.getSession();
 
@@ -51,7 +50,7 @@ public class LoginAction implements Action {
             session.setAttribute("user", user);
         }
 
-        LOG.debug("Command finished");
+        LOG.debug("Login Action finished");
 
         return forward;
     }
