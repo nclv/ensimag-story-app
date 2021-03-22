@@ -26,6 +26,7 @@
             <ul>
                 <c:if test="${not empty user}">
                     <li><a href=<%= Path.REDIRECT_LOGOUT %>> Logout </a></li>
+                    <li> ${user.name} </li>
                 </c:if>
             </ul>
         </nav>

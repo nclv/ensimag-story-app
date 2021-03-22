@@ -26,6 +26,11 @@ public class LogoutAction implements Action {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
 
+        if (user == null) {
+            request.setAttribute("error_message", "There is no connected user.");
+            return Path.PAGE_ERROR;
+        }
+
         LOG.info("User [username --> [" + user.getName() + "], [password --> " + user.getPassword()
                 + "] successfully signed out");
 

@@ -33,16 +33,16 @@ public class LoginAction implements Action {
 
         String forward = Path.PAGE_HOME;
 
-        request.setAttribute("usernameNotFound", username);
+        request.setAttribute("username", username);
         if (user == null) {
             LOG.error("There is no such a username --> [" + username + "]");
 
-            request.setAttribute("usernameValid", "is-invalid");
+            request.setAttribute("usernameValid", "invalid");
             forward = Path.PAGE_LOGIN;
         } else if (!password.equals(user.getPassword())) {
             LOG.error("Incorrect password --> " + password + " for [" + username + "]");
 
-            request.setAttribute("passwordValid", "is-invalid");
+            request.setAttribute("passwordValid", "invalid");
             forward = Path.PAGE_LOGIN;
         } else {
             LOG.trace("User [username --> '" + username + "', password --> '" + password + "'] successfully signed in");
