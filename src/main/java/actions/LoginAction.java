@@ -31,18 +31,22 @@ public class LoginAction implements Action {
         UserDAO userDao = new UserDAOimpl();
         User user = userDao.findUser(username);
 
+        // Validation
         String forward = Path.PAGE_HOME;
+        if (username == "") {
+            LOG.error("There is no username --> [" + username + "]");
 
-        request.setAttribute("username", username);
-        if (user == null) {
+            request.setAttribute("error_message", "Enter an user name.");
+            forward = Path.PAGE_LOGIN;
+        } else if (user == null) {
             LOG.error("There is no such a username --> [" + username + "]");
 
-            request.setAttribute("usernameValid", "invalid");
+            request.setAttribute("error_message", username + " is invalid");
             forward = Path.PAGE_LOGIN;
         } else if (!password.equals(user.getPassword())) {
             LOG.error("Incorrect password --> " + password + " for [" + username + "]");
 
-            request.setAttribute("passwordValid", "invalid");
+            request.setAttribute("error_message", username + " exist but invalid password.");
             forward = Path.PAGE_LOGIN;
         } else {
             LOG.trace("User [username --> '" + username + "', password --> '" + password + "'] successfully signed in");
@@ -54,5 +58,4 @@ public class LoginAction implements Action {
 
         return forward;
     }
-
 }

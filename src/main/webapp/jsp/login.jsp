@@ -23,14 +23,8 @@
             <strong>Password</strong>:<input type="password" name="password"><br>
             <input type="submit" value="Login">
         </form>
-        <c:if test="${empty username}">
-            <p> Enter an user name. </p>
-        </c:if>
-        <c:if test="${(not empty username) and (not empty usernameValid)}">
-            <p> ${username} is ${usernameValid}. </p>
-        </c:if>
-        <c:if test="${(not empty username) and (not empty passwordValid)}">
-            <p> ${username} exist but ${passwordValid} password. </p>
+        <c:if test="${not empty error_message}">
+            <p> ${error_message} </p>
         </c:if>
     </main>
     <footer>
