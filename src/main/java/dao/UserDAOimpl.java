@@ -5,21 +5,19 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import javax.sql.DataSource;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import jakarta.annotation.Resource;
 import models.DatabaseFields;
 import models.User;
+import utils.DatabaseManager;
 
 public class UserDAOimpl implements UserDAO {
 
     private static final Logger LOG = LogManager.getLogger();
 
-    @Resource(name = "jdbc/story-app")
-    private DataSource dataSource;
+    // @Resource(name = "jdbc/story-app")
+    // private DataSource dataSource;
 
     private final static String SQL_FIND_USER_USER_ID = "SELECT * FROM \"User\" WHERE \"user_id\"=?";
     private final static String SQL_FIND_USER_USERNAME = "SELECT * FROM \"User\" WHERE \"username\"=?";
@@ -28,7 +26,7 @@ public class UserDAOimpl implements UserDAO {
     @Override
     public long saveUser(User user) {
         long id = -1;
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = DatabaseManager.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(SQL_INSERT_USER)) {
             preparedStatement.setString(1, user.getName());
             preparedStatement.setString(2, user.getPassword());
@@ -48,7 +46,7 @@ public class UserDAOimpl implements UserDAO {
     @Override
     public User findUser(String username) {
         User user = null;
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = DatabaseManager.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(SQL_FIND_USER_USERNAME)) {
             preparedStatement.setString(1, username);
 
@@ -63,7 +61,7 @@ public class UserDAOimpl implements UserDAO {
     @Override
     public User findUser(long id) {
         User user = null;
-        try (Connection connection = dataSource.getConnection();
+        try (Connection connection = DatabaseManager.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(SQL_FIND_USER_USER_ID)) {
             preparedStatement.setLong(1, id);
 
