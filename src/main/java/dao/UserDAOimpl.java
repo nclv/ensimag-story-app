@@ -23,6 +23,8 @@ public class UserDAOimpl implements UserDAO {
     private final static String SQL_FIND_USER_USERNAME = "SELECT * FROM \"User\" WHERE \"username\"=?";
     private final static String SQL_INSERT_USER = "INSERT INTO \"User\" (\"username\", \"password\") VALUES (?, ?)";
 
+    private final static String SQL_GET_USER_ID = "SELECT \"USER_USER_ID_SEQ\".currval FROM DUAL";
+
     @Override
     public long saveUser(User user) {
         long id = -1;
@@ -32,9 +34,13 @@ public class UserDAOimpl implements UserDAO {
             preparedStatement.setString(2, user.getPassword());
 
             preparedStatement.executeUpdate();
-            ResultSet resultSet = preparedStatement.getGeneratedKeys();
-            if (resultSet.next())
-                id = resultSet.getLong(1);
+
+            try (PreparedStatement ps = connection.prepareStatement(SQL_GET_USER_ID);
+                    ResultSet resultSet = ps.executeQuery()) {
+                if (resultSet.next()) {
+                    id = resultSet.getLong(1);
+                }
+            }
 
         } catch (Exception e) {
             LOG.error("Failed inserting user", e);
