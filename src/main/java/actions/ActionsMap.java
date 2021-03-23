@@ -6,6 +6,7 @@ import java.util.Map;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import jakarta.servlet.http.HttpServletRequest;
 import utils.Path;
 
 public class ActionsMap {
@@ -14,12 +15,12 @@ public class ActionsMap {
     private static final Map<String, Action> actions = new HashMap<>();
 
     static {
-        actions.put("invalid", new InvalidAction());
-        actions.put("about", (request, response) -> Path.PAGE_ABOUT);
-        actions.put("show_login", (request, response) -> Path.PAGE_LOGIN);
-        actions.put("login", new LoginAction());
-        actions.put("logout", new LogoutAction());
-        actions.put("register", new RegisterAction());
+        actions.put("GET/invalid", new InvalidAction());
+        actions.put("GET/about", (request, response) -> Path.PAGE_ABOUT);
+        actions.put("GET/show_login", (request, response) -> Path.PAGE_LOGIN);
+        actions.put("POST/login", new LoginAction());
+        actions.put("GET/logout", new LogoutAction());
+        actions.put("POST/register", new RegisterAction());
 
         LOG.debug("Command container was successfully initialized");
         LOG.trace("Number of actions --> " + actions.size());
@@ -27,12 +28,15 @@ public class ActionsMap {
 
     private ActionsMap () {}
 
-    public static Action get(String actionName) {
-        if (actionName == null)
-            return actions.get("about");
+    public static Action get(HttpServletRequest request) {
+        String actionName = request.getMethod() + "/" + request.getParameter("action");
+        LOG.error("Action: " + actionName);
+
+        if (actionName.isEmpty())
+            return actions.get("GET/about");
         if (!actions.containsKey(actionName)) {
             LOG.trace("Command not found, name --> " + actionName);
-            return actions.get("invalid");
+            return actions.get("GET/invalid");
         }
 
         return actions.get(actionName);

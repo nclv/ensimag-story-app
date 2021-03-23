@@ -48,7 +48,7 @@ public class Controller extends HttpServlet {
         String actionName = request.getParameter("action");
         LOG.trace("Request parameter: action --> " + actionName);
 
-        Action action = ActionsMap.get(actionName);
+        Action action = ActionsMap.get(request);
         LOG.trace("Obtained action --> " + action);
 
         String forward = action.execute(request, response);
