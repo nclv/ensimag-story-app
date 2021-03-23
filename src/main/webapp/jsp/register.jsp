@@ -22,6 +22,9 @@
             <strong>Password</strong>:<input type="password" name="password"><br>
             <input type="submit" value="Register">
         </form>
+        <c:if test="${not empty error_message}">
+            <span style="background-color: #F08080"> ${error_message} </span>
+        </c:if>
         <p> Si vous êtes déjà enregistré, pensez à vous <a href="login.jsp"> identifier </a>. </p>
     </main>
     <footer>

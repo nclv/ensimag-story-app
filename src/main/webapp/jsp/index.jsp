@@ -4,7 +4,7 @@
 <%@ page import="utils.Path"%>
 
 <sql:query var="listUsers" dataSource="jdbc/story-app">
-    select "username", "password" from "User"
+    select "user_id", "username", "password" from "User"
 </sql:query>
 
 <!doctype html>
@@ -39,12 +39,14 @@
                 <caption><h2>List of users</h2></caption>
                 <thead>
                     <tr>
+                        <th>Id</th>
                         <th>Name</th>
                         <th>Password</th>
                     </tr>
                 </thead>
                 <c:forEach var="user" items="${listUsers.rows}">
                     <tr>
+                        <td><c:out value="${user.user_id}" /></td>
                         <td><c:out value="${user.username}" /></td>
                         <td><c:out value="${user.password}" /></td>
                     </tr>

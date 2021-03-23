@@ -1,4 +1,5 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ page import="utils.Path"%>
 
 <!doctype html>
@@ -19,12 +20,12 @@
     </header>
     <main>
         <form action=<%= Path.REDIRECT_LOGIN %> method="post">
-            <strong>Username</strong>:<input type="text" name="username"><br>
-            <strong>Password</strong>:<input type="password" name="password"><br>
+            <strong>Username</strong>:<input type="text" name="username" value="${fn:escapeXml(param.username)}"><br>
+            <strong>Password</strong>:<input type="password" name="password" value="${fn:escapeXml(param.password)}"><br>
             <input type="submit" value="Login">
         </form>
         <c:if test="${not empty error_message}">
-            <p> ${error_message} </p>
+            <span style="background-color: #F08080"> ${error_message} </span>
         </c:if>
     </main>
     <footer>
