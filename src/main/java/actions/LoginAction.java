@@ -33,7 +33,7 @@ public class LoginAction implements Action {
 
         // Validation
         String forward = Path.PAGE_HOME;
-        if (username == "") {
+        if (username == null || username.isEmpty()) {
             LOG.error("There is no username --> [" + username + "]");
 
             request.setAttribute("error_message", "Enter an user name.");
@@ -41,7 +41,12 @@ public class LoginAction implements Action {
         } else if (user == null) {
             LOG.error("There is no such a username --> [" + username + "]");
 
-            request.setAttribute("error_message", username + " is invalid");
+            request.setAttribute("error_message", username + " is invalid.");
+            forward = Path.PAGE_LOGIN;
+        } else if (password == null || password.isEmpty()) {
+            LOG.error("There is no password --> [" + username + "]");
+
+            request.setAttribute("error_message", "Enter a password.");
             forward = Path.PAGE_LOGIN;
         } else if (!password.equals(user.getPassword())) {
             LOG.error("Incorrect password --> " + password + " for [" + username + "]");
