@@ -21,7 +21,14 @@
     <main>
         <form action=<%= Path.REDIRECT_CREATE_STORY %> method="post">
             <strong>Title</strong>:<input type="text" name="title" value="${fn:escapeXml(param.title)}"><br>
-            <input type="submit" value="CreateStory">
+            <p> Is your story <strong>open</strong> or <strong>private</strong>? </p>
+            <input type="radio" id="open" name="open" value="open" checked>
+            <label for="open">Open</label>
+            <input type="radio" id="private" name="open" value="private">
+            <label for="private">Private</label>
+
+            <input type="submit" name="create" value="Create my Story">
+            <input type="submit" name="create_and_publish" value="Create and Publish my Story">
         </form>
         <c:if test="${not empty error_message}">
             <span style="background-color: #F08080"> ${error_message} </span>

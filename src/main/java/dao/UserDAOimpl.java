@@ -41,7 +41,6 @@ public class UserDAOimpl implements UserDAO {
                     id = resultSet.getLong(1);
                 }
             }
-
         } catch (Exception e) {
             LOG.error("Failed inserting user", e);
         }

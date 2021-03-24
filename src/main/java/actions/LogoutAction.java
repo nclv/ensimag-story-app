@@ -16,7 +16,6 @@ public class LogoutAction implements Action {
     private static final Logger LOG = LogManager.getLogger();
 
     private static final long serialVersionUID = -6166985392326198420L;
-
     
     @Override
     public String execute(HttpServletRequest request, HttpServletResponse response)
