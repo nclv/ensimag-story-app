@@ -10,7 +10,6 @@ import org.apache.logging.log4j.Logger;
 
 import models.DatabaseFields;
 import models.Story;
-import models.User;
 import utils.DatabaseManager;
 
 public class StoryDAOimpl implements StoryDAO {
@@ -18,7 +17,7 @@ public class StoryDAOimpl implements StoryDAO {
     private static final Logger LOG = LogManager.getLogger();
 
     private final static String SQL_FIND_STORY_STORY_ID = "SELECT * FROM \"Story\" WHERE \"story_id\"=?";
-    private final static String SQL_INSERT_STORY = "INSERT INTO \"Story\" (\"open\", \"published\", \"user_id\") VALUES (?, ?)";
+    private final static String SQL_INSERT_STORY = "INSERT INTO \"Story\" (\"open\", \"published\", \"user_id\") VALUES (?, ?, ?)";
 
     private final static String SQL_GET_STORY_ID = "SELECT \"STORY_STORY_ID_SEQ\".currval FROM DUAL";
 

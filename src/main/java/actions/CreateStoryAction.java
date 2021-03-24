@@ -34,7 +34,8 @@ public class CreateStoryAction implements Action {
             return Path.PAGE_ERROR;
         }
 
-        Boolean open = (request.getParameter("open") == "open")? true: false;
+        boolean open = request.getParameter("open").equals("open")? true: false;
+        LOG.error(open);
 
         Story story = null;
         if (request.getParameter("create") != null) {
