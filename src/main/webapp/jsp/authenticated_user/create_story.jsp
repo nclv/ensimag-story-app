@@ -7,27 +7,25 @@
 
 <head>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/style.css">
-
+    
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Register</title>
+    
+    <title>Create Story</title>
 </head>
 
 <body>
     <header>
-        <p> register.jsp </p>
+         <p> create_story.jsp </p>
     </header>
     <main>
-        <form action=<%= Path.REDIRECT_REGISTER %> method="post">
-            <strong>Username</strong>:<input type="text" name="username" value="${fn:escapeXml(param.username)}"><br>
-            <strong>Password</strong>:<input type="password" name="password" value="${fn:escapeXml(param.password)}"><br>
-            <input type="submit" value="Register">
+        <form action=<%= Path.REDIRECT_CREATE_STORY %> method="post">
+            <strong>Title</strong>:<input type="text" name="title" value="${fn:escapeXml(param.title)}"><br>
+            <input type="submit" value="CreateStory">
         </form>
         <c:if test="${not empty error_message}">
             <span style="background-color: #F08080"> ${error_message} </span>
         </c:if>
-        <p> Si vous êtes déjà enregistré, pensez à vous <a href="login.jsp"> identifier </a>. </p>
     </main>
     <footer>
         <hr>

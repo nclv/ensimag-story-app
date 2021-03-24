@@ -21,6 +21,7 @@ public class ActionsMap {
         actions.put("POST/login", new LoginAction());
         actions.put("GET/logout", new LogoutAction());
         actions.put("POST/register", new RegisterAction());
+        actions.put("POST/create_story", new CreateStoryAction());
 
         LOG.debug("Command container was successfully initialized");
         LOG.trace("Number of actions --> " + actions.size());
