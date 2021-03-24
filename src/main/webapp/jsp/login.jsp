@@ -2,11 +2,13 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ page import="utils.Path"%>
 
+<c:set var="context" value="${pageContext.request.contextPath}" />
+
 <!doctype html>
 <html lang="fr">
 
 <head>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/style.css">
+    <link rel="stylesheet" href="${context}/style.css">
     
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -19,7 +21,7 @@
          <p> login.jsp </p>
     </header>
     <main>
-        <form action=<%= Path.REDIRECT_LOGIN %> method="post">
+        <form action="${context}${Path.REDIRECT_LOGIN}" method="post">
             <strong>Username</strong>:<input type="text" name="username" value="${fn:escapeXml(param.username)}"><br>
             <strong>Password</strong>:<input type="password" name="password" value="${fn:escapeXml(param.password)}"><br>
             <input type="submit" value="Login">

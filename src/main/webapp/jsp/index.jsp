@@ -7,11 +7,13 @@
     select "user_id", "username", "password" from "User"
 </sql:query>
 
+<c:set var="context" value="${pageContext.request.contextPath}" />
+
 <!doctype html>
 <html lang="fr">
 
 <head>
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/style.css">
+    <link rel="stylesheet" href="${context}/style.css">
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -25,8 +27,8 @@
             <a> </a>
             <ul>
                 <c:if test="${not empty user}">
-                    <li><a href=<%= Path.PAGE_CREATE_STORY %>> Create a Story </a></li>
-                    <li><a href=<%= Path.REDIRECT_LOGOUT %>> Logout </a></li>
+                    <li><a href="${context}${Path.PAGE_CREATE_STORY}"> Create a Story </a></li>
+                    <li><a href="${context}${Path.REDIRECT_LOGOUT}"> Logout </a></li>
                     <li> ${user.name} </li>
                 </c:if>
             </ul>
@@ -54,7 +56,7 @@
                 </c:forEach>
             </table>
         </section>
-        <p> Pensez à vous <a href="jsp/register.jsp"> enregistrer </a>. </p>
+        <p> Pensez à vous <a href="${context}${Path.PAGE_REGISTER}"> enregistrer </a>. </p>
     </main>
     <footer>
         <hr>
