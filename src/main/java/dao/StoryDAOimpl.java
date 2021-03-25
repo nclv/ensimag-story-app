@@ -91,6 +91,8 @@ public class StoryDAOimpl implements StoryDAO {
                 story = getStory(resultSet);
                 stories.add(story);
             }
+            LOG.error(stories);
+
         } catch (SQLException e) {
             LOG.error("Failed querying open stories", e);
         }

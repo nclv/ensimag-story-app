@@ -13,10 +13,10 @@
     <res-auth>Container</res-auth>
   </resource-ref>
 
-  <welcome-file-list>
+  <!-- <welcome-file-list>
     <welcome-file>jsp/index.jsp</welcome-file>
     <welcome-file>index.html</welcome-file>
-  </welcome-file-list>
+  </welcome-file-list> -->
 
   <jsp-config>
     <jsp-property-group>

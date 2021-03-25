@@ -56,6 +56,27 @@
                 </c:forEach>
             </table>
         </section>
+        <section>
+            <table>
+                <caption><h2>List of open stories</h2></caption>
+                <thead>
+                    <tr>
+                        <th>Story Id</th>
+                        <th>Open</th>
+                        <th>Published</th>
+                        <th>User Id</th>
+                    </tr>
+                </thead>
+                <c:forEach var="story" items="${stories}">
+                    <tr>
+                        <td><c:out value="${story.id}" /></td>
+                        <td><c:out value="${story.user_id}" /></td>
+                        <td><c:out value="${story.open}" /></td>
+                        <td><c:out value="${story.published}" /></td>
+                    </tr>
+                </c:forEach>
+            </table>
+        </section>
         <p> Pensez à vous <a href="${context}${Path.PAGE_REGISTER}"> enregistrer </a>. </p>
         <p> Si vous êtes déjà enregistré, pensez à vous <a href="${context}${Path.PAGE_LOGIN}"> identifier </a>. </p>
     </main>

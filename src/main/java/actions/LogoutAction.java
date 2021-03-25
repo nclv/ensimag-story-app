@@ -38,6 +38,6 @@ public class LogoutAction implements Action {
 
         LOG.debug("Logout Action finished");
 
-        return Path.PAGE_HOME;
+        return Path.REDIRECT_HOME;
     }
 }

@@ -56,7 +56,7 @@ public class Controller extends HttpServlet {
 
         if (forward.contains("/controller")) {
             LOG.debug("Controller finished, now go to forward address with a redirect --> " + forward);
-            response.sendRedirect(forward);
+            response.sendRedirect(request.getContextPath() + forward);
         } else {
             LOG.debug("Controller finished, now go to forward address --> " + forward);
             request.getRequestDispatcher(forward).forward(request, response);

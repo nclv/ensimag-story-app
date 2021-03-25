@@ -44,7 +44,7 @@ public class LoginAction implements Action {
         User user = userDao.findUser(username);
 
         // Validation database
-        String forward = Path.PAGE_HOME;
+        String forward = Path.REDIRECT_HOME;
         if (user == null) {
             LOG.error("There is no such a username --> [" + username + "]");
 
