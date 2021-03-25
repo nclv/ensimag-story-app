@@ -71,7 +71,8 @@ public class LoginAction implements Action {
             session.setAttribute("user", user);
         }
 
-        if (redirect != null) {
+        // Important de filtrer les espaces !!
+        if (redirect != null && !redirect.trim().isEmpty()) {
             forward = redirect;
         }
 
