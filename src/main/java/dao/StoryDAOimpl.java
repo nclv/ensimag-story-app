@@ -4,6 +4,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,6 +21,7 @@ public class StoryDAOimpl implements StoryDAO {
 
     private final static String SQL_FIND_STORY_STORY_ID = "SELECT * FROM \"Story\" WHERE \"story_id\"=?";
     private final static String SQL_INSERT_STORY = "INSERT INTO \"Story\" (\"open\", \"published\", \"user_id\") VALUES (?, ?, ?)";
+    private final static String SQL_FIND_ALL_OPEN_STORIES = "SELECT * FROM \"Story\" WHERE \"open\"=1";
 
     private final static String SQL_GET_STORY_ID = "SELECT \"STORY_STORY_ID_SEQ\".currval FROM DUAL";
 
@@ -60,18 +64,41 @@ public class StoryDAOimpl implements StoryDAO {
         return story;
     }
 
+    @Override
+    public List<Story> findAllOpenStories() {
+        List<Story> stories = new ArrayList<Story>();
+        try (Connection connection = DatabaseManager.getConnection();
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery(SQL_FIND_ALL_OPEN_STORIES)) {
+
+            Story story = null;
+            while (resultSet.next()) {
+                story = getStory(resultSet);
+                stories.add(story);
+            }
+        } catch (SQLException e) {
+            LOG.error("Failed querying open stories", e);
+        }
+
+        return stories;
+    }
+
     private Story getStory(PreparedStatement preparedStatement) throws SQLException {
         Story story = null;
 
         ResultSet resultSet = preparedStatement.executeQuery();
         if (resultSet.next()) {
-            story = Story.builder().id(resultSet.getLong(DatabaseFields.STORY_ID))
-                    .user_id(resultSet.getLong(DatabaseFields.USER_ID))
-                    .open((resultSet.getInt(DatabaseFields.STORY_OPEN) == 1))
-                    .published((resultSet.getInt(DatabaseFields.STORY_PUBLISHED) == 1)).build();
+            story = getStory(resultSet);
         }
         resultSet.close();
 
         return story;
+    }
+
+    private Story getStory(ResultSet resultSet) throws SQLException {
+        return Story.builder().id(resultSet.getLong(DatabaseFields.STORY_ID))
+                .user_id(resultSet.getLong(DatabaseFields.USER_ID))
+                .open((resultSet.getInt(DatabaseFields.STORY_OPEN) == 1))
+                .published((resultSet.getInt(DatabaseFields.STORY_PUBLISHED) == 1)).build();
     }
 }
