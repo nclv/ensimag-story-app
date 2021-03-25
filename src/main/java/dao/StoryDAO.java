@@ -8,4 +8,5 @@ public interface StoryDAO {
     long saveStory(Story story);
     Story findStory(long id);
     List<Story> findAllOpenStories();
+    void updateStory(Story story);
 }

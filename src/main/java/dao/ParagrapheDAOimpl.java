@@ -18,6 +18,8 @@ public class ParagrapheDAOimpl implements ParagrapheDAO {
 
     private final static String SQL_FIND_PARAGRAPHE = "SELECT * FROM \"Paragraphe\" WHERE \"story_id\"=? AND \"para_id\"=?";
     private final static String SQL_INSERT_PARAGRAPHE = "INSERT INTO \"Paragraphe\" (\"story_id\", \"content\", \"is_final\") VALUES (?, ?, ?)";
+    private final static String SQL_UPDATE_PARAGRAPHE = "UPDATE \"Paragraphe\" SET \"story_id\"=?, \"content\"=?, \"is_final\"=? WHERE \"para_id\"=?";
+
 
     private final static String SQL_GET_PARAGRAPHE_ID = "SELECT \"PARAGRAPHE_PARA_ID_SEQ\".currval FROM DUAL";
 
@@ -60,6 +62,20 @@ public class ParagrapheDAOimpl implements ParagrapheDAO {
         }
 
         return paragraphe;
+    }
+
+    @Override
+    public void updateParagraphe(Paragraphe paragraphe) {
+        try (Connection connection = DatabaseManager.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(SQL_UPDATE_PARAGRAPHE)) {
+            preparedStatement.setLong(1, paragraphe.getStory_id());
+            preparedStatement.setString(2, paragraphe.getContent());
+            preparedStatement.setInt(3, paragraphe.is_final() ? 1 : 0);
+
+            preparedStatement.executeUpdate();
+        } catch (Exception e) {
+            LOG.error("Failed updating paragraphe", e);
+        }
     }
 
     private Paragraphe getParagraphe(PreparedStatement preparedStatement) throws SQLException {

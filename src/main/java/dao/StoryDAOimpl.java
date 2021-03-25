@@ -21,6 +21,7 @@ public class StoryDAOimpl implements StoryDAO {
 
     private final static String SQL_FIND_STORY_STORY_ID = "SELECT * FROM \"Story\" WHERE \"story_id\"=?";
     private final static String SQL_INSERT_STORY = "INSERT INTO \"Story\" (\"open\", \"published\", \"user_id\") VALUES (?, ?, ?)";
+    private final static String SQL_UPDATE_STORY = "UPDATE \"Story\" SET \"open\"=?, \"published\"=?, \"user_id\"=? WHERE \"story_id\"=?";
     private final static String SQL_FIND_ALL_OPEN_STORIES = "SELECT * FROM \"Story\" WHERE \"open\"=1";
 
     private final static String SQL_GET_STORY_ID = "SELECT \"STORY_STORY_ID_SEQ\".currval FROM DUAL";
@@ -62,6 +63,20 @@ public class StoryDAOimpl implements StoryDAO {
         }
 
         return story;
+    }
+
+    @Override
+    public void updateStory(Story story) {
+        try (Connection connection = DatabaseManager.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(SQL_UPDATE_STORY)) {
+            preparedStatement.setInt(1, story.isOpen() ? 1 : 0);
+            preparedStatement.setInt(2, story.isPublished() ? 1 : 0);
+            preparedStatement.setLong(3, story.getUser_id());
+
+            preparedStatement.executeUpdate();
+        } catch (Exception e) {
+            LOG.error("Failed updating story", e);
+        }
     }
 
     @Override
