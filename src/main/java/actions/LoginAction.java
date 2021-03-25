@@ -27,7 +27,12 @@ public class LoginAction implements Action {
 
         String username = request.getParameter("username");
         String password = request.getParameter("password");
+
+        String redirect = request.getParameter("redirect");
+        LOG.error(redirect);
+
         // Validation requête
+        // return to prevent database access
         if (username == null || username.isEmpty()) {
             LOG.error("There is no username --> [" + username + "]");
 
@@ -48,15 +53,6 @@ public class LoginAction implements Action {
         // UNSAFE to use referer or hidden input form to make decision
         // so we always redirect to home page
         String forward = Path.REDIRECT_HOME;
-        // String url = request.getHeader("referer");
-        // LOG.error(url);
-        // if (url != null) {
-        //     url = url.split(request.getContextPath())[1];
-        //     LOG.error(url);
-        //     if (!url.contains(Path.PAGE_LOGIN)) {
-        //         forward = url;
-        //     }
-        // }
 
         // Validation database
         if (user == null) {
@@ -73,6 +69,10 @@ public class LoginAction implements Action {
             LOG.trace("User [username --> '" + username + "', password --> '" + password + "'] successfully signed in");
 
             session.setAttribute("user", user);
+        }
+
+        if (redirect != null) {
+            forward = redirect;
         }
 
         LOG.debug("Login Action finished");

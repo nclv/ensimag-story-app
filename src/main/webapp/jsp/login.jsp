@@ -24,6 +24,7 @@
         <form action="${context}${Path.REDIRECT_LOGIN}" method="post">
             <strong>Username</strong>:<input type="text" name="username" value="${fn:escapeXml(param.username)}"><br>
             <strong>Password</strong>:<input type="password" name="password" value="${fn:escapeXml(param.password)}"><br>
+            <input type="hidden" name="redirect" value="${param.redirect}">
             <input type="submit" value="Login">
         </form>
         <c:if test="${not empty error_message}">

@@ -52,7 +52,7 @@ public class Controller extends HttpServlet {
         LOG.trace("Obtained action --> " + action);
 
         String forward = action.execute(request, response);
-        LOG.trace("Forward address --> " + forward);
+        LOG.error("Forward address --> " + forward);
 
         if (forward.contains("/controller")) {
             LOG.debug("Controller finished, now go to forward address with a redirect --> " + forward);

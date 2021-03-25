@@ -21,7 +21,7 @@ public class AuthenticationFilter implements Filter {
             throws IOException, ServletException {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse resp = (HttpServletResponse) response;
-        
+
         HttpSession session = req.getSession(false);
         String forward = Path.PAGE_LOGIN;
 
@@ -29,7 +29,9 @@ public class AuthenticationFilter implements Filter {
         if (loggedIn) {
             chain.doFilter(req, resp);
         } else {
-            req.getRequestDispatcher(forward).forward(req, resp);
+            // req.getRequestDispatcher(forward).forward(req, resp);
+            resp.sendRedirect(req.getContextPath() + forward + "?redirect="
+                    + req.getRequestURI().substring(req.getContextPath().length()));
         }
     }
 }
