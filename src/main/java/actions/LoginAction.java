@@ -27,26 +27,28 @@ public class LoginAction implements Action {
 
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-
-        UserDAO userDao = new UserDAOimpl();
-        User user = userDao.findUser(username);
-
-        // Validation
-        String forward = Path.PAGE_HOME;
+        // Validation requête
         if (username == null || username.isEmpty()) {
             LOG.error("There is no username --> [" + username + "]");
 
             request.setAttribute("error_message", "Enter an user name.");
-            forward = Path.PAGE_LOGIN;
-        } else if (user == null) {
-            LOG.error("There is no such a username --> [" + username + "]");
-
-            request.setAttribute("error_message", username + " is invalid.");
-            forward = Path.PAGE_LOGIN;
+            return Path.PAGE_LOGIN;
         } else if (password == null || password.isEmpty()) {
             LOG.error("There is no password --> [" + username + "]");
 
             request.setAttribute("error_message", "Enter a password.");
+            return Path.PAGE_LOGIN;
+        }
+
+        UserDAO userDao = new UserDAOimpl();
+        User user = userDao.findUser(username);
+
+        // Validation database
+        String forward = Path.PAGE_HOME;
+        if (user == null) {
+            LOG.error("There is no such a username --> [" + username + "]");
+
+            request.setAttribute("error_message", username + " is invalid.");
             forward = Path.PAGE_LOGIN;
         } else if (!password.equals(user.getPassword())) {
             LOG.error("Incorrect password --> " + password + " for [" + username + "]");
