@@ -18,7 +18,7 @@
 
 <body>
     <header>
-         <p> create_story.jsp </p>
+         <h1> create_story.jsp </h1>
     </header>
     <main>
         <form action="${context}${Path.REDIRECT_CREATE_STORY}" method="post">

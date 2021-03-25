@@ -18,7 +18,7 @@
 
 <body>
     <header>
-         <p> login.jsp </p>
+         <h1> login.jsp </h1>
     </header>
     <main>
         <form action="${context}${Path.REDIRECT_LOGIN}" method="post">

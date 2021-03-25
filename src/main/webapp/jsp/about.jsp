@@ -12,7 +12,7 @@
 
 <body>
     <header>
-         <p> about.jsp </p>
+         <h1> about.jsp </h1>
     </header>
     <main>
     </main>

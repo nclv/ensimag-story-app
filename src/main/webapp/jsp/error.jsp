@@ -12,7 +12,7 @@
 
 <body>
     <header>
-         <p> error.jsp </p>
+         <h1> error.jsp </h1>
     </header>
     <main>
         <p> ${error_message} </p>

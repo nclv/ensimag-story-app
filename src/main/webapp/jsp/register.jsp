@@ -18,7 +18,7 @@
 
 <body>
     <header>
-        <p> register.jsp </p>
+        <h1> register.jsp </h1>
     </header>
     <main>
         <form action="${context}${Path.REDIRECT_REGISTER}" method="post">

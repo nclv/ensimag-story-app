@@ -57,6 +57,7 @@
             </table>
         </section>
         <p> Pensez à vous <a href="${context}${Path.PAGE_REGISTER}"> enregistrer </a>. </p>
+        <p> Si vous êtes déjà enregistré, pensez à vous <a href="${context}${Path.PAGE_LOGIN}"> identifier </a>. </p>
     </main>
     <footer>
         <hr>
