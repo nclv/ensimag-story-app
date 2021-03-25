@@ -4,6 +4,14 @@
 
 <c:set var="context" value="${pageContext.request.contextPath}" />
 
+<%-- 
+    On sauvegarde le paramètre de redirection pour le réutiliser 
+    après rechargement de la page login.jsp (erreur de validation) 
+--%>
+<c:if test="${not empty fn:trim(param.redirect)}">
+    <c:set var="redirect" value="${param.redirect}"/>
+</c:if>
+
 <!doctype html>
 <html lang="fr">
 
@@ -24,7 +32,7 @@
         <form action="${context}${Path.REDIRECT_LOGIN}" method="post">
             <strong>Username</strong>:<input type="text" name="username" value="${fn:escapeXml(param.username)}"><br>
             <strong>Password</strong>:<input type="password" name="password" value="${fn:escapeXml(param.password)}"><br>
-            <input type="hidden" name="redirect" value="${param.redirect}">
+            <input type="hidden" name="redirect" value="${redirect}">
             <input type="submit" value="Login">
         </form>
         <c:if test="${not empty error_message}">

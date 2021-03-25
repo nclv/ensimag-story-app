@@ -59,18 +59,19 @@ public class LoginAction implements Action {
             LOG.error("There is no such a username --> [" + username + "]");
 
             request.setAttribute("error_message", username + " is invalid.");
-            forward = Path.PAGE_LOGIN;
+            return Path.PAGE_LOGIN;
         } else if (!password.equals(user.getPassword())) {
             LOG.error("Incorrect password --> " + password + " for [" + username + "]");
 
             request.setAttribute("error_message", username + " exist but invalid password.");
-            forward = Path.PAGE_LOGIN;
+            return Path.PAGE_LOGIN;
         } else {
             LOG.trace("User [username --> '" + username + "', password --> '" + password + "'] successfully signed in");
 
             session.setAttribute("user", user);
         }
 
+        // On a passé toutes les validations, forward = Path.REDIRECT_HOME
         // Important de filtrer les espaces !!
         if (redirect != null && !redirect.trim().isEmpty()) {
             forward = redirect;
