@@ -43,8 +43,22 @@ public class LoginAction implements Action {
         UserDAO userDao = new UserDAOimpl();
         User user = userDao.findUser(username);
 
-        // Validation database
+        // Redirect to previous page or to home page 
+        // (fonctionnel ssi aucune erreur lors de la première tentative de login)
+        // UNSAFE to use referer or hidden input form to make decision
+        // so we always redirect to home page
         String forward = Path.REDIRECT_HOME;
+        // String url = request.getHeader("referer");
+        // LOG.error(url);
+        // if (url != null) {
+        //     url = url.split(request.getContextPath())[1];
+        //     LOG.error(url);
+        //     if (!url.contains(Path.PAGE_LOGIN)) {
+        //         forward = url;
+        //     }
+        // }
+
+        // Validation database
         if (user == null) {
             LOG.error("There is no such a username --> [" + username + "]");
 
