@@ -38,7 +38,9 @@ public class CreateStoryAction implements Action {
         }
 
         boolean open = request.getParameter("open").equals("open") ? true : false;
-        LOG.error(open);
+        boolean is_final = request.getParameter("is_final").equals("final") ? true : false;
+        LOG.error("Open story: " + open);
+        LOG.error("Final paragraphe: " + is_final);
 
         Story story = null;
         if (request.getParameter("create") != null) {
@@ -51,26 +53,31 @@ public class CreateStoryAction implements Action {
         }
 
         String content = request.getParameter("first_paragraphe_content");
-        boolean is_final = request.getParameter("is_final").equals("final") ? true : false;
+        if (content == null || content.isEmpty()) {
+            LOG.error("There is no content --> [" + content + "]");
 
-        // Validation story et paragraphe request
-        // TODO
+            request.setAttribute("error_message", "Enter a first paragraphe.");
+            return Path.PAGE_CREATE_STORY;
+        }
 
-        String forward = Path.PAGE_SHOW_STORIES;
-
+        // Database
         StoryDAO storyDAO = new StoryDAOimpl();
         long storyId = storyDAO.saveStory(story);
         LOG.error(storyId + " " + story);
-        // Validation story database
-        // TODO
 
         Paragraphe paragraphe = Paragraphe.builder().story_id(storyId).content(content).is_final(is_final).build();
 
         ParagrapheDAO paragrapheDAO = new ParagrapheDAOimpl();
         long paragrapheId = paragrapheDAO.saveParagraphe(paragraphe);
         LOG.error(paragrapheId + " " + paragraphe);
-        // Validation paragraphe database
-        // TODO
+
+        // Validation story and paragraphe database
+        String forward = Path.PAGE_SHOW_STORIES;
+        if (storyId == -1 && paragrapheId == -1) {
+            request.setAttribute("error_message",
+                    "Error when creating your story. Fill the fields and submit your story again.");
+            forward = Path.PAGE_CREATE_STORY;
+        }
 
         LOG.debug("CreateStory Action finished");
         return forward;
