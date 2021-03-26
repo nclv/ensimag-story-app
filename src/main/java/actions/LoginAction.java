@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.mindrot.jbcrypt.BCrypt;
 
 import dao.UserDAO;
 import dao.UserDAOimpl;
@@ -60,7 +61,7 @@ public class LoginAction implements Action {
 
             request.setAttribute("error_message", username + " is invalid.");
             return Path.PAGE_LOGIN;
-        } else if (!password.equals(user.getPassword())) {
+        } else if (!BCrypt.checkpw(password, user.getPassword())) {
             LOG.error("Incorrect password --> " + password + " for [" + username + "]");
 
             request.setAttribute("error_message", username + " exist but invalid password.");

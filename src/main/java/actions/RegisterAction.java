@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.mindrot.jbcrypt.BCrypt;
 
 import dao.UserDAO;
 import dao.UserDAOimpl;
@@ -38,6 +39,7 @@ public class RegisterAction implements Action {
             return Path.PAGE_REGISTER;
         } 
 
+        password = BCrypt.hashpw(password, BCrypt.gensalt());
         User user = User.builder().name(username).password(password).build();
 
         UserDAO userDao = new UserDAOimpl();

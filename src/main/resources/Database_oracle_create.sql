@@ -1,7 +1,7 @@
 CREATE TABLE "User" (
 	"user_id" NUMBER(10) NOT NULL,
 	"username" VARCHAR2(50) UNIQUE NOT NULL,
-	"password" VARCHAR2(50) NOT NULL,
+	"password" VARCHAR2(60) NOT NULL,
 	constraint USER_PK PRIMARY KEY ("user_id"));
 
 CREATE sequence "USER_USER_ID_SEQ";
