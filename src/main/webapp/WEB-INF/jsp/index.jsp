@@ -59,7 +59,7 @@
         </section>
         <section>
             <table>
-                <caption><h2>List of open stories</h2></caption>
+                <caption><h2>List of open and published stories</h2></caption>
                 <thead>
                     <tr>
                         <th>Story Id</th>
