@@ -23,6 +23,7 @@ public class ActionsMap {
         actions.put("POST/create_story", new CreateStoryAction());
         actions.put("GET/home", new HomePageAction());
         actions.put("GET/show_user_stories", new ShowUserStoriesAction());
+        actions.put("GET/show_story", new ShowStoryAction());
 
         LOG.debug("Command container was successfully initialized");
         LOG.trace("Number of actions --> " + actions.size());
