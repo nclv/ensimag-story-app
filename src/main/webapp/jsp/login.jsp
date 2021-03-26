@@ -26,7 +26,10 @@
 
 <body>
     <header>
-         <h1> login.jsp </h1>
+        <nav>
+            <a href="${context}${Path.REDIRECT_HOME}"><img alt="Logo" src="https://via.placeholder.com/200x70?text=Logo" height="70"></a>
+        </nav>
+        <h1> login.jsp </h1>
     </header>
     <main>
         <form action="${context}${Path.REDIRECT_LOGIN}" method="post">

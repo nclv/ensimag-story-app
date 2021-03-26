@@ -33,12 +33,12 @@ public class LoginAction implements Action {
 
         // Validation requête
         // return to prevent database access
-        if (username == null || username.isEmpty()) {
+        if (username == null || username.trim().isEmpty()) {
             LOG.error("There is no username --> [" + username + "]");
 
             request.setAttribute("error_message", "Enter an user name.");
             return Path.PAGE_LOGIN;
-        } else if (password == null || password.isEmpty()) {
+        } else if (password == null || password.trim().isEmpty()) {
             LOG.error("There is no password --> [" + username + "]");
 
             request.setAttribute("error_message", "Enter a password.");

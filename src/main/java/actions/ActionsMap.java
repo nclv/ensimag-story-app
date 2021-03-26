@@ -17,12 +17,12 @@ public class ActionsMap {
     static {
         actions.put("GET/invalid", new InvalidAction());
         actions.put("GET/about", (request, response) -> Path.PAGE_ABOUT);
-        actions.put("GET/show_login", (request, response) -> Path.PAGE_LOGIN);
         actions.put("POST/login", new LoginAction());
         actions.put("GET/logout", new LogoutAction());
         actions.put("POST/register", new RegisterAction());
         actions.put("POST/create_story", new CreateStoryAction());
         actions.put("GET/home", new HomePageAction());
+        actions.put("GET/show_user_stories", new ShowUserStoriesAction());
 
         LOG.debug("Command container was successfully initialized");
         LOG.trace("Number of actions --> " + actions.size());

@@ -19,10 +19,11 @@ public class StoryDAOimpl implements StoryDAO {
 
     private static final Logger LOG = LogManager.getLogger();
 
+    private final static String SQL_FIND_STORIES_USER_ID = "SELECT * FROM \"Story\" WHERE \"user_id\"=?";
     private final static String SQL_FIND_STORY_STORY_ID = "SELECT * FROM \"Story\" WHERE \"story_id\"=?";
     private final static String SQL_INSERT_STORY = "INSERT INTO \"Story\" (\"open\", \"published\", \"user_id\") VALUES (?, ?, ?)";
     private final static String SQL_UPDATE_STORY = "UPDATE \"Story\" SET \"open\"=?, \"published\"=?, \"user_id\"=? WHERE \"story_id\"=?";
-    private final static String SQL_FIND_ALL_OPEN_STORIES = "SELECT * FROM \"Story\" WHERE \"open\"=1";
+    private final static String SQL_FIND_ALL_OPEN_PUBLISHED_STORIES = "SELECT * FROM \"Story\" WHERE \"open\"=1 AND \"published\"=1";
 
     private final static String SQL_GET_STORY_ID = "SELECT \"STORY_STORY_ID_SEQ\".currval FROM DUAL";
 
@@ -80,11 +81,34 @@ public class StoryDAOimpl implements StoryDAO {
     }
 
     @Override
-    public List<Story> findAllOpenStories() {
+    public List<Story> findStories(long userId) {
+        List<Story> stories = new ArrayList<Story>();
+        try (Connection connection = DatabaseManager.getConnection();
+        PreparedStatement preparedStatement = connection.prepareStatement(SQL_FIND_STORIES_USER_ID)) {
+            preparedStatement.setLong(1, userId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            Story story = null;
+            while (resultSet.next()) {
+                story = getStory(resultSet);
+                stories.add(story);
+            }
+            LOG.error(stories);
+
+            resultSet.close();
+        } catch (SQLException e) {
+            LOG.error("Failed querying user (" + userId + ") stories", e);
+        }
+
+        return stories;
+    }
+
+    @Override
+    public List<Story> findAllOpenPublishedStories() {
         List<Story> stories = new ArrayList<Story>();
         try (Connection connection = DatabaseManager.getConnection();
                 Statement statement = connection.createStatement();
-                ResultSet resultSet = statement.executeQuery(SQL_FIND_ALL_OPEN_STORIES)) {
+                ResultSet resultSet = statement.executeQuery(SQL_FIND_ALL_OPEN_PUBLISHED_STORIES)) {
 
             Story story = null;
             while (resultSet.next()) {
@@ -94,7 +118,7 @@ public class StoryDAOimpl implements StoryDAO {
             LOG.error(stories);
 
         } catch (SQLException e) {
-            LOG.error("Failed querying open stories", e);
+            LOG.error("Failed querying open and published stories", e);
         }
 
         return stories;

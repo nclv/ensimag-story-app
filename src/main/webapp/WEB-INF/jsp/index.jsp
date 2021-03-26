@@ -24,10 +24,11 @@
 <body>
     <header>
         <nav>
-            <a> </a>
+            <a href="${context}${Path.REDIRECT_HOME}"><img alt="Logo" src="https://via.placeholder.com/200x70?text=Logo" height="70"></a>
             <ul>
                 <c:if test="${not empty user}">
                     <li><a href="${context}${Path.PAGE_CREATE_STORY}"> Create a Story </a></li>
+                    <li><a href="${context}${Path.REDIRECT_SHOW_USER_STORIES}"> My stories </a></li>
                     <li><a href="${context}${Path.REDIRECT_LOGOUT}"> Logout </a></li>
                     <li> ${user.name} </li>
                 </c:if>
@@ -62,9 +63,9 @@
                 <thead>
                     <tr>
                         <th>Story Id</th>
+                        <th>User Id</th>
                         <th>Open</th>
                         <th>Published</th>
-                        <th>User Id</th>
                     </tr>
                 </thead>
                 <c:forEach var="story" items="${stories}">

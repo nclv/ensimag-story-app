@@ -53,7 +53,7 @@ public class CreateStoryAction implements Action {
         }
 
         String content = request.getParameter("first_paragraphe_content");
-        if (content == null || content.isEmpty()) {
+        if (content == null || content.trim().isEmpty()) {
             LOG.error("There is no content --> [" + content + "]");
 
             request.setAttribute("error_message", "Enter a first paragraphe.");
@@ -72,7 +72,7 @@ public class CreateStoryAction implements Action {
         LOG.error(paragrapheId + " " + paragraphe);
 
         // Validation story and paragraphe database
-        String forward = Path.PAGE_SHOW_STORIES;
+        String forward = Path.REDIRECT_SHOW_USER_STORIES;
         if (storyId == -1 && paragrapheId == -1) {
             request.setAttribute("error_message",
                     "Error when creating your story. Fill the fields and submit your story again.");
