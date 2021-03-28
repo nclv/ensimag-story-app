@@ -47,7 +47,7 @@ public class RegisterAction implements Action {
         LOG.error(userId + " " + user);
 
         // Validation database
-        String forward = Path.PAGE_LOGIN;
+        String forward = Path.REDIRECT_LOGIN;
         if (userId == -1) {
             LOG.error("You need to change your username --> [" + username + " " + userId + "]");
 

@@ -18,6 +18,7 @@ public class ActionsMap {
         actions.put("GET/invalid", new InvalidAction());
         actions.put("GET/about", (request, response) -> Path.PAGE_ABOUT);
         actions.put("POST/login", new LoginAction());
+        actions.put("GET/login", (request, response) -> Path.PAGE_LOGIN);
         actions.put("GET/logout", new LogoutAction());
         actions.put("POST/register", new RegisterAction());
         actions.put("POST/create_story", new CreateStoryAction());
