@@ -22,6 +22,7 @@ public class ActionsMap {
         actions.put("GET/logout", new LogoutAction());
         actions.put("POST/register", new RegisterAction());
         actions.put("POST/create_story", new CreateStoryAction());
+        actions.put("GET/create_story", (request, response) -> Path.PAGE_CREATE_STORY); // PRG pattern
         actions.put("GET/home", new HomePageAction());
         actions.put("GET/show_user_stories", new ShowUserStoriesAction());
         actions.put("GET/show_story", new ShowStoryAction());

@@ -2,6 +2,10 @@ package filters;
 
 import java.io.IOException;
 
+import org.apache.commons.io.FilenameUtils;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -15,6 +19,8 @@ import utils.Path;
 
 @WebFilter("/jsp/authenticated_user/*")
 public class AuthenticationFilter implements Filter {
+
+    private static final Logger LOG = LogManager.getLogger();
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -30,8 +36,8 @@ public class AuthenticationFilter implements Filter {
             chain.doFilter(req, resp);
         } else {
             // req.getRequestDispatcher(forward).forward(req, resp);
-            resp.sendRedirect(req.getContextPath() + forward + "?redirect="
-                    + req.getRequestURI().substring(req.getContextPath().length()));
+            resp.sendRedirect(req.getContextPath() + forward + "?redirect=/controller?action="
+                    + FilenameUtils.getBaseName(req.getRequestURI()));
         }
     }
 }
