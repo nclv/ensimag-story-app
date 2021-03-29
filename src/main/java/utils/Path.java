@@ -18,6 +18,7 @@ public final class Path {
     /* Only use in ShowUserStoriesAction, use REDIRECT_SHOW_USER_STORIES */
     public static final String PAGE_SHOW_USER_STORIES = JSP_PATH_ACCESSIBLE + "authenticated_user/show_user_stories.jsp";
     public static final String PAGE_SHOW_STORY = JSP_PATH_ACCESSIBLE + "show_story.jsp";
+    public static final String PAGE_ADD_PARAGRAPHE = JSP_PATH_ACCESSIBLE + "authentificated_user/add_paragraphe.jsp";
 
 
     /* Only use in HomePageAction, use REDIRECT_HOME */
@@ -31,4 +32,6 @@ public final class Path {
     public static final String REDIRECT_CREATE_STORY = "/controller?action=create_story";
     public static final String REDIRECT_SHOW_USER_STORIES = "/controller?action=show_user_stories";
     public static final String REDIRECT_SHOW_STORY = "/controller?action=show_story";
+    public static final String REDIRECT_ADD_PARAGRAPHE = "/controller?action=add_paragraphe";
+    
 }

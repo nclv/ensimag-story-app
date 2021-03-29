@@ -22,6 +22,7 @@
             <ul>
                 <c:if test="${not empty user}">
                     <li><a href="${context}${Path.PAGE_CREATE_STORY}"> Create a Story </a></li>
+                    <li><a href="${context}${Path.PAGE_ADD_PARAGRAPHE}"> Add Paragraphe </a><li>
                     <li><a href="${context}${Path.REDIRECT_LOGOUT}"> Logout </a></li>
                     <li> ${user.name} </li>
                 </c:if>
