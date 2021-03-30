@@ -29,6 +29,9 @@ public class HomePageAction implements Action {
         StoryDAO storyDAO = new StoryDAOimpl();
         List<Story> stories = storyDAO.findAllOpenPublishedStories();
         request.setAttribute("stories", stories);
+
+        List<Story> published_stories = storyDAO.findAllPublishedStories();
+        request.setAttribute("published_stories", published_stories);
         
         LOG.error("HomePage Action finished");        
 

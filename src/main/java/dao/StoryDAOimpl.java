@@ -24,6 +24,7 @@ public class StoryDAOimpl implements StoryDAO {
     private final static String SQL_INSERT_STORY = "INSERT INTO \"Story\" (\"open\", \"published\", \"user_id\") VALUES (?, ?, ?)";
     private final static String SQL_UPDATE_STORY = "UPDATE \"Story\" SET \"open\"=?, \"published\"=?, \"user_id\"=? WHERE \"story_id\"=?";
     private final static String SQL_FIND_ALL_OPEN_PUBLISHED_STORIES = "SELECT * FROM \"Story\" WHERE \"open\"=1 AND \"published\"=1";
+    private final static String SQL_FIND_ALL_PUBLISHED_STORIES = "SELECT * FROM \"Story\" WHERE \"published\"=1";
 
     private final static String SQL_GET_STORY_ID = "SELECT \"STORY_STORY_ID_SEQ\".currval FROM DUAL";
 
@@ -109,6 +110,27 @@ public class StoryDAOimpl implements StoryDAO {
         try (Connection connection = DatabaseManager.getConnection();
                 Statement statement = connection.createStatement();
                 ResultSet resultSet = statement.executeQuery(SQL_FIND_ALL_OPEN_PUBLISHED_STORIES)) {
+
+            Story story = null;
+            while (resultSet.next()) {
+                story = getStory(resultSet);
+                stories.add(story);
+            }
+            LOG.error(stories);
+
+        } catch (SQLException e) {
+            LOG.error("Failed querying open and published stories", e);
+        }
+
+        return stories;
+    }
+
+    @Override
+    public List<Story> findAllPublishedStories() {
+        List<Story> stories = new ArrayList<Story>();
+        try (Connection connection = DatabaseManager.getConnection();
+                Statement statement = connection.createStatement();
+                ResultSet resultSet = statement.executeQuery(SQL_FIND_ALL_PUBLISHED_STORIES)) {
 
             Story story = null;
             while (resultSet.next()) {
