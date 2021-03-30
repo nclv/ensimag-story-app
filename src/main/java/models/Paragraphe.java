@@ -19,5 +19,5 @@ public class Paragraphe implements Serializable {
     private long story_id;
     private long id;
     private String content;
-    private boolean is_final;
+    private boolean last;
 }

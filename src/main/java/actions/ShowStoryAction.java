@@ -1,15 +1,19 @@
 package actions;
 
 import java.io.IOException;
+import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import dao.ParagrapheDAO;
+import dao.ParagrapheDAOimpl;
 import dao.StoryDAO;
 import dao.StoryDAOimpl;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import models.Paragraphe;
 import models.Story;
 import utils.Path;
 
@@ -31,6 +35,10 @@ public class ShowStoryAction implements Action {
         StoryDAO storyDAO = new StoryDAOimpl();
         Story story = storyDAO.findStory(storyId);
         request.setAttribute("story", story);
+
+        ParagrapheDAO paragrapheDAO = new ParagrapheDAOimpl();
+        List<Paragraphe> paragraphes = paragrapheDAO.findAllStoryParagraphes(storyId);
+        request.setAttribute("paragraphes", paragraphes);
         
         LOG.error("ShowStory Action finished");        
 

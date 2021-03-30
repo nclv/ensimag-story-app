@@ -53,6 +53,25 @@
                 </tr>
             </table>
         </section>
+        <section>
+            <table>
+                <caption><h2>List of paragraphes</h2></caption>
+                <thead>
+                    <tr>
+                        <th>Paragraphe Id</th>
+                        <th>Content</th>
+                        <th>Is final</th>
+                    </tr>
+                </thead>
+                <c:forEach var="paragraphe" items="${paragraphes}">
+                    <tr>
+                        <td><c:out value="${paragraphe.id}" /></td>
+                        <td><c:out value="${paragraphe.content}" /></td>
+                        <td><c:out value="${paragraphe.last}" /></td>
+                    </tr>
+                </c:forEach>
+            </table>
+        </section>
     </main>
     <footer>
         <hr>
