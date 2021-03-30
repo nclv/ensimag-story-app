@@ -54,7 +54,7 @@ public class AddParagrapheAction implements Action{
             return Path.PAGE_ADD_PARAGRAPHE;
         }
         long storyId = 4;
-        Paragraphe paragraphe = Paragraphe.builder().story_id(storyId).content(content).is_final(is_final).build();
+        Paragraphe paragraphe = Paragraphe.builder().story_id(storyId).content(content).last(is_final).build();
         ParagrapheDAO paragrapheDAO = new ParagrapheDAOimpl();
         long paragrapheId = paragrapheDAO.saveParagraphe(paragraphe);
         LOG.error(paragrapheId + " " + paragraphe);

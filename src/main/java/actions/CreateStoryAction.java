@@ -65,7 +65,7 @@ public class CreateStoryAction implements Action {
         long storyId = storyDAO.saveStory(story);
         LOG.error(storyId + " " + story);
 
-        Paragraphe paragraphe = Paragraphe.builder().story_id(storyId).content(content).is_final(is_final).build();
+        Paragraphe paragraphe = Paragraphe.builder().story_id(storyId).content(content).last(is_final).build();
 
         ParagrapheDAO paragrapheDAO = new ParagrapheDAOimpl();
         long paragrapheId = paragrapheDAO.saveParagraphe(paragraphe);
