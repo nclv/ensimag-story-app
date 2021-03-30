@@ -12,14 +12,11 @@ import org.apache.logging.log4j.Logger;
 
 import dao.ParagrapheDAO;
 import dao.ParagrapheDAOimpl;
-import dao.StoryDAO;
-import dao.StoryDAOimpl;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import models.Paragraphe;
-import models.Story;
 import models.User;
 import utils.Path;
 
