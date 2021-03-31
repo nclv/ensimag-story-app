@@ -10,11 +10,14 @@ import dao.ParagrapheDAO;
 import dao.ParagrapheDAOimpl;
 import dao.StoryDAO;
 import dao.StoryDAOimpl;
+import dao.UserDAO;
+import dao.UserDAOimpl;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import models.Paragraphe;
 import models.Story;
+import models.User;
 import utils.Path;
 
 public class ShowStoryAction implements Action {
@@ -39,6 +42,10 @@ public class ShowStoryAction implements Action {
         ParagrapheDAO paragrapheDAO = new ParagrapheDAOimpl();
         List<Paragraphe> paragraphes = paragrapheDAO.findAllStoryParagraphes(storyId);
         request.setAttribute("paragraphes", paragraphes);
+
+        UserDAO userDAO = new UserDAOimpl();
+        User author = userDAO.findUser(story.getUser_id());
+        request.setAttribute("author", author);
         
         LOG.error("ShowStory Action finished");        
 

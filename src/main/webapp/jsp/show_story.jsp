@@ -35,6 +35,9 @@
     <main>
         <hr>
         <section>
+        <p> L'auteur de cette histoire est <c:out value="${author.name}" />. </p>
+        </section>
+        <section>
             <table>
                 <caption><h2>Story</h2></caption>
                 <thead>

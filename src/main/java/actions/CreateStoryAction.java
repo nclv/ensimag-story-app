@@ -47,6 +47,11 @@ public class CreateStoryAction implements Action {
             // create action
             story = Story.builder().open(open).user_id(user.getId()).published(false).build();
 
+        } else if (request.getParameter("create_and_publish") != null && is_final == false) {
+            LOG.error("Your can't published a story without any final paragraphe.");
+
+            request.setAttribute("error_message", "You need to have a final paragraphe to publish your story.");
+            return Path.PAGE_CREATE_STORY;
         } else if (request.getParameter("create_and_publish") != null) {
             // create and publish action
             story = Story.builder().open(open).user_id(user.getId()).published(true).build();
