@@ -68,17 +68,21 @@ public class StoryDAOimpl implements StoryDAO {
     }
 
     @Override
-    public void updateStory(Story story) {
+    public int updateStory(Story story) {
+        int err = -1;
         try (Connection connection = DatabaseManager.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(SQL_UPDATE_STORY)) {
             preparedStatement.setInt(1, story.isOpen() ? 1 : 0);
             preparedStatement.setInt(2, story.isPublished() ? 1 : 0);
             preparedStatement.setLong(3, story.getUser_id());
+            preparedStatement.setLong(4, story.getId());
 
             preparedStatement.executeUpdate();
+            err = 0;
         } catch (Exception e) {
             LOG.error("Failed updating story", e);
         }
+        return err;
     }
 
     @Override

@@ -30,7 +30,7 @@
                     <li><a href="${context}${Path.PAGE_CREATE_STORY}"> Create a Story </a></li>
                     <li><a href="${context}${Path.REDIRECT_SHOW_USER_STORIES}"> My stories </a></li>
                     <li><a href="${context}${Path.REDIRECT_LOGOUT}"> Logout </a></li>
-                    <li> ${user.name} </li>
+                    <li><a href="${context}${Path.PAGE_UPDATE_PASSWORD}"> ${user.name} </a></li>
                 </c:if>
             </ul>
         </nav>

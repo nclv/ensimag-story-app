@@ -80,16 +80,20 @@ public class UserDAOimpl implements UserDAO {
     }
 
     @Override
-    public void updateUser(User user) {
+    public int updateUser(User user) {
+        int err = -1;
         try (Connection connection = DatabaseManager.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(SQL_UPDATE_USER)) {
             preparedStatement.setString(1, user.getName());
             preparedStatement.setString(2, user.getPassword());
+            preparedStatement.setLong(3, user.getId());
 
             preparedStatement.executeUpdate();
+            err = 0;
         } catch (Exception e) {
             LOG.error("Failed updating user", e);
         }
+        return err;
     }
 
     private User getUser(PreparedStatement preparedStatement) throws SQLException {

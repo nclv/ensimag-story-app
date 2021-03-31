@@ -6,5 +6,5 @@ public interface UserDAO {
     long saveUser(User user);
     User findUser(String username);
     User findUser(long id);
-    void updateUser(User user);
+    int updateUser(User user);
 }

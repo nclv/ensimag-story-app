@@ -67,17 +67,21 @@ public class ParagrapheDAOimpl implements ParagrapheDAO {
     }
 
     @Override
-    public void updateParagraphe(Paragraphe paragraphe) {
+    public int updateParagraphe(Paragraphe paragraphe) {
+        int err = -1;
         try (Connection connection = DatabaseManager.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(SQL_UPDATE_PARAGRAPHE)) {
             preparedStatement.setLong(1, paragraphe.getStory_id());
             preparedStatement.setString(2, paragraphe.getContent());
             preparedStatement.setInt(3, paragraphe.isLast() ? 1 : 0);
+            preparedStatement.setLong(4, paragraphe.getId());
 
             preparedStatement.executeUpdate();
+            err = 0;
         } catch (Exception e) {
             LOG.error("Failed updating paragraphe", e);
         }
+        return err;
     }
 
     @Override

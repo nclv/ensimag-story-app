@@ -10,5 +10,5 @@ public interface StoryDAO {
     List<Story> findStories(long userId);
     List<Story> findAllOpenPublishedStories();
     List<Story> findAllPublishedStories();
-    void updateStory(Story story);
+    int updateStory(Story story);
 }
