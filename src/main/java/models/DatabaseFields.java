@@ -15,4 +15,6 @@ public final class DatabaseFields {
     public static final String PARAGRAPHE_ID = "para_id";
     public static final String PARAGRAPHE_CONTENT = "content";
     public static final String PARAGRAPHE_IS_FINAL = "is_final";
+
+    public static final String INVITED_DATE = "date";
 }
