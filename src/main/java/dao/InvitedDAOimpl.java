@@ -31,7 +31,7 @@ public class InvitedDAOimpl implements InvitedDAO {
 
             preparedStatement.executeUpdate();
         } catch (Exception e) {
-            LOG.error("Failed inserting paragraphe", e);
+            LOG.error("Failed inserting invited", e);
         }
     }
 

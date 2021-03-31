@@ -22,6 +22,7 @@ public class UserDAOimpl implements UserDAO {
     private final static String SQL_FIND_USER_USER_ID = "SELECT * FROM \"User\" WHERE \"user_id\"=?";
     private final static String SQL_FIND_USER_USERNAME = "SELECT * FROM \"User\" WHERE \"username\"=?";
     private final static String SQL_INSERT_USER = "INSERT INTO \"User\" (\"username\", \"password\") VALUES (?, ?)";
+    private final static String SQL_UPDATE_USER = "UPDATE \"User\" SET \"username\"=?, \"password\"=? WHERE \"user_id\"=?";
 
     private final static String SQL_GET_USER_ID = "SELECT \"USER_USER_ID_SEQ\".currval FROM DUAL";
 
@@ -76,6 +77,19 @@ public class UserDAOimpl implements UserDAO {
         }
 
         return user;
+    }
+
+    @Override
+    public void updateUser(User user) {
+        try (Connection connection = DatabaseManager.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(SQL_UPDATE_USER)) {
+            preparedStatement.setString(1, user.getName());
+            preparedStatement.setString(2, user.getPassword());
+
+            preparedStatement.executeUpdate();
+        } catch (Exception e) {
+            LOG.error("Failed updating user", e);
+        }
     }
 
     private User getUser(PreparedStatement preparedStatement) throws SQLException {
