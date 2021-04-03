@@ -52,6 +52,9 @@ public class ShowStoryAction implements Action {
         ParagrapheDAO paragrapheDAO = new ParagrapheDAOimpl();
         List<Paragraphe> paragraphes = paragrapheDAO.findAllStoryParagraphes(storyId);
         request.setAttribute("paragraphes", paragraphes);
+        // On peut lire la story s'il existe au moins un paragraphe final
+        boolean canRead = paragraphes.stream().map(Paragraphe::isLast).collect(Collectors.toList()).contains(true);
+        request.setAttribute("canRead", canRead);
 
         UserDAO userDAO = new UserDAOimpl();
         User author = userDAO.findUser(story.getUser_id());

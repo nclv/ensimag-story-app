@@ -25,11 +25,14 @@
                     <li><a href="${context}${Path.PAGE_CREATE_STORY}"> Create a Story </a></li>
                     <%-- Story éditable (voir conditions dans l'action) --%>
                     <c:if test="${not empty canEditStory}">
-                        <li><a href="${context}${Path.PAGE_ADD_PARAGRAPHE}"> Add Paragraphe </a><li>
+                        <li><a href="${context}${Path.PAGE_ADD_PARAGRAPHE}&story_id=${story.id}"> Add Paragraphe </a><li>
                     </c:if>
                     <%-- Si on est l'auteur de l'histoire (not open) on peut inviter d'autres utilisateurs --%>
                     <c:if test="${not empty canInvite}">
                         <li><a href="${context}${Path.REDIRECT_INVITE_USERS}&story_id=${story.id}"> Invite Users </a><li>
+                    </c:if>
+                    <c:if test="${not empty canRead}">
+                        <li><a href="${context}${Path.REDIRECT_READ_STORY}&story_id=${story.id}"> Read Story </a><li>
                     </c:if>
                     <li><a href="${context}${Path.REDIRECT_LOGOUT}"> Logout </a></li>
                     <li> ${user.name} </li>
