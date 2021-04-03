@@ -20,6 +20,7 @@ public final class Path {
     public static final String PAGE_SHOW_STORY = JSP_PATH_ACCESSIBLE + "show_story.jsp";
     public static final String PAGE_ADD_PARAGRAPHE = JSP_PATH_ACCESSIBLE + "authenticated_user/add_paragraphe.jsp";
     public static final String PAGE_UPDATE_PASSWORD = JSP_PATH_ACCESSIBLE + "authenticated_user/update_password.jsp";
+    public static final String PAGE_INVITE_USERS = JSP_PATH_ACCESSIBLE + "authenticated_user/invite_users.jsp";
 
     /* Only use in HomePageAction, use REDIRECT_HOME */
     public static final String PAGE_HOME = JSP_PATH_PRIVATE + "index.jsp";
@@ -34,5 +35,6 @@ public final class Path {
     public static final String REDIRECT_SHOW_STORY = "/controller?action=show_story";
     public static final String REDIRECT_ADD_PARAGRAPHE = "/controller?action=add_paragraphe";
     public static final String REDIRECT_UPDATE_PASSWORD = "/controller?action=update_password";
+    public static final String REDIRECT_INVITE_USERS = "/controller?action=invite_users";
     
 }

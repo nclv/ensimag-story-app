@@ -22,7 +22,8 @@ public class InvitedDAOimpl implements InvitedDAO {
     private final static String SQL_FIND_INVITED_STORY_ID = "SELECT * FROM \"Invited\" WHERE \"story_id\"=?";
 
     @Override
-    public void saveInvited(Invited invited) {
+    public long saveInvited(Invited invited) {
+        long err = -1;
         try (Connection connection = DatabaseManager.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(SQL_INSERT_INVITED)) {
             preparedStatement.setLong(1, invited.getUser_id());
@@ -30,9 +31,11 @@ public class InvitedDAOimpl implements InvitedDAO {
             preparedStatement.setDate(3, invited.getDate());
 
             preparedStatement.executeUpdate();
+            err = 0;
         } catch (Exception e) {
             LOG.error("Failed inserting invited", e);
         }
+        return err;
     }
 
     @Override

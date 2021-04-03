@@ -4,6 +4,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,6 +27,8 @@ public class UserDAOimpl implements UserDAO {
     private final static String SQL_FIND_USER_USERNAME = "SELECT * FROM \"User\" WHERE \"username\"=?";
     private final static String SQL_INSERT_USER = "INSERT INTO \"User\" (\"username\", \"password\") VALUES (?, ?)";
     private final static String SQL_UPDATE_USER = "UPDATE \"User\" SET \"username\"=?, \"password\"=? WHERE \"user_id\"=?";
+    private final static String SQL_FIND_ALL_USERS_EXCEPT = "SELECT * FROM \"User\" WHERE \"user_id\"!=?";
+    private final static String SQL_FIND_USERS = "SELECT * FROM \"User\" WHERE \"user_id\" in (%s)";
 
     private final static String SQL_GET_USER_ID = "SELECT \"USER_USER_ID_SEQ\".currval FROM DUAL";
 
@@ -80,6 +86,65 @@ public class UserDAOimpl implements UserDAO {
     }
 
     @Override
+    public List<User> findAllUsersExcept(long userId) {
+        List<User> users = new ArrayList<User>();
+        try (Connection connection = DatabaseManager.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(SQL_FIND_ALL_USERS_EXCEPT)) {
+            preparedStatement.setLong(1, userId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            User user = null;
+            while (resultSet.next()) {
+                user = getUser(resultSet);
+                users.add(user);
+            }
+            // LOG.error(users);
+
+            resultSet.close();
+        } catch (SQLException e) {
+            LOG.error("Failed querying all users except (" + userId + ")", e);
+        }
+
+        return users;
+    }
+
+    @Override
+    public List<User> findUsers(Set<Long> userIds) {
+        List<User> users = new ArrayList<User>();
+        String SQL_FIND_USERS_FORMAT = String.format(SQL_FIND_USERS, preparePlaceHolders(userIds.size()));
+
+        try (Connection connection = DatabaseManager.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(SQL_FIND_USERS_FORMAT)) {
+
+            setValues(preparedStatement, userIds.toArray());
+            ResultSet resultSet = preparedStatement.executeQuery();
+
+            User user = null;
+            while (resultSet.next()) {
+                user = getUser(resultSet);
+                users.add(user);
+            }
+            // LOG.error(users);
+
+            resultSet.close();
+        } catch (SQLException e) {
+            LOG.error("Failed querying all users.", e);
+        }
+
+        return users;
+    }
+
+    private static String preparePlaceHolders(int length) {
+        return String.join(",", Collections.nCopies(length, "?"));
+    }
+
+    private static void setValues(PreparedStatement preparedStatement, Object... values) throws SQLException {
+        for (int i = 0; i < values.length; i++) {
+            preparedStatement.setObject(i + 1, values[i]);
+        }
+    }
+
+    @Override
     public int updateUser(User user) {
         int err = -1;
         try (Connection connection = DatabaseManager.getConnection();
@@ -101,12 +166,16 @@ public class UserDAOimpl implements UserDAO {
 
         ResultSet resultSet = preparedStatement.executeQuery();
         if (resultSet.next()) {
-            user = User.builder().id(resultSet.getLong(DatabaseFields.USER_ID))
-                    .name(resultSet.getString(DatabaseFields.USER_USERNAME))
-                    .password(resultSet.getString(DatabaseFields.USER_PASSWORD)).build();
+            user = getUser(resultSet);
         }
         resultSet.close();
 
         return user;
+    }
+
+    private User getUser(ResultSet resultSet) throws SQLException {
+        return User.builder().id(resultSet.getLong(DatabaseFields.USER_ID))
+                .name(resultSet.getString(DatabaseFields.USER_USERNAME))
+                .password(resultSet.getString(DatabaseFields.USER_PASSWORD)).build();
     }
 }
