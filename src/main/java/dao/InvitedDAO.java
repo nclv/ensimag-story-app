@@ -7,4 +7,5 @@ import models.Invited;
 public interface InvitedDAO {
     long saveInvited(Invited invited);
     List<Invited> findAllInvitedUsers(long storyId);
+    int removeInvited(Invited invited);
 }

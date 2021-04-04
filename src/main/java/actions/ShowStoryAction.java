@@ -42,8 +42,23 @@ public class ShowStoryAction implements Action {
         User connectedUser = (User) session.getAttribute("user");
         LOG.error(connectedUser);
 
-        long storyId = Long.parseLong(request.getParameter("story_id"));
-        LOG.error(storyId);
+        // Récupération de l'ID de la story
+        String storyIdString = request.getParameter("story_id");
+        if (storyIdString == null || storyIdString.trim().isEmpty()) {
+            LOG.error("Null story_id --> [" + storyIdString + "].");
+
+            request.setAttribute("error_message", "story_id is null.");
+            return Path.PAGE_ERROR;
+        }
+        long storyId;
+        try {
+            storyId = Long.parseLong(storyIdString);
+        } catch (NumberFormatException e) {
+            LOG.error("story_id --> [" + storyIdString + "].");
+
+            request.setAttribute("error_message", "story_id is not a number.");
+            return Path.PAGE_ERROR;
+        }
 
         StoryDAO storyDAO = new StoryDAOimpl();
         Story story = storyDAO.findStory(storyId);

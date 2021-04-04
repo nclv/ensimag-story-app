@@ -15,9 +15,7 @@ import dao.ParagrapheDAOimpl;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import models.Paragraphe;
-import models.User;
 import utils.Path;
 
 /**
@@ -35,13 +33,6 @@ public class AddParagrapheAction implements Action{
             throws ServletException, IOException {
         LOG.debug("AddParagraphe Action starts");
         
-        HttpSession session = request.getSession();
-        User user = (User) session.getAttribute("user");
-        if (user == null) {
-            request.setAttribute("error_message", "There is no connected user.");
-            return Path.PAGE_ERROR;
-        }
-        
         boolean is_final = request.getParameter("is_final").equals("final") ? true : false;
         String content = request.getParameter("paragraphe_content");
         
@@ -53,14 +44,21 @@ public class AddParagrapheAction implements Action{
         }
         
         String storyIdString = request.getParameter("story_id");
-        if (storyIdString == null) {
+        if (storyIdString == null || storyIdString.trim().isEmpty()) {
             LOG.error("Null story_id --> [" + storyIdString + "].");
 
             request.setAttribute("error_message", "story_id is null.");
             return Path.PAGE_ERROR;
         }
-        long storyId = Long.parseLong(storyIdString);
-        LOG.error(storyId);
+        long storyId;
+        try {
+            storyId = Long.parseLong(storyIdString);
+        } catch (NumberFormatException e) {
+            LOG.error("story_id --> [" + storyIdString + "].");
+
+            request.setAttribute("error_message", "story_id is not a number.");
+            return Path.PAGE_ERROR;
+        }
 
         Paragraphe paragraphe = Paragraphe.builder().story_id(storyId).content(content).last(is_final).build();
         ParagrapheDAO paragrapheDAO = new ParagrapheDAOimpl();

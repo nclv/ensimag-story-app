@@ -37,4 +37,6 @@ public final class Path {
     public static final String REDIRECT_UPDATE_PASSWORD = "/controller?action=update_password";
     public static final String REDIRECT_INVITE_USERS = "/controller?action=invite_users";
     public static final String REDIRECT_READ_STORY = "/controller?action=read_story";
+    public static final String REDIRECT_REMOVE_INVITED = "/controller?action=remove_invited";
+
 }

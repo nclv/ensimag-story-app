@@ -73,6 +73,7 @@
                         <th>Id</th>
                         <th>Name</th>
                         <th>Password</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <c:forEach var="user" items="${invitedUsers}">
@@ -80,6 +81,9 @@
                         <td><c:out value="${user.id}" /></td>
                         <td><c:out value="${user.name}" /></td>
                         <td><c:out value="${user.password}" /></td>
+                        <c:if test="${not empty canInvite}">
+                            <td><a href="${context}${Path.REDIRECT_REMOVE_INVITED}&user_id=${user.id}&story_id=${story.id}"> Remove </a></td>
+                        </c:if>
                     </tr>
                 </c:forEach>
             </table>

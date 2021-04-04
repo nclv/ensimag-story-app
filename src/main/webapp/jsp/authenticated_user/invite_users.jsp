@@ -42,7 +42,7 @@
                     <label for="${user.name}" ><c:out value="${user.name}" /></label>
                 </div>
             </c:forEach>
-            <input type="submit" name="invite" value="Invite selected Users">
+            <input type="submit" name="invite" value="Invite selected Users to collaborate">
         </form>
         <c:if test="${not empty param.error_message}">
             <span style="background-color: #F08080"> ${param.error_message} </span>

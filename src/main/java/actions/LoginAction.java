@@ -50,9 +50,6 @@ public class LoginAction implements Action {
         User user = userDao.findUser(username);
 
         // Redirect to previous page or to home page 
-        // (fonctionnel ssi aucune erreur lors de la première tentative de login)
-        // UNSAFE to use referer or hidden input form to make decision
-        // so we always redirect to home page
         String forward = Path.REDIRECT_HOME;
 
         // Validation database
