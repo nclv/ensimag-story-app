@@ -25,19 +25,20 @@
     </header>
     <main>
         <form action="${context}${Path.REDIRECT_CREATE_STORY}" method="post">
-            <strong>Title</strong>:<input type="text" name="title" value="${fn:escapeXml(param.title)}"><br>
+            <strong>Title</strong>:<input type="text" name="title" value="${param.title}"><br>
             
             <p> Is your story <strong>open</strong> or <strong>private</strong>? </p>
-            <input type="radio" id="open" name="open" value="open" checked>
+            <input type="radio" id="open" name="open" value="open" ${param.open=="open" ? "checked": ""}>
             <label for="open">Open</label>
-            <input type="radio" id="private" name="open" value="private">
+            <input type="radio" id="private" name="open" value="private" ${param.open=="private" ? "checked": ""}>
             <label for="private">Private</label>
 
-            <textarea rows = "10" cols = "60" name = "first_paragraphe_content"> Enter first paragraphe content here... </textarea>
+            <textarea rows = "10" cols = "60" name = "first_paragraphe_content"> ${not empty param.first_paragraphe_content ? param.first_paragraphe_content: "Enter your first paragraphe content..."} </textarea>
+            
             <p> Is your paragraphe <strong>final</strong>? </p>
-            <input type="radio" id="final" name="is_final" value="final" checked>
+            <input type="radio" id="final" name="is_final" value="final" ${param.is_final=="final" ? "checked": ""}>
             <label for="final">Yes</label>
-            <input type="radio" id="non-final" name="is_final" value="non-final">
+            <input type="radio" id="non-final" name="is_final" value="non-final" ${param.is_final=="non-final" ? "checked": ""}>
             <label for="non-final">No</label>
 
             <input type="submit" name="create" value="Create my Story">
