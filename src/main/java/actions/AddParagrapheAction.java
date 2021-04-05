@@ -53,7 +53,7 @@ public class AddParagrapheAction implements Action{
             request.setAttribute("error_message", "Enter a paragraphe.");
             return Path.PAGE_ADD_PARAGRAPHE;
         }
-        long storyId = 4;
+        long storyId = 3;
         Paragraphe paragraphe = Paragraphe.builder().story_id(storyId).content(content).last(is_final).build();
         ParagrapheDAO paragrapheDAO = new ParagrapheDAOimpl();
         long paragrapheId = paragrapheDAO.saveParagraphe(paragraphe);

@@ -33,7 +33,7 @@
             <strong>Title</strong>:<input type="text" name="title" value="${fn:escapeXml(param.title)}"><br>
             
 
-            <textarea rows = "10" cols = "60" name = "first_paragraphe_content"> Enter paragraphe content here... </textarea>
+            <textarea rows = "10" cols = "60" name = "paragraphe_content"> Enter paragraphe content here... </textarea>
             <p> Is your paragraphe <strong>final</strong>? </p>
             <input type="radio" id="final" name="is_final" value="final" checked>
             <label for="final">Yes</label>
