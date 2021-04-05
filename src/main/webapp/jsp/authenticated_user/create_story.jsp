@@ -27,7 +27,7 @@
             for (var i = 0; i < newField.length; i++) {
                 var theName = newField[i].name
                 if (theName)
-                    newField[i].name = theName + counter;
+                    newField[i].name = theName + '_' + counter;
             }
             var insertHere = document.getElementById('writeroot');
             // create wrapper container
@@ -38,7 +38,7 @@
             wrapper.appendChild(newFields);
         }
 
-        // window.onload = moreFields;
+        window.onload = moreFields;
     </script>
 </head>
 

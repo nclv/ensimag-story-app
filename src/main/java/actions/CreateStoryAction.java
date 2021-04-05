@@ -1,6 +1,9 @@
 package actions;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -80,6 +83,13 @@ public class CreateStoryAction implements Action {
         // ajouter un ou plusieurs choix: créer les paragraphes enfants, insérer dans Parent Section
         // parag_condition est le parent (choix inconditionnel) ou un autre paragraphe conditionnel
         // si paragraphe final il est possible de ne pas faire de choix
+        List<String> choices = Collections
+                .list(request.getParameterNames())
+                .stream()
+                .filter(parameterName -> parameterName.startsWith("choice_"))
+                .map(request::getParameter)
+                .collect(Collectors.toList());
+        LOG.error(choices);
 
         // Validation story and paragraphe database
         String forward = Path.REDIRECT_SHOW_USER_STORIES;
