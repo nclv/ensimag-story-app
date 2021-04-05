@@ -16,7 +16,7 @@
     <title>Create Story</title>
 
     <script type="text/javascript">
-        var counter = 0;
+        var counter = 10000; // very big to not collide with loop.index when reloading previous text content
 
         function moreFields() {
             counter++;
@@ -67,6 +67,7 @@
             <input type="radio" id="non-final" name="is_final" value="non-final" ${param.is_final eq "non-final" ? "checked": ""}>
             <label for="non-final">No</label>
 
+            <%-- Invisible choice text input --%>
             <div id="readroot" style="display: none">
                 <label for="choice">Enter choice text:</label>
                 <input type="text" id="name" name="choice" size="28">
@@ -74,6 +75,17 @@
             </div>
 
             <section>
+                <%-- Load previous choices input --%>
+                <c:if test="${not empty choices}">
+                    <c:forEach var="choice" items="${choices}" varStatus="loop">
+                        <aside>
+                            <label for="choice">Enter choice text:</label>
+                            <input type="text" id="name" name="choice_${loop.index}" size="28" value="${choice}">
+                            <input type="button" value="Remove choice" onclick="this.parentNode.parentNode.removeChild(this.parentNode);" />
+                        </aside>
+                    </c:forEach>
+                </c:if>
+                <%-- moreFields() add a new text input here --%>
                 <span id="writeroot"></span>
             </section>
 

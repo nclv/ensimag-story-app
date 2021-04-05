@@ -45,6 +45,14 @@ public class CreateStoryAction implements Action {
         LOG.error("Open story: " + open);
         LOG.error("Final paragraphe: " + is_final);
 
+        List<String> choices = Collections
+                .list(request.getParameterNames())
+                .stream()
+                .filter(parameterName -> parameterName.startsWith("choice_"))
+                .map(request::getParameter)
+                .collect(Collectors.toList());
+        LOG.error(choices);
+
         Story story = null;
         if (request.getParameter("create") != null) {
             // create action
@@ -54,6 +62,7 @@ public class CreateStoryAction implements Action {
             LOG.error("Your can't published a story without any final paragraphe.");
 
             request.setAttribute("error_message", "You need to have a final paragraphe to publish your story.");
+            request.setAttribute("choices", choices);
             return Path.PAGE_CREATE_STORY;
         } else if (request.getParameter("create_and_publish") != null) {
             // create and publish action
@@ -65,6 +74,7 @@ public class CreateStoryAction implements Action {
             LOG.error("There is no content --> [" + content + "]");
 
             request.setAttribute("error_message", "Enter a first paragraphe.");
+            request.setAttribute("choices", choices);
             return Path.PAGE_CREATE_STORY;
         }
 
@@ -83,19 +93,13 @@ public class CreateStoryAction implements Action {
         // ajouter un ou plusieurs choix: créer les paragraphes enfants, insérer dans Parent Section
         // parag_condition est le parent (choix inconditionnel) ou un autre paragraphe conditionnel
         // si paragraphe final il est possible de ne pas faire de choix
-        List<String> choices = Collections
-                .list(request.getParameterNames())
-                .stream()
-                .filter(parameterName -> parameterName.startsWith("choice_"))
-                .map(request::getParameter)
-                .collect(Collectors.toList());
-        LOG.error(choices);
 
         // Validation story and paragraphe database
         String forward = Path.REDIRECT_SHOW_USER_STORIES;
         if (storyId == -1 && paragrapheId == -1) {
             request.setAttribute("error_message",
                     "Error when creating your story. Fill the fields and submit your story again.");
+            request.setAttribute("choices", choices);
             forward = Path.PAGE_CREATE_STORY;
         }
 
