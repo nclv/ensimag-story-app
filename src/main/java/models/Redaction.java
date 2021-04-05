@@ -12,13 +12,11 @@ import lombok.ToString;
 @Setter
 @Builder
 @ToString
-public class Paragraphe implements Serializable {
+public class Redaction implements Serializable {
     @Getter(AccessLevel.NONE)
     @Setter(AccessLevel.NONE)
-    private static final long serialVersionUID = -8486808310220589932L;
+    private static final long serialVersionUID = 5685951056329538292L;
     private long story_id;
-    private long id;
     private long user_id;
-    private String content;
-    private boolean last;
+    private boolean validated;
 }

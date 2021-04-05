@@ -20,9 +20,11 @@ public class InvitedDAOimpl implements InvitedDAO {
 
     private final static String SQL_INSERT_INVITED = "INSERT INTO \"Invited\" (\"user_id\", \"story_id\", \"date\") VALUES (?, ?, ?)";
     private final static String SQL_FIND_INVITED_STORY_ID = "SELECT * FROM \"Invited\" WHERE \"story_id\"=?";
+    private final static String SQL_REMOVE_INVITED = "DELETE FROM \"Invited\" WHERE \"user_id\"=? AND \"story_id\"=?";
 
     @Override
-    public void saveInvited(Invited invited) {
+    public int saveInvited(Invited invited) {
+        int err = -1;
         try (Connection connection = DatabaseManager.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(SQL_INSERT_INVITED)) {
             preparedStatement.setLong(1, invited.getUser_id());
@@ -30,9 +32,11 @@ public class InvitedDAOimpl implements InvitedDAO {
             preparedStatement.setDate(3, invited.getDate());
 
             preparedStatement.executeUpdate();
+            err = 0;
         } catch (Exception e) {
             LOG.error("Failed inserting invited", e);
         }
+        return err;
     }
 
     @Override
@@ -56,6 +60,22 @@ public class InvitedDAOimpl implements InvitedDAO {
         }
 
         return invitedList;
+    }
+
+    @Override
+    public int removeInvited(Invited invited) {
+        int err = -1;
+        try (Connection connection = DatabaseManager.getConnection();
+                PreparedStatement preparedStatement = connection.prepareStatement(SQL_REMOVE_INVITED)) {
+            preparedStatement.setLong(1, invited.getUser_id());
+            preparedStatement.setLong(2, invited.getStory_id());
+
+            preparedStatement.executeUpdate();
+            err = 0;
+        } catch (Exception e) {
+            LOG.error("Failed removing invited", e);
+        }
+        return err;
     }
 
     private Invited getInvited(ResultSet resultSet) throws SQLException {

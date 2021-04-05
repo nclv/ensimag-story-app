@@ -28,6 +28,10 @@ public class ActionsMap {
         actions.put("GET/show_story", new ShowStoryAction());
         actions.put("POST/add_paragraphe", new AddParagrapheAction());
         actions.put("POST/update_password", new UpdatePasswordAction());
+        actions.put("GET/invite_users", new InviteUsersGetAction());
+        actions.put("POST/invite_users", new InviteUsersPostAction());
+        actions.put("GET/read_story", new ReadStoryAction());
+        actions.put("GET/remove_invited", new RemoveInvitedAction());
 
         LOG.debug("Command container was successfully initialized");
         LOG.trace("Number of actions --> " + actions.size());

@@ -1,12 +1,17 @@
 package actions;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import dao.ParagrapheDAO;
 import dao.ParagrapheDAOimpl;
+import dao.ParentSectionDAO;
+import dao.ParentSectionDAOimpl;
 import dao.StoryDAO;
 import dao.StoryDAOimpl;
 import jakarta.servlet.ServletException;
@@ -14,6 +19,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import models.Paragraphe;
+import models.ParentSection;
 import models.Story;
 import models.User;
 import utils.Path;
@@ -42,6 +48,11 @@ public class CreateStoryAction implements Action {
         LOG.error("Open story: " + open);
         LOG.error("Final paragraphe: " + is_final);
 
+        List<String> choices = Collections.list(request.getParameterNames()).stream()
+                .filter(parameterName -> parameterName.startsWith("choice_")).map(request::getParameter)
+                .collect(Collectors.toList());
+        LOG.error(choices);
+
         Story story = null;
         if (request.getParameter("create") != null) {
             // create action
@@ -51,6 +62,7 @@ public class CreateStoryAction implements Action {
             LOG.error("Your can't published a story without any final paragraphe.");
 
             request.setAttribute("error_message", "You need to have a final paragraphe to publish your story.");
+            request.setAttribute("choices", choices);
             return Path.PAGE_CREATE_STORY;
         } else if (request.getParameter("create_and_publish") != null) {
             // create and publish action
@@ -62,6 +74,7 @@ public class CreateStoryAction implements Action {
             LOG.error("There is no content --> [" + content + "]");
 
             request.setAttribute("error_message", "Enter a first paragraphe.");
+            request.setAttribute("choices", choices);
             return Path.PAGE_CREATE_STORY;
         }
 
@@ -69,23 +82,67 @@ public class CreateStoryAction implements Action {
         StoryDAO storyDAO = new StoryDAOimpl();
         long storyId = storyDAO.saveStory(story);
         LOG.error(storyId + " " + story);
-
-        Paragraphe paragraphe = Paragraphe.builder().story_id(storyId).content(content).last(is_final).build();
-
-        ParagrapheDAO paragrapheDAO = new ParagrapheDAOimpl();
-        long paragrapheId = paragrapheDAO.saveParagraphe(paragraphe);
-        LOG.error(paragrapheId + " " + paragraphe);
-
-        // Validation story and paragraphe database
-        String forward = Path.REDIRECT_SHOW_USER_STORIES;
-        if (storyId == -1 && paragrapheId == -1) {
+        if (storyId == -1) {
             request.setAttribute("error_message",
                     "Error when creating your story. Fill the fields and submit your story again.");
-            forward = Path.PAGE_CREATE_STORY;
+            request.setAttribute("choices", choices);
+            return Path.PAGE_CREATE_STORY;
+        }
+
+        Paragraphe paragraphe = Paragraphe.builder().story_id(storyId).user_id(user.getId()).content(content)
+                .last(is_final).build();
+
+        ParagrapheDAO paragrapheDAO = new ParagrapheDAOimpl();
+        long parentParagrapheId = paragrapheDAO.saveParagraphe(paragraphe);
+        LOG.error(parentParagrapheId + " " + paragraphe);
+        if (parentParagrapheId == -1) {
+            request.setAttribute("error_message",
+                    "Error when creating your story. Fill the fields and submit your story again.");
+            request.setAttribute("choices", choices);
+            return Path.PAGE_CREATE_STORY;
+        }
+
+        // TODO
+        // ajouter un ou plusieurs choix: créer les paragraphes enfants, insérer dans
+        // Parent Section
+        // parag_condition est le parent (choix inconditionnel) ou un autre paragraphe
+        // conditionnel
+        // si paragraphe final il est possible de ne pas faire de choix
+
+        ParentSectionDAO parentSectionDAO = new ParentSectionDAOimpl();
+        ParentSection parentSection = ParentSection.builder().story_id(storyId).parent_story_id(storyId)
+                .parent_paragraphe_id(parentParagrapheId).paragraphe_conditionnel_story_id(storyId)
+                .paragraphe_conditionnel_id(parentParagrapheId).build();
+        long paragrapheId;
+        paragraphe = Paragraphe.builder().story_id(storyId).user_id(user.getId()).content("NO CONTENT YET").build();
+
+        int index = 0;
+        for (String choice : choices) {
+            paragrapheId = paragrapheDAO.saveParagraphe(paragraphe);
+            if (paragrapheId == -1) {
+                request.setAttribute("error_message",
+                        "Error when creating your story. Fill the fields and submit your story again.");
+                request.setAttribute("choices", choices);
+                return Path.PAGE_CREATE_STORY;
+            }
+
+            parentSection.setChoice_text(choice);
+            parentSection.setChoice_number(index);
+            parentSection.setParagraphe_id(paragrapheId);
+
+            int err = parentSectionDAO.saveParentSection(parentSection);
+            if (err == -1) {
+                request.setAttribute("error_message",
+                        "Error when creating your story. Fill the fields and submit your story again.");
+                request.setAttribute("choices", choices);
+                return Path.PAGE_CREATE_STORY;
+            }
+
+            index++;
         }
 
         LOG.debug("CreateStory Action finished");
-        return forward;
-    }
 
+        return Path.REDIRECT_SHOW_USER_STORIES;
+    }
 }

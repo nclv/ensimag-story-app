@@ -5,6 +5,7 @@ import java.util.List;
 import models.Invited;
 
 public interface InvitedDAO {
-    void saveInvited(Invited invited);
+    int saveInvited(Invited invited);
     List<Invited> findAllInvitedUsers(long storyId);
+    int removeInvited(Invited invited);
 }

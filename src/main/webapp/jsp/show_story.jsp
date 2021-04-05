@@ -20,10 +20,19 @@
         <nav>
             <a href="${context}${Path.REDIRECT_HOME}"><img alt="Logo" src="https://via.placeholder.com/200x70?text=Logo" height="70"></a>
             <ul>
+                <%-- Un utilisateur connecté --%>
                 <c:if test="${not empty user}">
                     <li><a href="${context}${Path.PAGE_CREATE_STORY}"> Create a Story </a></li>
-                    <c:if test="${story.open}">
-                        <li><a href="${context}${Path.PAGE_ADD_PARAGRAPHE}"> Add Paragraphe </a><li>
+                    <%-- Story éditable (voir conditions dans l'action) --%>
+                    <c:if test="${not empty canEditStory}">
+                        <li><a href="${context}${Path.PAGE_ADD_PARAGRAPHE}&story_id=${story.id}"> Add Paragraphe </a><li>
+                    </c:if>
+                    <%-- Si on est l'auteur de l'histoire (not open) on peut inviter d'autres utilisateurs --%>
+                    <c:if test="${not empty canInvite}">
+                        <li><a href="${context}${Path.REDIRECT_INVITE_USERS}&story_id=${story.id}"> Invite Users </a><li>
+                    </c:if>
+                    <c:if test="${not empty canRead}">
+                        <li><a href="${context}${Path.REDIRECT_READ_STORY}&story_id=${story.id}"> Read Story </a><li>
                     </c:if>
                     <li><a href="${context}${Path.REDIRECT_LOGOUT}"> Logout </a></li>
                     <li> ${user.name} </li>
@@ -54,6 +63,29 @@
                     <td><c:out value="${story.open}" /></td>
                     <td><c:out value="${story.published}" /></td>
                 </tr>
+            </table>
+        </section>
+        <section>
+            <table>
+                <caption><h2>List of invited users</h2></caption>
+                <thead>
+                    <tr>
+                        <th>Id</th>
+                        <th>Name</th>
+                        <th>Password</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <c:forEach var="user" items="${invitedUsers}">
+                    <tr>
+                        <td><c:out value="${user.id}" /></td>
+                        <td><c:out value="${user.name}" /></td>
+                        <td><c:out value="${user.password}" /></td>
+                        <c:if test="${not empty canInvite}">
+                            <td><a href="${context}${Path.REDIRECT_REMOVE_INVITED}&user_id=${user.id}&story_id=${story.id}"> Remove </a></td>
+                        </c:if>
+                    </tr>
+                </c:forEach>
             </table>
         </section>
         <section>
