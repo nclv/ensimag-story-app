@@ -34,6 +34,7 @@ end;
 CREATE TABLE "Paragraphe" (
 	"story_id" NUMBER(10) NOT NULL,
 	"para_id" NUMBER(10) NOT NULL,
+	"user_id" NUMBER(10) NOT NULL,
 	"content" CLOB NOT NULL,
 	"is_final" NUMBER(1) DEFAULT 0 NOT NULL,
 	constraint PARAGRAPHE_PK PRIMARY KEY ("story_id","para_id"));

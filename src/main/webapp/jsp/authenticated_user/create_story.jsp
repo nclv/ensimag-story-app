@@ -50,53 +50,55 @@
         <h1> create_story.jsp </h1>
     </header>
     <main>
-        <form action="${context}${Path.REDIRECT_CREATE_STORY}" method="post">
-            <strong>Title</strong>:<input type="text" name="title" value="${param.title}"><br>
-            
-            <p> Is your story <strong>open</strong> or <strong>private</strong>? </p>
-            <input type="radio" id="open" name="open" value="open" required ${param.open eq "open" ? "checked": ""}>
-            <label for="open">Open</label>
-            <input type="radio" id="private" name="open" value="private" ${param.open eq "private" ? "checked": ""}>
-            <label for="private">Private</label>
+        <section>
+            <form action="${context}${Path.REDIRECT_CREATE_STORY}" method="post">
+                <strong>Title</strong>:<input type="text" name="title" value="${param.title}"><br>
+                
+                <p> Is your story <strong>open</strong> or <strong>private</strong>? </p>
+                <input type="radio" id="open" name="open" value="open" required ${param.open eq "open" ? "checked": ""}>
+                <label for="open">Open</label>
+                <input type="radio" id="private" name="open" value="private" ${param.open eq "private" ? "checked": ""}>
+                <label for="private">Private</label>
 
-            <textarea rows="10" cols="60" name="first_paragraphe_content" placeholder="Enter your first paragraphe content..." required>${not empty param.first_paragraphe_content ? param.first_paragraphe_content: ""}</textarea>
-            
-            <p> Is your paragraphe <strong>final</strong>? </p>
-            <input type="radio" id="final" name="is_final" value="final" required ${param.is_final eq "final" ? "checked": ""}>
-            <label for="final">Yes</label>
-            <input type="radio" id="non-final" name="is_final" value="non-final" ${param.is_final eq "non-final" ? "checked": ""}>
-            <label for="non-final">No</label>
+                <textarea rows="10" cols="60" name="first_paragraphe_content" placeholder="Enter your first paragraphe content..." required>${not empty param.first_paragraphe_content ? param.first_paragraphe_content: ""}</textarea>
+                
+                <p> Is your paragraphe <strong>final</strong>? </p>
+                <input type="radio" id="final" name="is_final" value="final" required ${param.is_final eq "final" ? "checked": ""}>
+                <label for="final">Yes</label>
+                <input type="radio" id="non-final" name="is_final" value="non-final" ${param.is_final eq "non-final" ? "checked": ""}>
+                <label for="non-final">No</label>
 
-            <%-- Invisible choice text input --%>
-            <div id="readroot" style="display: none">
-                <label for="choice">Enter choice text:</label>
-                <input type="text" id="name" name="choice" size="28">
-                <input type="button" value="Remove choice" onclick="this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode);" />
-            </div>
+                <%-- Invisible choice text input --%>
+                <div id="readroot" style="display: none">
+                    <label for="choice">Enter choice text:</label>
+                    <input type="text" id="name" name="choice" size="28">
+                    <input type="button" value="Remove choice" onclick="this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode);" />
+                </div>
 
-            <section>
-                <%-- Load previous choices input --%>
-                <c:if test="${not empty choices}">
-                    <c:forEach var="choice" items="${choices}" varStatus="loop">
-                        <aside>
-                            <label for="choice">Enter choice text:</label>
-                            <input type="text" id="name" name="choice_${loop.index}" size="28" value="${choice}">
-                            <input type="button" value="Remove choice" onclick="this.parentNode.parentNode.removeChild(this.parentNode);" />
-                        </aside>
-                    </c:forEach>
-                </c:if>
-                <%-- moreFields() add a new text input here --%>
-                <span id="writeroot"></span>
-            </section>
+                <section>
+                    <%-- Load previous choices input --%>
+                    <c:if test="${not empty choices}">
+                        <c:forEach var="choice" items="${choices}" varStatus="loop">
+                            <aside>
+                                <label for="choice">Enter choice text:</label>
+                                <input type="text" id="name" name="choice_${loop.index}" size="28" value="${choice}">
+                                <input type="button" value="Remove choice" onclick="this.parentNode.parentNode.removeChild(this.parentNode);" />
+                            </aside>
+                        </c:forEach>
+                    </c:if>
+                    <%-- moreFields() add a new text input here --%>
+                    <span id="writeroot"></span>
+                </section>
 
-            <input type="button" name="addMoreFields" onclick="moreFields()" value="Add a choice." />
+                <input type="button" name="addMoreFields" onclick="moreFields()" value="Add a choice." />
 
-            <input type="submit" name="create" value="Create my Story">
-            <input type="submit" name="create_and_publish" value="Create and Publish my Story">
-        </form>
-        <c:if test="${not empty error_message}">
-            <span style="background-color: #F08080"> ${error_message} </span>
-        </c:if>
+                <input type="submit" name="create" value="Create my Story">
+                <input type="submit" name="create_and_publish" value="Create and Publish my Story">
+            </form>
+            <c:if test="${not empty error_message}">
+                <span style="background-color: #F08080"> ${error_message} </span>
+            </c:if>
+        </section>
     </main>
     <footer>
         <hr>

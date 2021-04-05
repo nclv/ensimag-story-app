@@ -18,6 +18,7 @@ public class Paragraphe implements Serializable {
     private static final long serialVersionUID = -8486808310220589932L;
     private long story_id;
     private long id;
+    private long user_id;
     private String content;
     private boolean last;
 }
