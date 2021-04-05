@@ -76,6 +76,11 @@ public class CreateStoryAction implements Action {
         long paragrapheId = paragrapheDAO.saveParagraphe(paragraphe);
         LOG.error(paragrapheId + " " + paragraphe);
 
+        // TODO
+        // ajouter un ou plusieurs choix: créer les paragraphes enfants, insérer dans Parent Section
+        // parag_condition est le parent (choix inconditionnel) ou un autre paragraphe conditionnel
+        // si paragraphe final il est possible de ne pas faire de choix
+
         // Validation story and paragraphe database
         String forward = Path.REDIRECT_SHOW_USER_STORIES;
         if (storyId == -1 && paragrapheId == -1) {

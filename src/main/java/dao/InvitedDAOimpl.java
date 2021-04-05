@@ -23,8 +23,8 @@ public class InvitedDAOimpl implements InvitedDAO {
     private final static String SQL_REMOVE_INVITED = "DELETE FROM \"Invited\" WHERE \"user_id\"=? AND \"story_id\"=?";
 
     @Override
-    public long saveInvited(Invited invited) {
-        long err = -1;
+    public int saveInvited(Invited invited) {
+        int err = -1;
         try (Connection connection = DatabaseManager.getConnection();
                 PreparedStatement preparedStatement = connection.prepareStatement(SQL_INSERT_INVITED)) {
             preparedStatement.setLong(1, invited.getUser_id());

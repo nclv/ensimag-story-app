@@ -65,7 +65,7 @@ public class InviteUsersPostAction implements Action {
         Set<Long> nonInvitedUserIds = new HashSet<>(invitedUserIds);
         nonInvitedUserIds.removeAll(alreadyInvitedUserIds);
 
-        long err;
+        int err;
         for (long invitedUserId : nonInvitedUserIds) {
             invited.setUser_id(invitedUserId);
             err = invitedDAO.saveInvited(invited);

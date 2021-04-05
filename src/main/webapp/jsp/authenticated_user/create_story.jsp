@@ -33,7 +33,7 @@
             <input type="radio" id="private" name="open" value="private" ${param.open=="private" ? "checked": ""}>
             <label for="private">Private</label>
 
-            <textarea rows = "10" cols = "60" name = "first_paragraphe_content"> ${not empty param.first_paragraphe_content ? param.first_paragraphe_content: "Enter your first paragraphe content..."} </textarea>
+            <textarea rows = "10" cols = "60" name = "first_paragraphe_content">${not empty param.first_paragraphe_content ? param.first_paragraphe_content: "Enter your first paragraphe content..."}</textarea>
             
             <p> Is your paragraphe <strong>final</strong>? </p>
             <input type="radio" id="final" name="is_final" value="final" ${param.is_final=="final" ? "checked": ""}>
