@@ -29,18 +29,6 @@ public class RegisterAction implements Action {
 
         String username = request.getParameter("username");
         String password = request.getParameter("password");
-        // Validation requête
-        if (username == null || username.trim().isEmpty()) {
-            LOG.error("There is no username --> [" + username + "]");
-
-            request.setAttribute("error_message", "Enter an user name.");
-            return Path.PAGE_REGISTER;
-        } else if (password == null || password.trim().isEmpty()) {
-            LOG.error("There is no password --> [" + username + "]");
-
-            request.setAttribute("error_message", "Enter a password.");
-            return Path.PAGE_REGISTER;
-        } 
 
         password = BCrypt.hashpw(password, BCrypt.gensalt());
         User user = User.builder().name(username).password(password).build();
