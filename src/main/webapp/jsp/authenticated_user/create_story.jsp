@@ -95,10 +95,10 @@
                 <input type="submit" name="create" value="Create my Story">
                 <input type="submit" name="create_and_publish" value="Create and Publish my Story">
             </form>
-            <c:if test="${not empty error_message}">
-                <span style="background-color: #F08080"> ${error_message} </span>
-            </c:if>
         </section>
+        <c:if test="${not empty error_message}">
+            <span style="background-color: #F08080"> ${error_message} </span>
+        </c:if>
     </main>
     <footer>
         <hr>
