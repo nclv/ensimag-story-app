@@ -7,6 +7,8 @@ import java.sql.SQLException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import dao.ParagrapheDAO;
+import dao.ParagrapheDAOimpl;
 import dao.StoryDAO;
 import dao.StoryDAOimpl;
 import jakarta.servlet.ServletException;
@@ -100,6 +102,51 @@ public class Validation {
                 valid = false;
 
                 req.setAttribute("error_message", "story_id doesn't exist.");
+                req.getRequestDispatcher(forwardPage).include(req, resp);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return valid;
+    }
+
+    public static boolean ParagrapheId(HttpServletRequest req, HttpServletResponse resp, String forwardPage)
+            throws ServletException, IOException {
+
+        String storyIdString = req.getParameter("story_id");
+        long storyId = Long.parseLong(storyIdString);
+
+        String paragrapheIdString = req.getParameter("paragraphe_id");
+
+        boolean valid = true;
+        if (paragrapheIdString == null || paragrapheIdString.trim().isEmpty()) {
+            LOG.error("Null paragraphe_id --> [" + paragrapheIdString + "].");
+            valid = false;
+
+            req.setAttribute("error_message", "paragraphe_id is null.");
+            req.getRequestDispatcher(forwardPage).include(req, resp);
+        }
+        long paragrapheId = -1;
+        try {
+            paragrapheId = Long.parseLong(paragrapheIdString);
+        } catch (NumberFormatException e) {
+            LOG.error("paragraphe_id --> [" + paragrapheIdString + "].");
+            valid = false;
+
+            req.setAttribute("error_message", "paragraphe_id is not a number.");
+            req.getRequestDispatcher(forwardPage).include(req, resp);
+        }
+
+        ParagrapheDAO paragrapheDAO = new ParagrapheDAOimpl();
+        try (Connection connection = DatabaseManager.getConnection()) {
+            ParagrapheDAOimpl.setConnection(connection);
+
+            if (paragrapheDAO.findParagraphe(storyId, paragrapheId) == null) {
+                LOG.error("story_id, paragraphe_id --> [" + storyId + ", " + paragrapheIdString + "] doesn't exist.");
+                valid = false;
+
+                req.setAttribute("error_message", "story_id, paragraphe_id doesn't exist.");
                 req.getRequestDispatcher(forwardPage).include(req, resp);
             }
         } catch (SQLException e) {

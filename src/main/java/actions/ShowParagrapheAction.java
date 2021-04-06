@@ -39,7 +39,7 @@ import utils.Path;
  * @author vincent
  */
 
-public class ShowParagapheAction implements Action {
+public class ShowParagrapheAction implements Action {
 
     private static final long serialVersionUID = -1681360924475966816L;
     private static final Logger LOG = LogManager.getLogger();
@@ -54,27 +54,12 @@ public class ShowParagapheAction implements Action {
         User connectedUser = (User) session.getAttribute("user");
         LOG.error(connectedUser);
 
-        // Récupération de l'ID du paragraphe
-        String paragrapheIdString = request.getParameter("paragraphe_id");
-        if (paragrapheIdString == null || paragrapheIdString.trim().isEmpty()) {
-            LOG.error("Null story_id --> [" + paragrapheIdString + "].");
-
-            request.setAttribute("error_message", "story_id is null.");
-            return Path.PAGE_ERROR;
-        }
-        long paragrapheId;
-        try {
-            paragrapheId = Long.parseLong(paragrapheIdString);
-        } catch (NumberFormatException e) {
-            LOG.error("paragraphe_id --> [" + paragrapheIdString + "].");
-
-            request.setAttribute("error_message", "paragraphe_id is not a number.");
-            return Path.PAGE_ERROR;
-        }
-
         String storyIdString = request.getParameter("story_id");
         long storyId = Long.parseLong(storyIdString);
 
+        String paragrapheIdString = request.getParameter("paragraphe_id");
+        long paragrapheId = Long.parseLong(paragrapheIdString);
+        
         StoryDAO storyDAO = new StoryDAOimpl();
         ParagrapheDAO paragrapheDAO = new ParagrapheDAOimpl();
         UserDAO userDAO = new UserDAOimpl();

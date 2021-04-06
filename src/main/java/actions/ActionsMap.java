@@ -26,7 +26,7 @@ public class ActionsMap {
         actions.put("GET/home", new HomePageAction());
         actions.put("GET/show_story", new ShowStoryAction());
         actions.put("GET/show_user_stories", new ShowUserStoriesAction());
-        actions.put("GET/show_paragraphe", new ShowParagapheAction());
+        actions.put("GET/show_paragraphe", new ShowParagrapheAction());
         actions.put("GET/read_story", new ReadStoryAction());
         actions.put("GET/remove_invited", new RemoveInvitedAction());
 
