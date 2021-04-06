@@ -18,7 +18,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import utils.Path;
 
-@WebFilter(urlPatterns = { "/jsp/authenticated_user/*", "/controller" })
+@WebFilter(urlPatterns = { "/jsp/authenticated_user/*", "/WEB-INF/jsp/authenticated_user/*", "/controller" })
 public class AuthenticationFilter implements Filter {
 
     private static final Logger LOG = LogManager.getLogger();
@@ -38,7 +38,7 @@ public class AuthenticationFilter implements Filter {
         boolean loginNeeded = ActionsMap.authenticatedActionsContains(actionName);
         if (actionName == null && !req.getRequestURI().contains("/controller")) {
             actionName = FilenameUtils.getBaseName(req.getRequestURI());
-            loginNeeded = true; // on doit se login pour toute page de /jsp/authenticated_user/
+            loginNeeded = true; // on doit se login pour toute page autre page qu'un controller
         }
         LOG.error(actionName);
         LOG.error(loginNeeded);
