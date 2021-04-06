@@ -14,6 +14,7 @@ import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import utils.Path;
+import utils.Validation;
 
 @WebFilter("/controller")
 public class RegisterValidationFilter implements Filter {
@@ -31,24 +32,7 @@ public class RegisterValidationFilter implements Filter {
         LOG.error(actionName);
         LOG.error(canFilter);
 
-        if (canFilter) {
-            String username = req.getParameter("username");
-            String password = req.getParameter("password");
-            // Validation requête
-            if (username == null || username.trim().isEmpty()) {
-                LOG.error("There is no username --> [" + username + "]");
-
-                req.setAttribute("error_message", "Enter an user name.");
-                req.getRequestDispatcher(Path.PAGE_REGISTER).include(req, resp);
-            } else if (password == null || password.trim().isEmpty()) {
-                LOG.error("There is no password --> [" + username + "]");
-
-                req.setAttribute("error_message", "Enter a password.");
-                req.getRequestDispatcher(Path.PAGE_REGISTER).include(req, resp);
-            } else {
-                chain.doFilter(req, resp);
-            }
-        } else {
+        if (!canFilter || (canFilter && Validation.UsernamePassword(req, resp, Path.PAGE_REGISTER))) {
             chain.doFilter(req, resp);
         }
     }
