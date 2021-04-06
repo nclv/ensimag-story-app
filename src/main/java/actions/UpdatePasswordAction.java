@@ -50,16 +50,16 @@ public class UpdatePasswordAction implements Action {
 
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
-        if (user == null) {
-            request.setAttribute("error_message", "There is no connected user.");
-            return Path.PAGE_ERROR;
-        }
+        // if (user == null) {
+        //     request.setAttribute("error_message", "There is no connected user.");
+        //     return Path.PAGE_ERROR;
+        // }
 
         String password = BCrypt.hashpw(new_password, BCrypt.gensalt());
         user.setPassword(password);
 
         UserDAO userDao = new UserDAOimpl();
-        
+
         boolean err = false;
         try (Connection connection = DatabaseManager.getConnection()) {
             UserDAOimpl.setConnection(connection);

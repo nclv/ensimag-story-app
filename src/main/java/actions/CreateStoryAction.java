@@ -41,10 +41,10 @@ public class CreateStoryAction implements Action {
         User user = (User) session.getAttribute("user");
 
         // for POST request on /controller?action=create_story
-        if (user == null) {
-            request.setAttribute("error_message", "There is no connected user.");
-            return Path.PAGE_ERROR;
-        }
+        // if (user == null) {
+        //     request.setAttribute("error_message", "There is no connected user.");
+        //     return Path.PAGE_ERROR;
+        // }
 
         boolean open = request.getParameter("open").equals("open") ? true : false;
         boolean is_final = request.getParameter("is_final").equals("final") ? true : false;

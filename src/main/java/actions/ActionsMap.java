@@ -1,6 +1,8 @@
 package actions;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
@@ -13,6 +15,7 @@ public class ActionsMap {
     private static final Logger LOG = LogManager.getLogger();
 
     private static final Map<String, Action> actions = new HashMap<>();
+    private static final List<String> authenticatedActions = new ArrayList<>();
 
     static {
         actions.put("GET/invalid", new InvalidAction());
@@ -38,11 +41,22 @@ public class ActionsMap {
         actions.put("GET/invite_users", new InviteUsersGetAction());
         actions.put("POST/invite_users", new InviteUsersPostAction());
 
+        authenticatedActions.add("add_paragraphe");
+        authenticatedActions.add("create_story");
+        authenticatedActions.add("invite_users");
+        authenticatedActions.add("update_password");
+        authenticatedActions.add("show_user_stories");
+        authenticatedActions.add("remove_invited");
+
         LOG.debug("Command container was successfully initialized");
         LOG.trace("Number of actions --> " + actions.size());
     }
 
     private ActionsMap() {
+    }
+
+    public static boolean authenticatedActionsContains(String actionName) {
+        return authenticatedActions.contains(actionName);
     }
 
     public static Action get(HttpServletRequest request) {

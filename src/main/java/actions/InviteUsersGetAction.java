@@ -35,10 +35,10 @@ public class InviteUsersGetAction implements Action {
 
         HttpSession session = request.getSession();
         User connectedUser = (User) session.getAttribute("user");
-        if (connectedUser == null) {
-            request.setAttribute("error_message", "There is no connected user.");
-            return Path.PAGE_ERROR;
-        }
+        // if (connectedUser == null) {
+        //     request.setAttribute("error_message", "There is no connected user.");
+        //     return Path.PAGE_ERROR;
+        // }
 
         // Récupération de l'ID de la story
         String storyIdString = request.getParameter("story_id");
@@ -62,7 +62,7 @@ public class InviteUsersGetAction implements Action {
         Story story = null;
         try (Connection connection = DatabaseManager.getConnection()) {
             StoryDAOimpl.setConnection(connection);
-            
+
             story = storyDAO.findStory(storyId);
         } catch (SQLException e) {
             e.printStackTrace();

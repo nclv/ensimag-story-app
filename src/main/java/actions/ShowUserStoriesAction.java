@@ -35,10 +35,10 @@ public class ShowUserStoriesAction implements Action {
         User user = (User) session.getAttribute("user");
 
         // for POST request on /controller?action=create_story
-        if (user == null) {
-            request.setAttribute("error_message", "There is no connected user.");
-            return Path.PAGE_ERROR;
-        }
+        // if (user == null) {
+        //     request.setAttribute("error_message", "There is no connected user.");
+        //     return Path.PAGE_ERROR;
+        // }
         LOG.error(user);
         
         StoryDAO storyDAO = new StoryDAOimpl();
@@ -51,7 +51,7 @@ public class ShowUserStoriesAction implements Action {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         request.setAttribute("stories", stories);
         
         LOG.error("ShowUserStories Action finished");        
