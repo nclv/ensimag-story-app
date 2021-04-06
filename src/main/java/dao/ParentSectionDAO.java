@@ -1,7 +1,9 @@
 package dao;
 
+import java.sql.SQLException;
+
 import models.ParentSection;
 
 public interface ParentSectionDAO {
-    int saveParentSection(ParentSection parentSection);
+    void saveParentSection(ParentSection parentSection) throws SQLException;
 }

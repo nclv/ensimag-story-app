@@ -12,7 +12,6 @@ import org.apache.logging.log4j.Logger;
 
 import models.DatabaseFields;
 import models.Invited;
-import utils.DatabaseManager;
 
 public class InvitedDAOimpl implements InvitedDAO {
 
@@ -22,60 +21,50 @@ public class InvitedDAOimpl implements InvitedDAO {
     private final static String SQL_FIND_INVITED_STORY_ID = "SELECT * FROM \"Invited\" WHERE \"story_id\"=?";
     private final static String SQL_REMOVE_INVITED = "DELETE FROM \"Invited\" WHERE \"user_id\"=? AND \"story_id\"=?";
 
+    private static Connection connection = null;
+
+    public static void setConnection(Connection connection) {
+        InvitedDAOimpl.connection = connection;
+    }
+
     @Override
-    public int saveInvited(Invited invited) {
-        int err = -1;
-        try (Connection connection = DatabaseManager.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(SQL_INSERT_INVITED)) {
+    public void saveInvited(Invited invited) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_INSERT_INVITED)) {
             preparedStatement.setLong(1, invited.getUser_id());
             preparedStatement.setLong(2, invited.getStory_id());
             preparedStatement.setDate(3, invited.getDate());
 
             preparedStatement.executeUpdate();
-            err = 0;
-        } catch (Exception e) {
-            LOG.error("Failed inserting invited", e);
         }
-        return err;
     }
 
     @Override
-    public List<Invited> findAllInvitedUsers(long storyId) {
+    public List<Invited> findAllInvitedUsers(long storyId) throws SQLException {
         List<Invited> invitedList = new ArrayList<Invited>();
-        try (Connection connection = DatabaseManager.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(SQL_FIND_INVITED_STORY_ID)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_FIND_INVITED_STORY_ID)) {
             preparedStatement.setLong(1, storyId);
-            ResultSet resultSet = preparedStatement.executeQuery();
 
-            Invited story = null;
-            while (resultSet.next()) {
-                story = getInvited(resultSet);
-                invitedList.add(story);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                Invited story = null;
+                while (resultSet.next()) {
+                    story = getInvited(resultSet);
+                    invitedList.add(story);
+                }
+                LOG.error(invitedList);
             }
-            LOG.error(invitedList);
-
-            resultSet.close();
-        } catch (SQLException e) {
-            LOG.error("Failed querying user (" + storyId + ") invited", e);
         }
 
         return invitedList;
     }
 
     @Override
-    public int removeInvited(Invited invited) {
-        int err = -1;
-        try (Connection connection = DatabaseManager.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(SQL_REMOVE_INVITED)) {
+    public void removeInvited(Invited invited) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_REMOVE_INVITED)) {
             preparedStatement.setLong(1, invited.getUser_id());
             preparedStatement.setLong(2, invited.getStory_id());
 
             preparedStatement.executeUpdate();
-            err = 0;
-        } catch (Exception e) {
-            LOG.error("Failed removing invited", e);
         }
-        return err;
     }
 
     private Invited getInvited(ResultSet resultSet) throws SQLException {

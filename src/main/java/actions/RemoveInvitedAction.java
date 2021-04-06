@@ -1,6 +1,8 @@
 package actions;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,6 +13,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import models.Invited;
+import utils.DatabaseManager;
 import utils.Path;
 
 public class RemoveInvitedAction implements Action {
@@ -46,8 +49,18 @@ public class RemoveInvitedAction implements Action {
         Invited invited = Invited.builder().user_id(userId).story_id(storyId).build();
 
         InvitedDAO invitedDAO = new InvitedDAOimpl();
-        int err = invitedDAO.removeInvited(invited);
-        if (err == -1) {
+
+        boolean err = false;
+        try (Connection connection = DatabaseManager.getConnection()) {
+            InvitedDAOimpl.setConnection(connection);
+            
+            invitedDAO.removeInvited(invited);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            err = true;
+        }
+        
+        if (err) {
             LOG.error("Couldn't remove invited user. " + invited);
 
             request.setAttribute("error_message", "Couldn't remove invited user.");

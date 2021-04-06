@@ -1,12 +1,13 @@
 package dao;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import models.Paragraphe;
 
 public interface ParagrapheDAO {
-    long saveParagraphe(Paragraphe paragraphe);
-    Paragraphe findParagraphe(long story_id, long paragraphe_id);
-    int updateParagraphe(Paragraphe paragraphe);
-    List<Paragraphe> findAllStoryParagraphes(long story_id);
+    long saveParagraphe(Paragraphe paragraphe) throws SQLException;
+    Paragraphe findParagraphe(long story_id, long paragraphe_id) throws SQLException;
+    void updateParagraphe(Paragraphe paragraphe) throws SQLException;
+    List<Paragraphe> findAllStoryParagraphes(long story_id) throws SQLException;
 }

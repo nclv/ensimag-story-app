@@ -1,6 +1,8 @@
 package actions;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,6 +15,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import models.User;
+import utils.DatabaseManager;
 import utils.Path;
 
 public class LoginAction implements Action {
@@ -47,7 +50,15 @@ public class LoginAction implements Action {
         }
 
         UserDAO userDao = new UserDAOimpl();
-        User user = userDao.findUser(username);
+
+        User user = null;
+        try (Connection connection = DatabaseManager.getConnection()) {
+            UserDAOimpl.setConnection(connection);
+
+            user = userDao.findUser(username);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
         // Redirect to previous page or to home page 
         String forward = Path.REDIRECT_HOME;

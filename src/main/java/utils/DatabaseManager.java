@@ -25,8 +25,12 @@ public final class DatabaseManager {
 
             connection = dataSource.getConnection();
         } catch (NamingException ex) {
-            LOG.error("Failed while getting a JDBC connection", ex);
+            LOG.error("Failed while getting a JDBC connection. Bad lookup.", ex);
+        } catch (SQLException ex) {
+            LOG.error("Failed while getting a JDBC connection. Datasource error.", ex);
+            throw ex;
         }
+
         return connection;
     }
 

@@ -1,7 +1,9 @@
 package actions;
 
 import java.io.IOException;
+import java.sql.Connection;
 import java.sql.Date;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -12,13 +14,11 @@ import org.apache.logging.log4j.Logger;
 
 import dao.InvitedDAO;
 import dao.InvitedDAOimpl;
-import dao.UserDAO;
-import dao.UserDAOimpl;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import models.Invited;
-import models.User;
+import utils.DatabaseManager;
 import utils.Path;
 
 public class InviteUsersPostAction implements Action {
@@ -57,29 +57,33 @@ public class InviteUsersPostAction implements Action {
         Invited invited = Invited.builder().date(new Date(System.currentTimeMillis())).story_id(storyId).build();
         InvitedDAO invitedDAO = new InvitedDAOimpl();
 
-        // Récupération des utilisateurs déja invités
-        Set<Long> alreadyInvitedUserIds = invitedDAO.findAllInvitedUsers(storyId).stream().map(Invited::getUser_id)
-                .collect(Collectors.toSet());
+        boolean err = false;
+        try (Connection connection = DatabaseManager.getConnection()) {
+            InvitedDAOimpl.setConnection(connection);
 
-        // On ne garde que les utilisateurs qui ne sont pas déjà invités.
-        Set<Long> nonInvitedUserIds = new HashSet<>(invitedUserIds);
-        nonInvitedUserIds.removeAll(alreadyInvitedUserIds);
+            // Récupération des utilisateurs déja invités
+            Set<Long> alreadyInvitedUserIds = invitedDAO.findAllInvitedUsers(storyId).stream().map(Invited::getUser_id)
+                    .collect(Collectors.toSet());
 
-        int err;
-        for (long invitedUserId : nonInvitedUserIds) {
-            invited.setUser_id(invitedUserId);
-            err = invitedDAO.saveInvited(invited);
-            if (err == -1) {
-                UserDAO userDAO = new UserDAOimpl();
-                User user = userDAO.findUser(invitedUserId);
+            // On ne garde que les utilisateurs qui ne sont pas déjà invités.
+            Set<Long> nonInvitedUserIds = new HashSet<>(invitedUserIds);
+            nonInvitedUserIds.removeAll(alreadyInvitedUserIds);
 
-                LOG.error("Can't insert --> [" + user + "].");
-
-                request.setAttribute("error_message", user.getName() + " is already invited. (database error)");
-                // return Path.REDIRECT_INVITE_USERS + "&story_id=" + storyIdString + "&error_message=" + user.getName()
-                //         + " is already invited.";
-                return Path.PAGE_ERROR;
+            for (long invitedUserId : nonInvitedUserIds) {
+                invited.setUser_id(invitedUserId);
+                invitedDAO.saveInvited(invited);
             }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            err = true;
+        }
+
+        if (err) {
+            request.setAttribute("error_message", "User is already invited. (database error)");
+            // return Path.REDIRECT_INVITE_USERS + "&story_id=" + storyIdString +
+            // "&error_message=" + user.getName()
+            // + " is already invited.";
+            return Path.PAGE_ERROR;
         }
 
         LOG.error("InviteUsersPost Action finished");

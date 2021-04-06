@@ -1,6 +1,8 @@
 package actions;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,6 +15,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import models.User;
+import utils.DatabaseManager;
 import utils.Path;
 
 public class UpdatePasswordAction implements Action {
@@ -56,8 +59,18 @@ public class UpdatePasswordAction implements Action {
         user.setPassword(password);
 
         UserDAO userDao = new UserDAOimpl();
-        int err = userDao.updateUser(user);
-        if (err == -1) {
+        
+        boolean err = false;
+        try (Connection connection = DatabaseManager.getConnection()) {
+            UserDAOimpl.setConnection(connection);
+            
+            userDao.updateUser(user);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            err = true;
+        }
+        
+        if (err) {
             request.setAttribute("error_message", "Database error. Please retry.");
             return Path.PAGE_UPDATE_PASSWORD;
         }

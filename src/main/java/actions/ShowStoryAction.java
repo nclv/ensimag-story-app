@@ -1,6 +1,8 @@
 package actions;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -24,6 +26,7 @@ import models.Invited;
 import models.Paragraphe;
 import models.Story;
 import models.User;
+import utils.DatabaseManager;
 import utils.Path;
 
 public class ShowStoryAction implements Action {
@@ -61,27 +64,44 @@ public class ShowStoryAction implements Action {
         }
 
         StoryDAO storyDAO = new StoryDAOimpl();
-        Story story = storyDAO.findStory(storyId);
-        request.setAttribute("story", story);
-
         ParagrapheDAO paragrapheDAO = new ParagrapheDAOimpl();
-        List<Paragraphe> paragraphes = paragrapheDAO.findAllStoryParagraphes(storyId);
+        UserDAO userDAO = new UserDAOimpl();
+        InvitedDAO invitedDAO = new InvitedDAOimpl();
+
+        Story story = null;
+        List<Paragraphe> paragraphes = null;
+        User author = null;
+        Set<Long> invitedUsersIds = null;
+        List<User> invitedUsers = null;
+        try (Connection connection = DatabaseManager.getConnection()) {
+            StoryDAOimpl.setConnection(connection);
+            ParagrapheDAOimpl.setConnection(connection);
+            UserDAOimpl.setConnection(connection);
+            InvitedDAOimpl.setConnection(connection);
+
+            story = storyDAO.findStory(storyId);
+            paragraphes = paragrapheDAO.findAllStoryParagraphes(storyId);
+            author = userDAO.findUser(story.getUser_id());
+
+            invitedUsersIds = invitedDAO.findAllInvitedUsers(storyId).stream().map(Invited::getUser_id)
+                    .collect(Collectors.toSet());
+            LOG.error(invitedUsersIds);
+            if (!invitedUsersIds.isEmpty()) {
+                invitedUsers = userDAO.findUsers(invitedUsersIds);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        request.setAttribute("story", story);
         request.setAttribute("paragraphes", paragraphes);
+        request.setAttribute("author", author);
+        request.setAttribute("invitedUsers", invitedUsers);
+
         // On peut lire la story s'il existe au moins un paragraphe final
         boolean canRead = paragraphes.stream().map(Paragraphe::isLast).collect(Collectors.toList()).contains(true);
         request.setAttribute("canRead", canRead);
-
-        UserDAO userDAO = new UserDAOimpl();
-        User author = userDAO.findUser(story.getUser_id());
-        request.setAttribute("author", author);
-
-        InvitedDAO invitedDAO = new InvitedDAOimpl();
-        Set<Long> invitedUsersIds = invitedDAO.findAllInvitedUsers(storyId).stream().map(Invited::getUser_id)
-                .collect(Collectors.toSet());
-        ;
-        LOG.error(invitedUsersIds);
-        List<User> invitedUsers = userDAO.findUsers(invitedUsersIds);
-        request.setAttribute("invitedUsers", invitedUsers);
 
         // On peut éditer la story ssi. un utilisateur est connecté et
         // - elle est ouverte,

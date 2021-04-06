@@ -6,6 +6,8 @@
 package actions;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,6 +20,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import models.Paragraphe;
 import models.User;
+import utils.DatabaseManager;
 import utils.Path;
 
 /**
@@ -74,8 +77,17 @@ public class AddParagrapheAction implements Action {
         Paragraphe paragraphe = Paragraphe.builder().story_id(storyId).user_id(user.getId()).content(content)
                 .last(is_final).build();
         ParagrapheDAO paragrapheDAO = new ParagrapheDAOimpl();
-        long paragrapheId = paragrapheDAO.saveParagraphe(paragraphe);
-        LOG.error(paragrapheId + " " + paragraphe);
+
+        long paragrapheId = -1;
+        try (Connection connection = DatabaseManager.getConnection()) {
+            ParagrapheDAOimpl.setConnection(connection);
+
+            paragrapheId = paragrapheDAO.saveParagraphe(paragraphe);
+            LOG.error(paragrapheId + " " + paragraphe);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
         String forward = Path.REDIRECT_SHOW_USER_STORIES;
         if (paragrapheId == -1) {

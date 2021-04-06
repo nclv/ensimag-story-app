@@ -1,6 +1,8 @@
 package actions;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -14,6 +16,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import models.Story;
 import models.User;
+import utils.DatabaseManager;
 import utils.Path;
 
 public class ShowUserStoriesAction implements Action {
@@ -39,7 +42,16 @@ public class ShowUserStoriesAction implements Action {
         LOG.error(user);
         
         StoryDAO storyDAO = new StoryDAOimpl();
-        List<Story> stories = storyDAO.findStories(user.getId());
+
+        List<Story> stories = null;
+        try (Connection connection = DatabaseManager.getConnection()) {
+            StoryDAOimpl.setConnection(connection);
+            
+            stories = storyDAO.findStories(user.getId());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
         request.setAttribute("stories", stories);
         
         LOG.error("ShowUserStories Action finished");        

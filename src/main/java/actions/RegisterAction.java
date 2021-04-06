@@ -1,6 +1,8 @@
 package actions;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,6 +14,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import models.User;
+import utils.DatabaseManager;
 import utils.Path;
 
 public class RegisterAction implements Action {
@@ -43,8 +46,16 @@ public class RegisterAction implements Action {
         User user = User.builder().name(username).password(password).build();
 
         UserDAO userDao = new UserDAOimpl();
-        long userId = userDao.saveUser(user);
-        LOG.error(userId + " " + user);
+
+        long userId = -1;
+        try (Connection connection = DatabaseManager.getConnection()) {
+            UserDAOimpl.setConnection(connection);
+
+            userId = userDao.saveUser(user);
+            LOG.error(userId + " " + user);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
 
         // Validation database
         String forward = Path.REDIRECT_LOGIN;

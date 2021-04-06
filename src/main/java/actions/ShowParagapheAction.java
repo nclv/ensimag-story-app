@@ -6,6 +6,8 @@
 package actions;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -29,6 +31,7 @@ import models.Invited;
 import models.Paragraphe;
 import models.Story;
 import models.User;
+import utils.DatabaseManager;
 import utils.Path;
 
 /**
@@ -36,11 +39,11 @@ import utils.Path;
  * @author vincent
  */
 
-
 public class ShowParagapheAction implements Action {
-    
+
+    private static final long serialVersionUID = -1681360924475966816L;
     private static final Logger LOG = LogManager.getLogger();
-    
+
     @Override
     public String execute(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -68,32 +71,51 @@ public class ShowParagapheAction implements Action {
             request.setAttribute("error_message", "paragraphe_id is not a number.");
             return Path.PAGE_ERROR;
         }
-        
+
         String storyIdString = request.getParameter("story_id");
         long storyId = Long.parseLong(storyIdString);
 
         StoryDAO storyDAO = new StoryDAOimpl();
-        Story story = storyDAO.findStory(storyId);
-        request.setAttribute("story", story);
-
         ParagrapheDAO paragrapheDAO = new ParagrapheDAOimpl();
-        Paragraphe paragraphe = paragrapheDAO.findParagraphe(storyId, paragrapheId);
-        request.setAttribute("paragraphe", paragraphe);
-        // On peut lire la story s'il existe au moins un paragraphe final
-        boolean canRead = paragraphe.isLast();
-        request.setAttribute("canRead", canRead);
-
         UserDAO userDAO = new UserDAOimpl();
-        User author = userDAO.findUser(story.getUser_id());
-        request.setAttribute("author", author);
-
         InvitedDAO invitedDAO = new InvitedDAOimpl();
-        Set<Long> invitedUsersIds = invitedDAO.findAllInvitedUsers(storyId).stream().map(Invited::getUser_id)
-                .collect(Collectors.toSet());
-        ;
-        LOG.error(invitedUsersIds);
-        List<User> invitedUsers = userDAO.findUsers(invitedUsersIds);
+
+        Story story = null;
+        Paragraphe paragraphe = null;
+        User author = null;
+        Set<Long> invitedUsersIds = null;
+        List<User> invitedUsers = null;
+        try (Connection connection = DatabaseManager.getConnection()) {
+            StoryDAOimpl.setConnection(connection);
+            ParagrapheDAOimpl.setConnection(connection);
+            UserDAOimpl.setConnection(connection);
+            InvitedDAOimpl.setConnection(connection);
+
+            story = storyDAO.findStory(storyId);
+            paragraphe = paragrapheDAO.findParagraphe(storyId, paragrapheId);
+            author = userDAO.findUser(story.getUser_id());
+
+            invitedUsersIds = invitedDAO.findAllInvitedUsers(storyId).stream().map(Invited::getUser_id)
+                    .collect(Collectors.toSet());
+            LOG.error(invitedUsersIds);
+            if (!invitedUsersIds.isEmpty()) {
+                invitedUsers = userDAO.findUsers(invitedUsersIds);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        request.setAttribute("story", story);
+        request.setAttribute("paragraphe", paragraphe);
+        request.setAttribute("author", author);
         request.setAttribute("invitedUsers", invitedUsers);
+
+        // On peut lire la story s'il existe au moins un paragraphe final
+        if (paragraphe != null) {
+            boolean canRead = paragraphe.isLast();
+            request.setAttribute("canRead", canRead);
+        }
 
         // On peut éditer la story ssi. un utilisateur est connecté et
         // - elle est ouverte,
@@ -114,5 +136,5 @@ public class ShowParagapheAction implements Action {
 
         return Path.PAGE_SHOW_PARAGRAPHE;
     }
-    
+
 }

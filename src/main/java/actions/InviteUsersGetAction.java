@@ -1,6 +1,8 @@
 package actions;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -16,6 +18,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import models.Story;
 import models.User;
+import utils.DatabaseManager;
 import utils.Path;
 
 public class InviteUsersGetAction implements Action {
@@ -56,8 +59,16 @@ public class InviteUsersGetAction implements Action {
         }
         
         StoryDAO storyDAO = new StoryDAOimpl();
-        Story story = storyDAO.findStory(storyId);
-        if (story.isOpen()) {
+        Story story = null;
+        try (Connection connection = DatabaseManager.getConnection()) {
+            StoryDAOimpl.setConnection(connection);
+            
+            story = storyDAO.findStory(storyId);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
+        if (story != null && story.isOpen()) {
             LOG.error("Open story.");
 
             request.setAttribute("error_message", "The story is open. Everyone is invited.");
@@ -65,7 +76,14 @@ public class InviteUsersGetAction implements Action {
         }
 
         UserDAO userDAO = new UserDAOimpl();
-        List<User> users = userDAO.findAllUsersExcept(connectedUser.getId());
+        List<User> users = null;
+        try (Connection connection = DatabaseManager.getConnection()) {
+            UserDAOimpl.setConnection(connection);
+            
+            users = userDAO.findAllUsersExcept(connectedUser.getId());
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         request.setAttribute("users", users);
 
         LOG.error("InviteUsersGet Action finished");

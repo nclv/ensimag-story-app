@@ -14,7 +14,6 @@ import org.apache.logging.log4j.Logger;
 
 import models.DatabaseFields;
 import models.User;
-import utils.DatabaseManager;
 
 public class UserDAOimpl implements UserDAO {
 
@@ -32,11 +31,16 @@ public class UserDAOimpl implements UserDAO {
 
     private final static String SQL_GET_USER_ID = "SELECT \"USER_USER_ID_SEQ\".currval FROM DUAL";
 
+    private static Connection connection = null;
+
+    public static void setConnection(Connection connection) {
+        UserDAOimpl.connection = connection;
+    }
+
     @Override
-    public long saveUser(User user) {
+    public long saveUser(User user) throws SQLException {
         long id = -1;
-        try (Connection connection = DatabaseManager.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(SQL_INSERT_USER)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_INSERT_USER)) {
             preparedStatement.setString(1, user.getName());
             preparedStatement.setString(2, user.getPassword());
 
@@ -48,87 +52,69 @@ public class UserDAOimpl implements UserDAO {
                     id = resultSet.getLong(1);
                 }
             }
-        } catch (Exception e) {
-            LOG.error("Failed inserting user", e);
         }
 
         return id;
     }
 
     @Override
-    public User findUser(String username) {
+    public User findUser(String username) throws SQLException {
         User user = null;
-        try (Connection connection = DatabaseManager.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(SQL_FIND_USER_USERNAME)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_FIND_USER_USERNAME)) {
             preparedStatement.setString(1, username);
 
             user = getUser(preparedStatement);
-        } catch (Exception e) {
-            LOG.error("Failed querying user by " + DatabaseFields.USER_USERNAME, e);
         }
 
         return user;
     }
 
     @Override
-    public User findUser(long id) {
+    public User findUser(long id) throws SQLException {
         User user = null;
-        try (Connection connection = DatabaseManager.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(SQL_FIND_USER_USER_ID)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_FIND_USER_USER_ID)) {
             preparedStatement.setLong(1, id);
 
             user = getUser(preparedStatement);
-        } catch (Exception e) {
-            LOG.error("Failed querying user by " + DatabaseFields.USER_ID, e);
         }
 
         return user;
     }
 
     @Override
-    public List<User> findAllUsersExcept(long userId) {
+    public List<User> findAllUsersExcept(long userId) throws SQLException {
         List<User> users = new ArrayList<User>();
-        try (Connection connection = DatabaseManager.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(SQL_FIND_ALL_USERS_EXCEPT)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_FIND_ALL_USERS_EXCEPT)) {
             preparedStatement.setLong(1, userId);
-            ResultSet resultSet = preparedStatement.executeQuery();
 
-            User user = null;
-            while (resultSet.next()) {
-                user = getUser(resultSet);
-                users.add(user);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                User user = null;
+                while (resultSet.next()) {
+                    user = getUser(resultSet);
+                    users.add(user);
+                }
             }
-            // LOG.error(users);
-
-            resultSet.close();
-        } catch (SQLException e) {
-            LOG.error("Failed querying all users except (" + userId + ")", e);
         }
 
         return users;
     }
 
     @Override
-    public List<User> findUsers(Set<Long> userIds) {
+    public List<User> findUsers(Set<Long> userIds) throws SQLException {
         List<User> users = new ArrayList<User>();
         String SQL_FIND_USERS_FORMAT = String.format(SQL_FIND_USERS, preparePlaceHolders(userIds.size()));
 
-        try (Connection connection = DatabaseManager.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(SQL_FIND_USERS_FORMAT)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_FIND_USERS_FORMAT)) {
 
             setValues(preparedStatement, userIds.toArray());
-            ResultSet resultSet = preparedStatement.executeQuery();
 
-            User user = null;
-            while (resultSet.next()) {
-                user = getUser(resultSet);
-                users.add(user);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                User user = null;
+                while (resultSet.next()) {
+                    user = getUser(resultSet);
+                    users.add(user);
+                }
             }
-            // LOG.error(users);
-
-            resultSet.close();
-        } catch (SQLException e) {
-            LOG.error("Failed querying all users.", e);
         }
 
         return users;
@@ -145,30 +131,24 @@ public class UserDAOimpl implements UserDAO {
     }
 
     @Override
-    public int updateUser(User user) {
-        int err = -1;
-        try (Connection connection = DatabaseManager.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(SQL_UPDATE_USER)) {
+    public void updateUser(User user) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_UPDATE_USER)) {
             preparedStatement.setString(1, user.getName());
             preparedStatement.setString(2, user.getPassword());
             preparedStatement.setLong(3, user.getId());
 
             preparedStatement.executeUpdate();
-            err = 0;
-        } catch (Exception e) {
-            LOG.error("Failed updating user", e);
         }
-        return err;
     }
 
     private User getUser(PreparedStatement preparedStatement) throws SQLException {
         User user = null;
 
-        ResultSet resultSet = preparedStatement.executeQuery();
-        if (resultSet.next()) {
-            user = getUser(resultSet);
+        try (ResultSet resultSet = preparedStatement.executeQuery()) {
+            if (resultSet.next()) {
+                user = getUser(resultSet);
+            }
         }
-        resultSet.close();
 
         return user;
     }

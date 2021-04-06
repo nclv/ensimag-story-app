@@ -1,6 +1,8 @@
 package actions;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,6 +24,7 @@ import models.Paragraphe;
 import models.ParentSection;
 import models.Story;
 import models.User;
+import utils.DatabaseManager;
 import utils.Path;
 
 public class CreateStoryAction implements Action {
@@ -80,66 +83,75 @@ public class CreateStoryAction implements Action {
 
         // Database
         StoryDAO storyDAO = new StoryDAOimpl();
-        long storyId = storyDAO.saveStory(story);
-        LOG.error(storyId + " " + story);
-        if (storyId == -1) {
-            request.setAttribute("error_message",
-                    "Error when creating your story. Fill the fields and submit your story again.");
-            request.setAttribute("choices", choices);
-            return Path.PAGE_CREATE_STORY;
-        }
-
-        Paragraphe paragraphe = Paragraphe.builder().story_id(storyId).user_id(user.getId()).content(content)
-                .last(is_final).build();
-
         ParagrapheDAO paragrapheDAO = new ParagrapheDAOimpl();
-        long parentParagrapheId = paragrapheDAO.saveParagraphe(paragraphe);
-        LOG.error(parentParagrapheId + " " + paragraphe);
-        if (parentParagrapheId == -1) {
+        ParentSectionDAO parentSectionDAO = new ParentSectionDAOimpl();
+
+        boolean err = false;
+        try (Connection connection = DatabaseManager.getConnection()) {
+            boolean autoCommit = connection.getAutoCommit();
+            connection.setAutoCommit(false);
+
+            StoryDAOimpl.setConnection(connection);
+            ParagrapheDAOimpl.setConnection(connection);
+            ParentSectionDAOimpl.setConnection(connection);
+            try {
+                long storyId = storyDAO.saveStory(story);
+                LOG.error(storyId + " " + story);
+
+                Paragraphe paragraphe = Paragraphe.builder().story_id(storyId).user_id(user.getId()).content(content)
+                        .last(is_final).build();
+
+                long parentParagrapheId = paragrapheDAO.saveParagraphe(paragraphe);
+                LOG.error(parentParagrapheId + " " + paragraphe);
+
+                ParentSection parentSection = ParentSection.builder().story_id(storyId).parent_story_id(storyId)
+                        .parent_paragraphe_id(parentParagrapheId).paragraphe_conditionnel_story_id(storyId)
+                        .paragraphe_conditionnel_id(parentParagrapheId).build();
+                long paragrapheId;
+                paragraphe = Paragraphe.builder().story_id(storyId).user_id(user.getId()).content("NO CONTENT YET")
+                        .build();
+
+                int index = 0;
+                for (String choice : choices) {
+                    paragrapheId = paragrapheDAO.saveParagraphe(paragraphe);
+
+                    parentSection.setChoice_text(choice);
+                    parentSection.setChoice_number(index);
+                    parentSection.setParagraphe_id(paragrapheId);
+
+                    parentSectionDAO.saveParentSection(parentSection);
+
+                    index++;
+                }
+
+                connection.commit();
+                connection.setAutoCommit(autoCommit);
+            } catch (SQLException rollbackError) {
+                rollbackError.printStackTrace();
+                err = true;
+                try {
+                    connection.rollback();
+                } catch (SQLException rbe) {
+                    rollbackError.printStackTrace();
+                }
+            }
+        } catch (SQLException connectionError) {
+            connectionError.printStackTrace();
+            err = true;
+        }
+
+        if (err) {
             request.setAttribute("error_message",
                     "Error when creating your story. Fill the fields and submit your story again.");
             request.setAttribute("choices", choices);
             return Path.PAGE_CREATE_STORY;
         }
 
-        // TODO
         // ajouter un ou plusieurs choix: créer les paragraphes enfants, insérer dans
         // Parent Section
         // parag_condition est le parent (choix inconditionnel) ou un autre paragraphe
         // conditionnel
         // si paragraphe final il est possible de ne pas faire de choix
-
-        ParentSectionDAO parentSectionDAO = new ParentSectionDAOimpl();
-        ParentSection parentSection = ParentSection.builder().story_id(storyId).parent_story_id(storyId)
-                .parent_paragraphe_id(parentParagrapheId).paragraphe_conditionnel_story_id(storyId)
-                .paragraphe_conditionnel_id(parentParagrapheId).build();
-        long paragrapheId;
-        paragraphe = Paragraphe.builder().story_id(storyId).user_id(user.getId()).content("NO CONTENT YET").build();
-
-        int index = 0;
-        for (String choice : choices) {
-            paragrapheId = paragrapheDAO.saveParagraphe(paragraphe);
-            if (paragrapheId == -1) {
-                request.setAttribute("error_message",
-                        "Error when creating your story. Fill the fields and submit your story again.");
-                request.setAttribute("choices", choices);
-                return Path.PAGE_CREATE_STORY;
-            }
-
-            parentSection.setChoice_text(choice);
-            parentSection.setChoice_number(index);
-            parentSection.setParagraphe_id(paragrapheId);
-
-            int err = parentSectionDAO.saveParentSection(parentSection);
-            if (err == -1) {
-                request.setAttribute("error_message",
-                        "Error when creating your story. Fill the fields and submit your story again.");
-                request.setAttribute("choices", choices);
-                return Path.PAGE_CREATE_STORY;
-            }
-
-            index++;
-        }
 
         LOG.debug("CreateStory Action finished");
 

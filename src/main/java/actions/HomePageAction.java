@@ -1,6 +1,8 @@
 package actions;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -12,6 +14,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import models.Story;
+import utils.DatabaseManager;
 import utils.Path;
 
 public class HomePageAction implements Action {
@@ -27,10 +30,19 @@ public class HomePageAction implements Action {
         LOG.error("HomePage Action starts");
         
         StoryDAO storyDAO = new StoryDAOimpl();
-        List<Story> stories = storyDAO.findAllOpenPublishedStories();
-        request.setAttribute("stories", stories);
 
-        List<Story> published_stories = storyDAO.findAllPublishedStories();
+        List<Story> stories = null;
+        List<Story> published_stories = null;
+        try (Connection connection = DatabaseManager.getConnection()) {
+            StoryDAOimpl.setConnection(connection);
+
+            stories = storyDAO.findAllOpenPublishedStories();
+            published_stories = storyDAO.findAllPublishedStories();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        request.setAttribute("stories", stories);
         request.setAttribute("published_stories", published_stories);
         
         LOG.error("HomePage Action finished");        

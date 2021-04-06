@@ -12,7 +12,6 @@ import org.apache.logging.log4j.Logger;
 
 import models.DatabaseFields;
 import models.Paragraphe;
-import utils.DatabaseManager;
 
 public class ParagrapheDAOimpl implements ParagrapheDAO {
 
@@ -25,11 +24,16 @@ public class ParagrapheDAOimpl implements ParagrapheDAO {
 
     private final static String SQL_GET_PARAGRAPHE_ID = "SELECT \"PARAGRAPHE_PARA_ID_SEQ\".currval FROM DUAL";
 
+    private static Connection connection = null;
+
+    public static void setConnection(Connection connection) {
+        ParagrapheDAOimpl.connection = connection;
+    }
+
     @Override
-    public long saveParagraphe(Paragraphe paragraphe) {
+    public long saveParagraphe(Paragraphe paragraphe) throws SQLException {
         long id = -1;
-        try (Connection connection = DatabaseManager.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(SQL_INSERT_PARAGRAPHE)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_INSERT_PARAGRAPHE)) {
             preparedStatement.setLong(1, paragraphe.getStory_id());
             preparedStatement.setLong(2, paragraphe.getUser_id());
             preparedStatement.setString(3, paragraphe.getContent());
@@ -43,35 +47,27 @@ public class ParagrapheDAOimpl implements ParagrapheDAO {
                     id = resultSet.getLong(1);
                 }
             }
-        } catch (Exception e) {
-            LOG.error("Failed inserting paragraphe", e);
         }
 
         return id;
     }
 
     @Override
-    public Paragraphe findParagraphe(long story_id, long paragraphe_id) {
+    public Paragraphe findParagraphe(long story_id, long paragraphe_id) throws SQLException {
         Paragraphe paragraphe = null;
-        try (Connection connection = DatabaseManager.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(SQL_FIND_PARAGRAPHE)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_FIND_PARAGRAPHE)) {
             preparedStatement.setLong(1, story_id);
             preparedStatement.setLong(2, paragraphe_id);
 
             paragraphe = getParagraphe(preparedStatement);
-        } catch (Exception e) {
-            LOG.error("Failed querying paragraphe by (" + DatabaseFields.STORY_ID + ", " + DatabaseFields.PARAGRAPHE_ID
-                    + ")", e);
         }
 
         return paragraphe;
     }
 
     @Override
-    public int updateParagraphe(Paragraphe paragraphe) {
-        int err = -1;
-        try (Connection connection = DatabaseManager.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(SQL_UPDATE_PARAGRAPHE)) {
+    public void updateParagraphe(Paragraphe paragraphe) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_UPDATE_PARAGRAPHE)) {
             preparedStatement.setLong(1, paragraphe.getStory_id());
             preparedStatement.setLong(2, paragraphe.getUser_id());
             preparedStatement.setString(3, paragraphe.getContent());
@@ -79,29 +75,22 @@ public class ParagrapheDAOimpl implements ParagrapheDAO {
             preparedStatement.setLong(5, paragraphe.getId());
 
             preparedStatement.executeUpdate();
-            err = 0;
-        } catch (Exception e) {
-            LOG.error("Failed updating paragraphe", e);
         }
-        return err;
     }
 
     @Override
-    public List<Paragraphe> findAllStoryParagraphes(long story_id) {
+    public List<Paragraphe> findAllStoryParagraphes(long story_id) throws SQLException {
         List<Paragraphe> stories = new ArrayList<Paragraphe>();
-        try (Connection connection = DatabaseManager.getConnection();
-                PreparedStatement preparedStatement = connection.prepareStatement(SQL_FIND_ALL_STORY_PARAGRAPHES)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_FIND_ALL_STORY_PARAGRAPHES)) {
             preparedStatement.setLong(1, story_id);
 
-            ResultSet resultSet = preparedStatement.executeQuery();
-            Paragraphe paragraphe = null;
-            while (resultSet.next()) {
-                paragraphe = getParagraphe(resultSet);
-                stories.add(paragraphe);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                Paragraphe paragraphe = null;
+                while (resultSet.next()) {
+                    paragraphe = getParagraphe(resultSet);
+                    stories.add(paragraphe);
+                }
             }
-            resultSet.close();
-        } catch (SQLException e) {
-            LOG.error("Failed querying story paragraphes", e);
         }
 
         return stories;
@@ -110,19 +99,18 @@ public class ParagrapheDAOimpl implements ParagrapheDAO {
     private Paragraphe getParagraphe(PreparedStatement preparedStatement) throws SQLException {
         Paragraphe paragraphe = null;
 
-        ResultSet resultSet = preparedStatement.executeQuery();
-        if (resultSet.next()) {
-            paragraphe = getParagraphe(resultSet);
+        try (ResultSet resultSet = preparedStatement.executeQuery()) {
+            if (resultSet.next()) {
+                paragraphe = getParagraphe(resultSet);
+            }
         }
-        resultSet.close();
 
         return paragraphe;
     }
 
     private Paragraphe getParagraphe(ResultSet resultSet) throws SQLException {
         return Paragraphe.builder().id(resultSet.getLong(DatabaseFields.PARAGRAPHE_ID))
-                .story_id(resultSet.getLong(DatabaseFields.STORY_ID))
-                .user_id(resultSet.getLong(DatabaseFields.USER_ID))
+                .story_id(resultSet.getLong(DatabaseFields.STORY_ID)).user_id(resultSet.getLong(DatabaseFields.USER_ID))
                 .content(resultSet.getString(DatabaseFields.PARAGRAPHE_CONTENT))
                 .last((resultSet.getInt(DatabaseFields.PARAGRAPHE_IS_FINAL) == 1)).build();
     }

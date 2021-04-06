@@ -1,11 +1,12 @@
 package dao;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import models.Invited;
 
 public interface InvitedDAO {
-    int saveInvited(Invited invited);
-    List<Invited> findAllInvitedUsers(long storyId);
-    int removeInvited(Invited invited);
+    void saveInvited(Invited invited) throws SQLException;
+    List<Invited> findAllInvitedUsers(long storyId) throws SQLException;
+    void removeInvited(Invited invited) throws SQLException;
 }
