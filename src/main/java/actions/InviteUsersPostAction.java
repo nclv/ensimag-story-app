@@ -59,22 +59,37 @@ public class InviteUsersPostAction implements Action {
 
         boolean err = false;
         try (Connection connection = DatabaseManager.getConnection()) {
+            boolean autoCommit = connection.getAutoCommit();
+            connection.setAutoCommit(false);
+
             InvitedDAOimpl.setConnection(connection);
+            try {
+                // Récupération des utilisateurs déja invités
+                Set<Long> alreadyInvitedUserIds = invitedDAO.findAllInvitedUsers(storyId).stream()
+                        .map(Invited::getUser_id).collect(Collectors.toSet());
 
-            // Récupération des utilisateurs déja invités
-            Set<Long> alreadyInvitedUserIds = invitedDAO.findAllInvitedUsers(storyId).stream().map(Invited::getUser_id)
-                    .collect(Collectors.toSet());
+                // On ne garde que les utilisateurs qui ne sont pas déjà invités.
+                Set<Long> nonInvitedUserIds = new HashSet<>(invitedUserIds);
+                nonInvitedUserIds.removeAll(alreadyInvitedUserIds);
 
-            // On ne garde que les utilisateurs qui ne sont pas déjà invités.
-            Set<Long> nonInvitedUserIds = new HashSet<>(invitedUserIds);
-            nonInvitedUserIds.removeAll(alreadyInvitedUserIds);
+                for (long invitedUserId : nonInvitedUserIds) {
+                    invited.setUser_id(invitedUserId);
+                    invitedDAO.saveInvited(invited);
+                }
 
-            for (long invitedUserId : nonInvitedUserIds) {
-                invited.setUser_id(invitedUserId);
-                invitedDAO.saveInvited(invited);
+                connection.commit();
+                connection.setAutoCommit(autoCommit);
+            } catch (SQLException rollbackError) {
+                rollbackError.printStackTrace();
+                err = true;
+                try {
+                    connection.rollback();
+                } catch (SQLException rbe) {
+                    rollbackError.printStackTrace();
+                }
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException connectionError) {
+            connectionError.printStackTrace();
             err = true;
         }
 
