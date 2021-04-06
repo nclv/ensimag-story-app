@@ -15,15 +15,13 @@ public final class Path {
     public static final String PAGE_LOGIN = JSP_PATH_ACCESSIBLE + "login.jsp";
     public static final String PAGE_REGISTER = JSP_PATH_ACCESSIBLE + "register.jsp";
     public static final String PAGE_CREATE_STORY = JSP_PATH_ACCESSIBLE + "authenticated_user/create_story.jsp";
-    /* Only use in ShowUserStoriesAction, use REDIRECT_SHOW_USER_STORIES */
-    public static final String PAGE_SHOW_USER_STORIES = JSP_PATH_PRIVATE + "authenticated_user/show_user_stories.jsp";
-    public static final String PAGE_SHOW_STORY = JSP_PATH_PRIVATE + "show_story.jsp";
     public static final String PAGE_ADD_PARAGRAPHE = JSP_PATH_ACCESSIBLE + "authenticated_user/add_paragraphe.jsp";
     public static final String PAGE_UPDATE_PASSWORD = JSP_PATH_ACCESSIBLE + "authenticated_user/update_password.jsp";
     public static final String PAGE_INVITE_USERS = JSP_PATH_ACCESSIBLE + "authenticated_user/invite_users.jsp";
+    // Private files hidden in WEB-INF
+    public static final String PAGE_SHOW_STORY = JSP_PATH_PRIVATE + "show_story.jsp";
+    public static final String PAGE_SHOW_USER_STORIES = JSP_PATH_PRIVATE + "authenticated_user/show_user_stories.jsp";
     public static final String PAGE_SHOW_PARAGRAPHE = JSP_PATH_PRIVATE + "show_paragraphe.jsp";
-
-    /* Only use in HomePageAction, use REDIRECT_HOME */
     public static final String PAGE_HOME = JSP_PATH_PRIVATE + "index.jsp";
 
     /* Utilisé dans les pages JSP */
@@ -40,5 +38,4 @@ public final class Path {
     public static final String REDIRECT_READ_STORY = "/controller?action=read_story";
     public static final String REDIRECT_REMOVE_INVITED = "/controller?action=remove_invited";
     public static final String REDIRECT_SHOW_PARAGRAPHE = "/controller?action=show_paragraphe";
-
 }
