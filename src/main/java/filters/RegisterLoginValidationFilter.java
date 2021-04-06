@@ -34,7 +34,7 @@ public class RegisterLoginValidationFilter implements Filter {
         
         if (canFilter) {
             String forwardPage = ActionsMap.get(actionName);
-            if (Validation.UsernamePassword(req, resp, forwardPage)) {
+            if (Validation.usernamePassword(req, resp, forwardPage)) {
                 chain.doFilter(req, resp);
             }
         } else {

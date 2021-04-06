@@ -32,8 +32,8 @@ public class ParagrapheIdValidationFilter implements Filter {
         LOG.error(actionName);
         LOG.error(canFilter);
 
-        if (!canFilter || (canFilter && Validation.StoryId(req, resp, Path.PAGE_ERROR)
-                && Validation.ParagrapheId(req, resp, Path.PAGE_ERROR))) {
+        if (!canFilter || (canFilter && Validation.storyId(req, resp, Path.PAGE_ERROR)
+                && Validation.paragrapheId(req, resp, Path.PAGE_ERROR))) {
             chain.doFilter(req, resp);
         }
     }

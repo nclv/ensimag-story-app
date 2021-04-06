@@ -20,7 +20,7 @@ public class Validation {
 
     private static final Logger LOG = LogManager.getLogger();
 
-    public static boolean UsernamePassword(HttpServletRequest req, HttpServletResponse resp, String forwardPage)
+    public static boolean usernamePassword(HttpServletRequest req, HttpServletResponse resp, String forwardPage)
             throws ServletException, IOException {
         String username = req.getParameter("username");
         String password = req.getParameter("password");
@@ -70,7 +70,7 @@ public class Validation {
         return valid;
     }
 
-    public static boolean StoryId(HttpServletRequest req, HttpServletResponse resp, String forwardPage)
+    public static boolean storyId(HttpServletRequest req, HttpServletResponse resp, String forwardPage)
             throws ServletException, IOException {
         String storyIdString = req.getParameter("story_id");
 
@@ -111,7 +111,17 @@ public class Validation {
         return valid;
     }
 
-    public static boolean ParagrapheId(HttpServletRequest req, HttpServletResponse resp, String forwardPage)
+    /**
+     * Require a previous call to Validation.storyId
+     * 
+     * @param req
+     * @param resp
+     * @param forwardPage
+     * @return
+     * @throws ServletException
+     * @throws IOException
+     */
+    public static boolean paragrapheId(HttpServletRequest req, HttpServletResponse resp, String forwardPage)
             throws ServletException, IOException {
 
         String storyIdString = req.getParameter("story_id");
