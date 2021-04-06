@@ -17,28 +17,33 @@ public class ActionsMap {
     static {
         actions.put("GET/invalid", new InvalidAction());
         actions.put("GET/about", (request, response) -> Path.PAGE_ABOUT);
-        actions.put("POST/login", new LoginAction());
-        actions.put("GET/login", (request, response) -> Path.PAGE_LOGIN); // PRG pattern
         actions.put("GET/logout", new LogoutAction());
-        actions.put("POST/register", new RegisterAction());
-        actions.put("POST/create_story", new CreateStoryAction());
-        actions.put("GET/create_story", (request, response) -> Path.PAGE_CREATE_STORY); // PRG pattern
         actions.put("GET/home", new HomePageAction());
-        actions.put("GET/show_user_stories", new ShowUserStoriesAction());
         actions.put("GET/show_story", new ShowStoryAction());
+        actions.put("GET/show_user_stories", new ShowUserStoriesAction());
+        actions.put("GET/show_paragraphe", new ShowParagapheAction());
+        actions.put("GET/read_story", new ReadStoryAction());
+        actions.put("GET/remove_invited", new RemoveInvitedAction());
+
+        actions.put("GET/login", (request, response) -> Path.PAGE_LOGIN); // PRG pattern
+        actions.put("POST/login", new LoginAction());
+        actions.put("GET/register", (request, response) -> Path.PAGE_REGISTER);
+        actions.put("POST/register", new RegisterAction());
+        actions.put("GET/create_story", (request, response) -> Path.PAGE_CREATE_STORY); // PRG pattern
+        actions.put("POST/create_story", new CreateStoryAction());
+        actions.put("GET/add_paragraphe", (request, response) -> Path.PAGE_ADD_PARAGRAPHE);
         actions.put("POST/add_paragraphe", new AddParagrapheAction());
+        actions.put("GET/update_password", (request, response) -> Path.PAGE_UPDATE_PASSWORD);
         actions.put("POST/update_password", new UpdatePasswordAction());
         actions.put("GET/invite_users", new InviteUsersGetAction());
         actions.put("POST/invite_users", new InviteUsersPostAction());
-        actions.put("GET/read_story", new ReadStoryAction());
-        actions.put("GET/remove_invited", new RemoveInvitedAction());
-        actions.put("GET/show_paragraphe", new ShowParagapheAction());
 
         LOG.debug("Command container was successfully initialized");
         LOG.trace("Number of actions --> " + actions.size());
     }
 
-    private ActionsMap () {}
+    private ActionsMap() {
+    }
 
     public static Action get(HttpServletRequest request) {
         String actionName = request.getMethod() + "/" + request.getParameter("action");
