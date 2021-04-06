@@ -29,24 +29,6 @@ public class UpdatePasswordAction implements Action {
         LOG.debug("UpdatePassword Action starts");
 
         String new_password = request.getParameter("new_password");
-        String new_password_confirmation = request.getParameter("new_password_confirmation");
-        // Validation requête
-        if (new_password == null || new_password.trim().isEmpty()) {
-            LOG.error("There is no password --> [" + new_password + "]");
-
-            request.setAttribute("error_message", "Enter a new password.");
-            return Path.PAGE_UPDATE_PASSWORD;
-        } else if (new_password_confirmation == null || new_password_confirmation.trim().isEmpty()) {
-            LOG.error("There is no password confirmation --> [" + new_password_confirmation + "]");
-
-            request.setAttribute("error_message", "Enter a new password confirmation.");
-            return Path.PAGE_UPDATE_PASSWORD;
-        } else if (!new_password.trim().equals(new_password_confirmation.trim())) {
-            LOG.error("Different passwords --> [" + new_password_confirmation + ", " + new_password + "]");
-
-            request.setAttribute("error_message", "Enter the same password twice.");
-            return Path.PAGE_UPDATE_PASSWORD;
-        }
 
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");

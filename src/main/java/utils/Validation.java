@@ -40,6 +40,34 @@ public class Validation {
         return valid;
     }
 
+    public static boolean updatePassword(HttpServletRequest req, HttpServletResponse resp, String forwardPage)
+            throws ServletException, IOException {
+        String new_password = req.getParameter("new_password");
+        String new_password_confirmation = req.getParameter("new_password_confirmation");
+        // Validation requête
+        boolean valid = true;
+        if (new_password == null || new_password.trim().isEmpty()) {
+            LOG.error("There is no password --> [" + new_password + "]");
+            valid = false;
+
+            req.setAttribute("error_message", "Enter a new password.");
+            req.getRequestDispatcher(forwardPage).include(req, resp);
+        } else if (new_password_confirmation == null || new_password_confirmation.trim().isEmpty()) {
+            LOG.error("There is no password confirmation --> [" + new_password_confirmation + "]");
+            valid = false;
+
+            req.setAttribute("error_message", "Enter a new password confirmation.");
+            req.getRequestDispatcher(forwardPage).include(req, resp);
+        } else if (!new_password.trim().equals(new_password_confirmation.trim())) {
+            LOG.error("Different passwords --> [" + new_password_confirmation + ", " + new_password + "]");
+            valid = false;
+
+            req.setAttribute("error_message", "Enter the same password twice.");
+            req.getRequestDispatcher(forwardPage).include(req, resp);
+        }
+        return valid;
+    }
+
     public static boolean StoryId(HttpServletRequest req, HttpServletResponse resp, String forwardPage)
             throws ServletException, IOException {
         String storyIdString = req.getParameter("story_id");
@@ -77,7 +105,7 @@ public class Validation {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        
+
         return valid;
     }
 }
