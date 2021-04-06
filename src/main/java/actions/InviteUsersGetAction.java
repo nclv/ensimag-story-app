@@ -38,21 +38,7 @@ public class InviteUsersGetAction implements Action {
 
         // Récupération de l'ID de la story
         String storyIdString = request.getParameter("story_id");
-        if (storyIdString == null || storyIdString.trim().isEmpty()) {
-            LOG.error("Null story_id --> [" + storyIdString + "].");
-
-            request.setAttribute("error_message", "story_id is null.");
-            return Path.PAGE_ERROR;
-        }
-        long storyId;
-        try {
-            storyId = Long.parseLong(storyIdString);
-        } catch (NumberFormatException e) {
-            LOG.error("story_id --> [" + storyIdString + "].");
-
-            request.setAttribute("error_message", "story_id is not a number.");
-            return Path.PAGE_ERROR;
-        }
+        long storyId = Long.parseLong(storyIdString);
         
         StoryDAO storyDAO = new StoryDAOimpl();
         Story story = null;

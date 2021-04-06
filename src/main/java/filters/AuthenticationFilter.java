@@ -36,15 +36,15 @@ public class AuthenticationFilter implements Filter {
         // actionName après login
         String actionName = req.getParameter("action");
         boolean loginNeeded = ActionsMap.authenticatedActionsContains(actionName);
-        if (actionName == null) {
+        if (actionName == null && !req.getRequestURI().contains("/controller")) {
             actionName = FilenameUtils.getBaseName(req.getRequestURI());
             loginNeeded = true; // on doit se login pour toute page de /jsp/authenticated_user/
         }
-        // LOG.error(actionName);
-        // LOG.error(loginNeeded);
+        LOG.error(actionName);
+        LOG.error(loginNeeded);
 
         boolean loggedIn = session != null && session.getAttribute("user") != null;
-        // LOG.error(loggedIn);
+        LOG.error(loggedIn);
         if (loggedIn || !loginNeeded) {
             chain.doFilter(req, resp);
         } else {

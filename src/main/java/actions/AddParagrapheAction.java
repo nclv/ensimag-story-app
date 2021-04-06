@@ -58,21 +58,7 @@ public class AddParagrapheAction implements Action {
         }
 
         String storyIdString = request.getParameter("story_id");
-        if (storyIdString == null || storyIdString.trim().isEmpty()) {
-            LOG.error("Null story_id --> [" + storyIdString + "].");
-
-            request.setAttribute("error_message", "story_id is null.");
-            return Path.PAGE_ERROR;
-        }
-        long storyId;
-        try {
-            storyId = Long.parseLong(storyIdString);
-        } catch (NumberFormatException e) {
-            LOG.error("story_id --> [" + storyIdString + "].");
-
-            request.setAttribute("error_message", "story_id is not a number.");
-            return Path.PAGE_ERROR;
-        }
+        long storyId = Long.parseLong(storyIdString);
 
         Paragraphe paragraphe = Paragraphe.builder().story_id(storyId).user_id(user.getId()).content(content)
                 .last(is_final).build();

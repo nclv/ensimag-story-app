@@ -33,12 +33,6 @@ public class ShowUserStoriesAction implements Action {
 
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
-
-        // for POST request on /controller?action=create_story
-        // if (user == null) {
-        //     request.setAttribute("error_message", "There is no connected user.");
-        //     return Path.PAGE_ERROR;
-        // }
         LOG.error(user);
         
         StoryDAO storyDAO = new StoryDAOimpl();

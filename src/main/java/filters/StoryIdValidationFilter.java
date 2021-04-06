@@ -17,7 +17,7 @@ import utils.Path;
 import utils.Validation;
 
 @WebFilter("/controller")
-public class RegisterValidationFilter implements Filter {
+public class StoryIdValidationFilter implements Filter {
 
     private static final Logger LOG = LogManager.getLogger();
 
@@ -28,11 +28,13 @@ public class RegisterValidationFilter implements Filter {
         HttpServletResponse resp = (HttpServletResponse) response;
 
         String actionName = req.getMethod() + "/" + req.getParameter("action");
-        boolean canFilter = actionName.equals("POST/register");
+        boolean canFilter = actionName.equals("GET/invite_users") || actionName.equals("POST/invite_users")
+                || actionName.equals("GET/show_story") || actionName.equals("GET/remove_invited")
+                || actionName.equals("POST/add_paragraphe");
         LOG.error(actionName);
         LOG.error(canFilter);
 
-        if (!canFilter || (canFilter && Validation.UsernamePassword(req, resp, Path.PAGE_REGISTER))) {
+        if (!canFilter || (canFilter && Validation.StoryId(req, resp, Path.PAGE_ERROR))) {
             chain.doFilter(req, resp);
         }
     }

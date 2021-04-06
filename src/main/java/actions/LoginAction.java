@@ -35,20 +35,6 @@ public class LoginAction implements Action {
         String redirect = request.getParameter("redirect");
         LOG.error(redirect);
 
-        // Validation requête
-        // return to prevent database access
-        if (username == null || username.trim().isEmpty()) {
-            LOG.error("There is no username --> [" + username + "]");
-
-            request.setAttribute("error_message", "Enter an user name.");
-            return Path.PAGE_LOGIN;
-        } else if (password == null || password.trim().isEmpty()) {
-            LOG.error("There is no password --> [" + username + "]");
-
-            request.setAttribute("error_message", "Enter a password.");
-            return Path.PAGE_LOGIN;
-        }
-
         UserDAO userDao = new UserDAOimpl();
 
         User user = null;

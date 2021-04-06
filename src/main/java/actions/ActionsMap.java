@@ -16,8 +16,10 @@ public class ActionsMap {
 
     private static final Map<String, Action> actions = new HashMap<>();
     private static final List<String> authenticatedActions = new ArrayList<>();
+    private static final Map<String, String> actionsPages = new HashMap<>();
 
     static {
+        // Interfaces Action
         actions.put("GET/invalid", new InvalidAction());
         actions.put("GET/about", (request, response) -> Path.PAGE_ABOUT);
         actions.put("GET/logout", new LogoutAction());
@@ -41,6 +43,10 @@ public class ActionsMap {
         actions.put("GET/invite_users", new InviteUsersGetAction());
         actions.put("POST/invite_users", new InviteUsersPostAction());
 
+        // Pages source des actions pour la redirection lors de la validation
+        actionsPages.put("POST/login", Path.PAGE_LOGIN);
+        actionsPages.put("POST/register", Path.PAGE_REGISTER);
+
         authenticatedActions.add("add_paragraphe");
         authenticatedActions.add("create_story");
         authenticatedActions.add("invite_users");
@@ -63,7 +69,7 @@ public class ActionsMap {
         String actionName = request.getMethod() + "/" + request.getParameter("action");
         LOG.error("Action: " + actionName);
 
-        if (actionName.isEmpty())
+        if (request.getParameter("action").isEmpty())
             return actions.get("GET/about");
         if (!actions.containsKey(actionName)) {
             LOG.trace("Command not found, name --> " + actionName);
@@ -73,8 +79,11 @@ public class ActionsMap {
         return actions.get(actionName);
     }
 
+    public static String get(String actionName) {
+        return actionsPages.get(actionName);
+    }
+
     public static boolean contains(String actionName) {
         return actions.get(actionName) != null;
     }
-
 }

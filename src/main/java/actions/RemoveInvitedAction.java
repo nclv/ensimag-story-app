@@ -25,24 +25,23 @@ public class RemoveInvitedAction implements Action {
     public String execute(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
 
-        String userIdString = request.getParameter("user_id");
         String storyIdString = request.getParameter("story_id");
-        if (storyIdString == null || storyIdString.trim().isEmpty() || userIdString == null
-                || userIdString.trim().isEmpty()) {
-            LOG.error("Null story_id or user_id--> [" + storyIdString + ", " + userIdString + "].");
+        long storyId = Long.parseLong(storyIdString);
 
-            request.setAttribute("error_message", "story_id or user_id is null.");
+        String userIdString = request.getParameter("user_id");
+        if (userIdString == null || userIdString.trim().isEmpty()) {
+            LOG.error("Null user_id--> [" + userIdString + "].");
+
+            request.setAttribute("error_message", "user_id is null.");
             return Path.PAGE_ERROR;
         }
-        long storyId;
         long userId;
         try {
-            storyId = Long.parseLong(storyIdString);
             userId = Long.parseLong(userIdString);
         } catch (NumberFormatException e) {
-            LOG.error("story_id, user_id --> [" + storyIdString + ", " + userIdString + "].");
+            LOG.error("user_id --> [" + userIdString + "].");
 
-            request.setAttribute("error_message", "story_id or user_id is/are not a number.");
+            request.setAttribute("error_message", "user_id is/are not a number.");
             return Path.PAGE_ERROR;
         }
 
@@ -53,13 +52,13 @@ public class RemoveInvitedAction implements Action {
         boolean err = false;
         try (Connection connection = DatabaseManager.getConnection()) {
             InvitedDAOimpl.setConnection(connection);
-            
+
             invitedDAO.removeInvited(invited);
         } catch (SQLException e) {
             e.printStackTrace();
             err = true;
         }
-        
+
         if (err) {
             LOG.error("Couldn't remove invited user. " + invited);
 

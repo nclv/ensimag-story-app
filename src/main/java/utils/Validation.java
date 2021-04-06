@@ -1,13 +1,18 @@
 package utils;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import dao.StoryDAO;
+import dao.StoryDAOimpl;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import models.Story;
 
 public class Validation {
 
@@ -32,6 +37,47 @@ public class Validation {
             req.setAttribute("error_message", "Enter a password.");
             req.getRequestDispatcher(forwardPage).include(req, resp);
         }
+        return valid;
+    }
+
+    public static boolean StoryId(HttpServletRequest req, HttpServletResponse resp, String forwardPage)
+            throws ServletException, IOException {
+        String storyIdString = req.getParameter("story_id");
+
+        boolean valid = true;
+        if (storyIdString == null || storyIdString.trim().isEmpty()) {
+            LOG.error("Null story_id --> [" + storyIdString + "].");
+            valid = false;
+
+            req.setAttribute("error_message", "story_id is null.");
+            req.getRequestDispatcher(forwardPage).include(req, resp);
+        }
+        long storyId = -1;
+        try {
+            storyId = Long.parseLong(storyIdString);
+        } catch (NumberFormatException e) {
+            LOG.error("story_id --> [" + storyIdString + "].");
+            valid = false;
+
+            req.setAttribute("error_message", "story_id is not a number.");
+            req.getRequestDispatcher(forwardPage).include(req, resp);
+        }
+
+        StoryDAO storyDAO = new StoryDAOimpl();
+        try (Connection connection = DatabaseManager.getConnection()) {
+            StoryDAOimpl.setConnection(connection);
+
+            if (storyDAO.findStory(storyId) == null) {
+                LOG.error("story_id --> [" + storyIdString + "] doesn't exist.");
+                valid = false;
+
+                req.setAttribute("error_message", "story_id doesn't exist.");
+                req.getRequestDispatcher(forwardPage).include(req, resp);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        
         return valid;
     }
 }
