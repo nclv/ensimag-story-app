@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
@@ -31,10 +32,10 @@ public class UserDAOimpl implements UserDAO {
 
     private final static String SQL_GET_USER_ID = "SELECT \"USER_USER_ID_SEQ\".currval FROM DUAL";
 
-    private static Connection connection = null;
+    private Connection connection = null;
 
-    public static void setConnection(Connection connection) {
-        UserDAOimpl.connection = connection;
+    public UserDAOimpl(Connection connection) {
+        this.connection = connection;
     }
 
     @Override
@@ -58,7 +59,7 @@ public class UserDAOimpl implements UserDAO {
     }
 
     @Override
-    public User findUser(String username) throws SQLException {
+    public Optional<User> findUser(String username) throws SQLException {
         User user = null;
         try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_FIND_USER_USERNAME)) {
             preparedStatement.setString(1, username);
@@ -66,11 +67,11 @@ public class UserDAOimpl implements UserDAO {
             user = getUser(preparedStatement);
         }
 
-        return user;
+        return Optional.ofNullable(user);
     }
 
     @Override
-    public User findUser(long id) throws SQLException {
+    public Optional<User> findUser(long id) throws SQLException {
         User user = null;
         try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_FIND_USER_USER_ID)) {
             preparedStatement.setLong(1, id);
@@ -78,7 +79,7 @@ public class UserDAOimpl implements UserDAO {
             user = getUser(preparedStatement);
         }
 
-        return user;
+        return Optional.ofNullable(user);
     }
 
     @Override

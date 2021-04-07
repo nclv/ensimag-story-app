@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,10 +28,10 @@ public class StoryDAOimpl implements StoryDAO {
 
     private final static String SQL_GET_STORY_ID = "SELECT \"STORY_STORY_ID_SEQ\".currval FROM DUAL";
 
-    private static Connection connection = null;
+    private Connection connection = null;
 
-    public static void setConnection(Connection connection) {
-        StoryDAOimpl.connection = connection;
+    public StoryDAOimpl(Connection connection) {
+        this.connection = connection;
     }
 
     @Override
@@ -55,7 +56,7 @@ public class StoryDAOimpl implements StoryDAO {
     }
 
     @Override
-    public Story findStory(long id) throws SQLException {
+    public Optional<Story> findStory(long id) throws SQLException {
         Story story = null;
         try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_FIND_STORY_STORY_ID)) {
             preparedStatement.setLong(1, id);
@@ -63,7 +64,7 @@ public class StoryDAOimpl implements StoryDAO {
             story = getStory(preparedStatement);
         }
 
-        return story;
+        return Optional.ofNullable(story);
     }
 
     @Override

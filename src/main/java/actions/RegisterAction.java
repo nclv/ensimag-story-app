@@ -2,19 +2,20 @@ package actions;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.SQLException;
+import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.mindrot.jbcrypt.BCrypt;
 
+import dao.DAOManager;
 import dao.UserDAO;
-import dao.UserDAOimpl;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import models.User;
 import utils.DatabaseManager;
+import utils.ErrorMessage;
 import utils.Path;
 
 public class RegisterAction implements Action {
@@ -33,32 +34,36 @@ public class RegisterAction implements Action {
         password = BCrypt.hashpw(password, BCrypt.gensalt());
         User user = User.builder().name(username).password(password).build();
 
-        UserDAO userDao = new UserDAOimpl();
+        // Database operations
+        Optional<Connection> connection = DatabaseManager.getConnection();
+        if (connection.isEmpty()) {
+            request.setAttribute("error_message", ErrorMessage.get("connection_error"));
+            return Path.PAGE_ERROR;
+        }
 
-        long userId = -1;
-        try (Connection connection = DatabaseManager.getConnection()) {
-            UserDAOimpl.setConnection(connection);
+        DAOManager daoManager = new DAOManager(connection.get());
 
-            userId = userDao.saveUser(user);
+        Optional<Object> result = daoManager.executeAndClose((daoFactory) -> {
+            UserDAO userDAO = daoFactory.getUserDAO();
+
+            long userId = userDAO.saveUser(user);
             LOG.error(userId + " " + user);
-        } catch (SQLException e) {
-            e.printStackTrace();
+            LOG.trace("User with id=" + userId + " was saved to the DB");
+
+            return true;
+        });
+        if (result.isEmpty()) {
+            // Database error: already used username or another SQLException
+            LOG.error("You need to change your username --> [" + username + "]");
+
+            request.setAttribute("error_message", ErrorMessage.get("username_used"));
+            return Path.PAGE_REGISTER;
         }
 
-        // Validation database
-        String forward = Path.REDIRECT_LOGIN;
-        if (userId == -1) {
-            LOG.error("You need to change your username --> [" + username + " " + userId + "]");
-
-            request.setAttribute("error_message", username + " is already used.");
-            forward = Path.PAGE_REGISTER;
-        }
-
-        LOG.trace("User with id=" + userId + " was saved to the DB");
         LOG.info("User [username --> [" + username + "], [password --> " + password + "] successfully signed up");
         LOG.debug("Register Action finished");
 
-        return forward;
+        return Path.REDIRECT_LOGIN;
     }
 
 }

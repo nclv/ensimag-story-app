@@ -21,10 +21,10 @@ public class InvitedDAOimpl implements InvitedDAO {
     private final static String SQL_FIND_INVITED_STORY_ID = "SELECT * FROM \"Invited\" WHERE \"story_id\"=?";
     private final static String SQL_REMOVE_INVITED = "DELETE FROM \"Invited\" WHERE \"user_id\"=? AND \"story_id\"=?";
 
-    private static Connection connection = null;
+    private Connection connection = null;
 
-    public static void setConnection(Connection connection) {
-        InvitedDAOimpl.connection = connection;
+    public InvitedDAOimpl(Connection connection) {
+        this.connection = connection;
     }
 
     @Override

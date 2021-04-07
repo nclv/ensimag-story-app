@@ -2,14 +2,14 @@ package actions;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import dao.DAOManager;
 import dao.StoryDAO;
-import dao.StoryDAOimpl;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,6 +17,7 @@ import jakarta.servlet.http.HttpSession;
 import models.Story;
 import models.User;
 import utils.DatabaseManager;
+import utils.ErrorMessage;
 import utils.Path;
 
 public class ShowUserStoriesAction implements Action {
@@ -35,18 +36,27 @@ public class ShowUserStoriesAction implements Action {
         User user = (User) session.getAttribute("user");
         LOG.error(user);
         
-        StoryDAO storyDAO = new StoryDAOimpl();
-
-        List<Story> stories = null;
-        try (Connection connection = DatabaseManager.getConnection()) {
-            StoryDAOimpl.setConnection(connection);
-            
-            stories = storyDAO.findStories(user.getId());
-        } catch (SQLException e) {
-            e.printStackTrace();
+        // Database operations
+        Optional<Connection> connection = DatabaseManager.getConnection();
+        if (connection.isEmpty()) {
+            request.setAttribute("error_message", ErrorMessage.get("connection_error"));
+            return Path.PAGE_ERROR;
         }
 
-        request.setAttribute("stories", stories);
+        DAOManager daoManager = new DAOManager(connection.get());
+
+        Optional<Object> result = daoManager.executeAndClose((daoFactory) -> {
+            StoryDAO storyDAO = daoFactory.getStoryDAO();
+
+            List<Story> stories = storyDAO.findStories(user.getId());
+
+            request.setAttribute("stories", stories);
+            return true;
+        });
+        if (result.isEmpty()) {
+            request.setAttribute("error_message", ErrorMessage.get("database_query_error"));
+            return Path.PAGE_ERROR;
+        }
         
         LOG.error("ShowUserStories Action finished");        
 

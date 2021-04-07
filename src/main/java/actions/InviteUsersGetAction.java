@@ -2,16 +2,15 @@ package actions;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import dao.DAOManager;
 import dao.StoryDAO;
-import dao.StoryDAOimpl;
 import dao.UserDAO;
-import dao.UserDAOimpl;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,6 +18,7 @@ import jakarta.servlet.http.HttpSession;
 import models.Story;
 import models.User;
 import utils.DatabaseManager;
+import utils.ErrorMessage;
 import utils.Path;
 
 public class InviteUsersGetAction implements Action {
@@ -39,34 +39,41 @@ public class InviteUsersGetAction implements Action {
         // Récupération de l'ID de la story
         String storyIdString = request.getParameter("story_id");
         long storyId = Long.parseLong(storyIdString);
-        
-        StoryDAO storyDAO = new StoryDAOimpl();
-        Story story = null;
-        try (Connection connection = DatabaseManager.getConnection()) {
-            StoryDAOimpl.setConnection(connection);
 
-            story = storyDAO.findStory(storyId);
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        
-        if (story != null && story.isOpen()) {
-            LOG.error("Open story.");
-
-            request.setAttribute("error_message", "The story is open. Everyone is invited.");
+        // Database operations
+        Optional<Connection> connection = DatabaseManager.getConnection();
+        if (connection.isEmpty()) {
+            request.setAttribute("error_message", ErrorMessage.get("connection_error"));
             return Path.PAGE_ERROR;
         }
 
-        UserDAO userDAO = new UserDAOimpl();
-        List<User> users = null;
-        try (Connection connection = DatabaseManager.getConnection()) {
-            UserDAOimpl.setConnection(connection);
-            
-            users = userDAO.findAllUsersExcept(connectedUser.getId());
-        } catch (SQLException e) {
-            e.printStackTrace();
+        DAOManager daoManager = new DAOManager(connection.get());
+
+        Optional<Object> result = daoManager.executeAndClose((daoFactory) -> {
+            StoryDAO storyDAO = daoFactory.getStoryDAO();
+            UserDAO userDAO = daoFactory.getUserDAO();
+
+            Optional<Story> story = storyDAO.findStory(storyId);
+            List<User> users = userDAO.findAllUsersExcept(connectedUser.getId());
+            request.setAttribute("users", users);
+
+            boolean valid = true;
+            if (story.isPresent() && story.get().isOpen()) {
+                LOG.error("Open story.");
+
+                request.setAttribute("error_message", ErrorMessage.get("open_story"));
+                valid = false;
+            }
+
+            return valid;
+        });
+        if (result.isEmpty()) {
+            request.setAttribute("error_message", ErrorMessage.get("database_query_error"));
+            return Path.PAGE_ERROR;
         }
-        request.setAttribute("users", users);
+        if (!(boolean) result.get()) {
+            return Path.PAGE_ERROR;
+        }
 
         LOG.error("InviteUsersGet Action finished");
 

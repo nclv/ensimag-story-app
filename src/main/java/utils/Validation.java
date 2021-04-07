@@ -2,23 +2,32 @@ package utils;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.SQLException;
+import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import dao.DAOManager;
 import dao.ParagrapheDAO;
-import dao.ParagrapheDAOimpl;
 import dao.StoryDAO;
-import dao.StoryDAOimpl;
+import dao.UserDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import models.Story;
 
-public class Validation {
+public final class Validation {
 
     private static final Logger LOG = LogManager.getLogger();
+
+    private static void setErrorMessageAndDispatch(HttpServletRequest req, HttpServletResponse resp, String forwardPage,
+            String errorMessage) throws ServletException, IOException {
+        req.setAttribute("error_message", errorMessage);
+        req.getRequestDispatcher(forwardPage).include(req, resp);
+    }
+
+    public static boolean emptyString(String string) {
+        return string == null || string.trim().isEmpty();
+    }
 
     public static boolean usernamePassword(HttpServletRequest req, HttpServletResponse resp, String forwardPage)
             throws ServletException, IOException {
@@ -26,18 +35,16 @@ public class Validation {
         String password = req.getParameter("password");
         // Validation requête
         boolean valid = true;
-        if (username == null || username.trim().isEmpty()) {
-            LOG.error("There is no username --> [" + username + "]");
+        if (emptyString(username)) {
+            LOG.error("There is no username --> [" + username + "].");
             valid = false;
 
-            req.setAttribute("error_message", "Enter an user name.");
-            req.getRequestDispatcher(forwardPage).include(req, resp);
-        } else if (password == null || password.trim().isEmpty()) {
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("username_empty"));
+        } else if (emptyString(password)) {
             LOG.error("There is no password --> [" + username + "]");
             valid = false;
 
-            req.setAttribute("error_message", "Enter a password.");
-            req.getRequestDispatcher(forwardPage).include(req, resp);
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("password_empty"));
         }
         return valid;
     }
@@ -48,67 +55,121 @@ public class Validation {
         String new_password_confirmation = req.getParameter("new_password_confirmation");
         // Validation requête
         boolean valid = true;
-        if (new_password == null || new_password.trim().isEmpty()) {
+        if (emptyString(new_password)) {
             LOG.error("There is no password --> [" + new_password + "]");
             valid = false;
 
-            req.setAttribute("error_message", "Enter a new password.");
-            req.getRequestDispatcher(forwardPage).include(req, resp);
-        } else if (new_password_confirmation == null || new_password_confirmation.trim().isEmpty()) {
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("new_password_empty"));
+        } else if (emptyString(new_password_confirmation)) {
             LOG.error("There is no password confirmation --> [" + new_password_confirmation + "]");
             valid = false;
 
-            req.setAttribute("error_message", "Enter a new password confirmation.");
-            req.getRequestDispatcher(forwardPage).include(req, resp);
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("new_password_confirmation_empty"));
         } else if (!new_password.trim().equals(new_password_confirmation.trim())) {
             LOG.error("Different passwords --> [" + new_password_confirmation + ", " + new_password + "]");
             valid = false;
 
-            req.setAttribute("error_message", "Enter the same password twice.");
-            req.getRequestDispatcher(forwardPage).include(req, resp);
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("password_confirmation_error"));
         }
         return valid;
+    }
+
+    public static boolean userId(HttpServletRequest req, HttpServletResponse resp, String forwardPage)
+            throws ServletException, IOException {
+
+        String userIdString = req.getParameter("user_id");
+        if (emptyString(userIdString)) {
+            LOG.error("Null user_id--> [" + userIdString + "].");
+
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("userId_empty"));
+            return false;
+        }
+        long userId;
+        try {
+            userId = Long.parseLong(userIdString);
+        } catch (NumberFormatException e) {
+            LOG.error("user_id --> [" + userIdString + "].");
+
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("userId_non_numeric"));
+            return false;
+        }
+
+        Optional<Connection> connection = DatabaseManager.getConnection();
+        if (connection.isEmpty()) {
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("connection_error"));
+            return false;
+        }
+
+        DAOManager daoManager = new DAOManager(connection.get());
+
+        final long userIdFinal = userId;
+        Optional<Object> result = daoManager.executeAndClose((daoFactory) -> {
+            UserDAO userDAO = daoFactory.getUserDAO();
+            return userDAO.findUser(userIdFinal).isPresent();
+        });
+        if (result.isEmpty()) {
+            LOG.error("Database query error.");
+
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("database_query_error"));
+            return false;
+        }
+        if (!(boolean) result.get()) {
+            LOG.error("user_id --> [" + userIdString + "] doesn't exist.");
+
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("userId_inexistent"));
+            return false;
+        }
+
+        return true;
     }
 
     public static boolean storyId(HttpServletRequest req, HttpServletResponse resp, String forwardPage)
             throws ServletException, IOException {
         String storyIdString = req.getParameter("story_id");
 
-        boolean valid = true;
-        if (storyIdString == null || storyIdString.trim().isEmpty()) {
+        if (emptyString(storyIdString)) {
             LOG.error("Null story_id --> [" + storyIdString + "].");
-            valid = false;
 
-            req.setAttribute("error_message", "story_id is null.");
-            req.getRequestDispatcher(forwardPage).include(req, resp);
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("storyId_empty"));
+            return false;
         }
-        long storyId = -1;
+        long storyId;
         try {
             storyId = Long.parseLong(storyIdString);
         } catch (NumberFormatException e) {
             LOG.error("story_id --> [" + storyIdString + "].");
-            valid = false;
 
-            req.setAttribute("error_message", "story_id is not a number.");
-            req.getRequestDispatcher(forwardPage).include(req, resp);
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("storyId_non_numeric"));
+            return false;
         }
 
-        StoryDAO storyDAO = new StoryDAOimpl();
-        try (Connection connection = DatabaseManager.getConnection()) {
-            StoryDAOimpl.setConnection(connection);
-
-            if (storyDAO.findStory(storyId) == null) {
-                LOG.error("story_id --> [" + storyIdString + "] doesn't exist.");
-                valid = false;
-
-                req.setAttribute("error_message", "story_id doesn't exist.");
-                req.getRequestDispatcher(forwardPage).include(req, resp);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        Optional<Connection> connection = DatabaseManager.getConnection();
+        if (connection.isEmpty()) {
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("connection_error"));
+            return false;
         }
 
-        return valid;
+        DAOManager daoManager = new DAOManager(connection.get());
+
+        final long storyIdFinal = storyId;
+        Optional<Object> result = daoManager.executeAndClose((daoFactory) -> {
+            StoryDAO storyDAO = daoFactory.getStoryDAO();
+            return storyDAO.findStory(storyIdFinal).isPresent();
+        });
+        if (result.isEmpty()) {
+            LOG.error("Database query error.");
+
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("database_query_error"));
+            return false;
+        }
+        if (!(boolean) result.get()) {
+            LOG.error("story_id --> [" + storyIdString + "] doesn't exist.");
+
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("storyId_inexistent"));
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -125,44 +186,52 @@ public class Validation {
             throws ServletException, IOException {
 
         String storyIdString = req.getParameter("story_id");
-        long storyId = Long.parseLong(storyIdString);
+        final long storyId = Long.parseLong(storyIdString);
 
         String paragrapheIdString = req.getParameter("paragraphe_id");
 
-        boolean valid = true;
-        if (paragrapheIdString == null || paragrapheIdString.trim().isEmpty()) {
+        if (emptyString(paragrapheIdString)) {
             LOG.error("Null paragraphe_id --> [" + paragrapheIdString + "].");
-            valid = false;
 
-            req.setAttribute("error_message", "paragraphe_id is null.");
-            req.getRequestDispatcher(forwardPage).include(req, resp);
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("paragrapheId_empty"));
+            return false;
         }
-        long paragrapheId = -1;
+        long paragrapheId;
         try {
             paragrapheId = Long.parseLong(paragrapheIdString);
         } catch (NumberFormatException e) {
             LOG.error("paragraphe_id --> [" + paragrapheIdString + "].");
-            valid = false;
 
-            req.setAttribute("error_message", "paragraphe_id is not a number.");
-            req.getRequestDispatcher(forwardPage).include(req, resp);
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("paragrapheId_non_numeric"));
+            return false;
         }
 
-        ParagrapheDAO paragrapheDAO = new ParagrapheDAOimpl();
-        try (Connection connection = DatabaseManager.getConnection()) {
-            ParagrapheDAOimpl.setConnection(connection);
-
-            if (paragrapheDAO.findParagraphe(storyId, paragrapheId) == null) {
-                LOG.error("story_id, paragraphe_id --> [" + storyId + ", " + paragrapheIdString + "] doesn't exist.");
-                valid = false;
-
-                req.setAttribute("error_message", "story_id, paragraphe_id doesn't exist.");
-                req.getRequestDispatcher(forwardPage).include(req, resp);
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        Optional<Connection> connection = DatabaseManager.getConnection();
+        if (connection.isEmpty()) {
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("connection_error"));
+            return false;
         }
 
-        return valid;
+        DAOManager daoManager = new DAOManager(connection.get());
+
+        final long paragrapheIdFinal = paragrapheId;
+        Optional<Object> result = daoManager.executeAndClose((daoFactory) -> {
+            ParagrapheDAO paragrapheDAO = daoFactory.getParagrapheDAO();
+            return !paragrapheDAO.findParagraphe(storyId, paragrapheIdFinal).isEmpty();
+        });
+        if (result.isEmpty()) {
+            LOG.error("Database query error.");
+
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("database_query_error"));
+            return false;
+        }
+        if (!(boolean) result.get()) {
+            LOG.error("story_id, paragraphe_id --> [" + storyId + ", " + paragrapheIdString + "] doesn't exist.");
+
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("paragrapheId_inexistent"));
+            return false;
+        }
+
+        return true;
     }
 }

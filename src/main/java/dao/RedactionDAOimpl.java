@@ -3,9 +3,9 @@ package dao;
 import java.sql.Connection;
 
 public class RedactionDAOimpl implements RedactionDAO {
-    private static Connection connection = null;
+    private Connection connection = null;
 
-    public static void setConnection(Connection connection) {
-        RedactionDAOimpl.connection = connection;
+    public RedactionDAOimpl(Connection connection) {
+        this.connection = connection;
     }
 }

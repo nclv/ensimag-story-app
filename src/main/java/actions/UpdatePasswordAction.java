@@ -2,20 +2,21 @@ package actions;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.SQLException;
+import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.mindrot.jbcrypt.BCrypt;
 
+import dao.DAOManager;
 import dao.UserDAO;
-import dao.UserDAOimpl;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import models.User;
 import utils.DatabaseManager;
+import utils.ErrorMessage;
 import utils.Path;
 
 public class UpdatePasswordAction implements Action {
@@ -36,20 +37,24 @@ public class UpdatePasswordAction implements Action {
         String password = BCrypt.hashpw(new_password, BCrypt.gensalt());
         user.setPassword(password);
 
-        UserDAO userDao = new UserDAOimpl();
-
-        boolean err = false;
-        try (Connection connection = DatabaseManager.getConnection()) {
-            UserDAOimpl.setConnection(connection);
-            
-            userDao.updateUser(user);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            err = true;
+        // Database operations
+        Optional<Connection> connection = DatabaseManager.getConnection();
+        if (connection.isEmpty()) {
+            request.setAttribute("error_message", ErrorMessage.get("connection_error"));
+            return Path.PAGE_ERROR;
         }
-        
-        if (err) {
-            request.setAttribute("error_message", "Database error. Please retry.");
+
+        DAOManager daoManager = new DAOManager(connection.get());
+
+        Optional<Object> result = daoManager.executeAndClose((daoFactory) -> {
+            UserDAO userDAO = daoFactory.getUserDAO();
+
+            userDAO.updateUser(user);
+
+            return true;
+        });
+        if (result.isEmpty()) {
+            request.setAttribute("error_message", ErrorMessage.get("database_update_password_error"));
             return Path.PAGE_UPDATE_PASSWORD;
         }
 

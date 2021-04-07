@@ -2,19 +2,20 @@ package actions;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import dao.DAOManager;
 import dao.StoryDAO;
-import dao.StoryDAOimpl;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import models.Story;
 import utils.DatabaseManager;
+import utils.ErrorMessage;
 import utils.Path;
 
 public class HomePageAction implements Action {
@@ -26,28 +27,49 @@ public class HomePageAction implements Action {
     @Override
     public String execute(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         LOG.error("HomePage Action starts");
-        
-        StoryDAO storyDAO = new StoryDAOimpl();
 
-        List<Story> stories = null;
-        List<Story> published_stories = null;
-        try (Connection connection = DatabaseManager.getConnection()) {
-            StoryDAOimpl.setConnection(connection);
-
-            stories = storyDAO.findAllOpenPublishedStories();
-            published_stories = storyDAO.findAllPublishedStories();
-        } catch (SQLException e) {
-            e.printStackTrace();
+        // Database operations
+        Optional<Connection> connection = DatabaseManager.getConnection();
+        if (connection.isEmpty()) {
+            request.setAttribute("error_message", ErrorMessage.get("connection_error"));
+            return Path.PAGE_ERROR;
         }
 
-        request.setAttribute("stories", stories);
-        request.setAttribute("published_stories", published_stories);
-        
-        LOG.error("HomePage Action finished");        
+        DAOManager daoManager = new DAOManager(connection.get());
+
+        Optional<Object> result = daoManager.executeAndClose((daoFactory) -> {
+            StoryDAO storyDAO = daoFactory.getStoryDAO();
+
+            List<Story> stories = storyDAO.findAllOpenPublishedStories();
+            List<Story> publishedStories = storyDAO.findAllPublishedStories();
+
+            request.setAttribute("stories", stories);
+            request.setAttribute("published_stories", publishedStories);
+            // var object = new Object() {
+            // public final List<Story> stories = storyDAO.findAllOpenPublishedStories();
+            // public final List<Story> publishedStories =
+            // storyDAO.findAllPublishedStories();
+            // };
+            // LOG.error(object.stories);
+            // LOG.error(object.publishedStories);
+            // return object;
+            return true;
+        });
+        if (result.isEmpty()) {
+            request.setAttribute("error_message", ErrorMessage.get("database_query_error"));
+            return Path.PAGE_ERROR;
+        }
+
+        // Object attributes = result.get();
+        // SYMBOL NOT FOUND
+        // request.setAttribute("stories", attributes.stories);
+        // request.setAttribute("published_stories", attributes.publishedStories);
+
+        LOG.error("HomePage Action finished");
 
         return Path.PAGE_HOME;
     }
-    
+
 }

@@ -17,10 +17,10 @@ public class ParentSectionDAOimpl implements ParentSectionDAO {
 
     private final static String SQL_INSERT_PARENT_SECTION = "INSERT INTO \"Parent Section\" (\"story_id\", \"para_id\", \"parent_story_id\", \"parent_para_id\", \"parag_condition_story_id\", \"parag_condition_para_id\", \"choice_text\", \"choice_num\") VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-    private static Connection connection = null;
+    private Connection connection = null;
 
-    public static void setConnection(Connection connection) {
-        ParentSectionDAOimpl.connection = connection;
+    public ParentSectionDAOimpl(Connection connection) {
+        this.connection = connection;
     }
 
     @Override

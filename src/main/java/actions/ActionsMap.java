@@ -11,7 +11,7 @@ import org.apache.logging.log4j.Logger;
 import jakarta.servlet.http.HttpServletRequest;
 import utils.Path;
 
-public class ActionsMap {
+public final class ActionsMap {
     private static final Logger LOG = LogManager.getLogger();
 
     private static final Map<String, Action> actions = new HashMap<>();
@@ -58,8 +58,7 @@ public class ActionsMap {
         LOG.trace("Number of actions --> " + actions.size());
     }
 
-    private ActionsMap() {
-    }
+    private ActionsMap() {}
 
     public static boolean authenticatedActionsContains(String actionName) {
         return authenticatedActions.contains(actionName);

@@ -2,20 +2,18 @@ package actions;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import dao.DAOManager;
 import dao.ParagrapheDAO;
-import dao.ParagrapheDAOimpl;
 import dao.ParentSectionDAO;
-import dao.ParentSectionDAOimpl;
 import dao.StoryDAO;
-import dao.StoryDAOimpl;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -25,6 +23,7 @@ import models.ParentSection;
 import models.Story;
 import models.User;
 import utils.DatabaseManager;
+import utils.ErrorMessage;
 import utils.Path;
 
 public class CreateStoryAction implements Action {
@@ -62,68 +61,54 @@ public class CreateStoryAction implements Action {
 
         String content = request.getParameter("first_paragraphe_content");
 
-        // Database
-        StoryDAO storyDAO = new StoryDAOimpl();
-        ParagrapheDAO paragrapheDAO = new ParagrapheDAOimpl();
-        ParentSectionDAO parentSectionDAO = new ParentSectionDAOimpl();
-
-        boolean err = false;
-        try (Connection connection = DatabaseManager.getConnection()) {
-            boolean autoCommit = connection.getAutoCommit();
-            connection.setAutoCommit(false);
-
-            StoryDAOimpl.setConnection(connection);
-            ParagrapheDAOimpl.setConnection(connection);
-            ParentSectionDAOimpl.setConnection(connection);
-            try {
-                long storyId = storyDAO.saveStory(story);
-                LOG.error(storyId + " " + story);
-
-                Paragraphe paragraphe = Paragraphe.builder().story_id(storyId).user_id(user.getId()).content(content)
-                        .last(is_final).build();
-
-                long parentParagrapheId = paragrapheDAO.saveParagraphe(paragraphe);
-                LOG.error(parentParagrapheId + " " + paragraphe);
-
-                ParentSection parentSection = ParentSection.builder().story_id(storyId).parent_story_id(storyId)
-                        .parent_paragraphe_id(parentParagrapheId).paragraphe_conditionnel_story_id(storyId)
-                        .paragraphe_conditionnel_id(parentParagrapheId).build();
-                long paragrapheId;
-                paragraphe = Paragraphe.builder().story_id(storyId).user_id(user.getId()).content("NO CONTENT YET")
-                        .build();
-
-                int index = 0;
-                for (String choice : choices) {
-                    paragrapheId = paragrapheDAO.saveParagraphe(paragraphe);
-
-                    parentSection.setChoice_text(choice);
-                    parentSection.setChoice_number(index);
-                    parentSection.setParagraphe_id(paragrapheId);
-
-                    parentSectionDAO.saveParentSection(parentSection);
-
-                    index++;
-                }
-
-                connection.commit();
-                connection.setAutoCommit(autoCommit);
-            } catch (SQLException rollbackError) {
-                rollbackError.printStackTrace();
-                err = true;
-                try {
-                    connection.rollback();
-                } catch (SQLException rbe) {
-                    rollbackError.printStackTrace();
-                }
-            }
-        } catch (SQLException connectionError) {
-            connectionError.printStackTrace();
-            err = true;
+        // Database operations
+        Optional<Connection> connection = DatabaseManager.getConnection();
+        if (connection.isEmpty()) {
+            request.setAttribute("error_message", ErrorMessage.get("connection_error"));
+            request.setAttribute("choices", choices);
+            return Path.PAGE_CREATE_STORY;
         }
 
-        if (err) {
-            request.setAttribute("error_message",
-                    "Error when creating your story. Fill the fields and submit your story again.");
+        DAOManager daoManager = new DAOManager(connection.get());
+
+        final Story storyFinal = story;
+        Optional<Object> result = daoManager.transactionAndClose((daoFactory) -> {
+            StoryDAO storyDAO = daoFactory.getStoryDAO();
+            ParagrapheDAO paragrapheDAO = daoFactory.getParagrapheDAO();
+            ParentSectionDAO parentSectionDAO = daoFactory.getParentSectionDAO();
+
+            long storyId = storyDAO.saveStory(storyFinal);
+            LOG.error(storyId + " " + storyFinal);
+
+            Paragraphe paragraphe = Paragraphe.builder().story_id(storyId).user_id(user.getId()).content(content)
+                    .last(is_final).build();
+
+            long parentParagrapheId = paragrapheDAO.saveParagraphe(paragraphe);
+            LOG.error(parentParagrapheId + " " + paragraphe);
+
+            ParentSection parentSection = ParentSection.builder().story_id(storyId).parent_story_id(storyId)
+                    .parent_paragraphe_id(parentParagrapheId).paragraphe_conditionnel_story_id(storyId)
+                    .paragraphe_conditionnel_id(parentParagrapheId).build();
+            long paragrapheId;
+            paragraphe = Paragraphe.builder().story_id(storyId).user_id(user.getId()).content("NO CONTENT YET").build();
+
+            int index = 0;
+            for (String choice : choices) {
+                paragrapheId = paragrapheDAO.saveParagraphe(paragraphe);
+
+                parentSection.setChoice_text(choice);
+                parentSection.setChoice_number(index);
+                parentSection.setParagraphe_id(paragrapheId);
+
+                parentSectionDAO.saveParentSection(parentSection);
+
+                index++;
+            }
+            return true;
+        });
+        if (result.isEmpty()) {
+            LOG.error("Database query error.");
+            request.setAttribute("error_message", ErrorMessage.get("database_story_create_error"));
             request.setAttribute("choices", choices);
             return Path.PAGE_CREATE_STORY;
         }

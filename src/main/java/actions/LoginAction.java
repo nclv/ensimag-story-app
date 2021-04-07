@@ -2,21 +2,23 @@ package actions;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.SQLException;
+import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.mindrot.jbcrypt.BCrypt;
 
+import dao.DAOManager;
 import dao.UserDAO;
-import dao.UserDAOimpl;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import models.User;
 import utils.DatabaseManager;
+import utils.ErrorMessage;
 import utils.Path;
+import utils.Validation;
 
 public class LoginAction implements Action {
     private static final Logger LOG = LogManager.getLogger();
@@ -35,40 +37,51 @@ public class LoginAction implements Action {
         String redirect = request.getParameter("redirect");
         LOG.error(redirect);
 
-        UserDAO userDao = new UserDAOimpl();
-
-        User user = null;
-        try (Connection connection = DatabaseManager.getConnection()) {
-            UserDAOimpl.setConnection(connection);
-
-            user = userDao.findUser(username);
-        } catch (SQLException e) {
-            e.printStackTrace();
+        // Database operations
+        Optional<Connection> connection = DatabaseManager.getConnection();
+        if (connection.isEmpty()) {
+            request.setAttribute("error_message", ErrorMessage.get("connection_error"));
+            return Path.PAGE_ERROR;
         }
 
-        // Redirect to previous page or to home page 
+        DAOManager daoManager = new DAOManager(connection.get());
+
+        Optional<Object> result = daoManager.executeAndClose((daoFactory) -> {
+            UserDAO userDAO = daoFactory.getUserDAO();
+
+            Optional<User> user = userDAO.findUser(username);
+
+            // Validation database
+            boolean valid = true;
+            if (user.isEmpty()) {
+                LOG.error("There is no such a username --> [" + username + "]");
+
+                request.setAttribute("error_message", ErrorMessage.get("username_invalid"));
+                valid = false;
+            } else if (!BCrypt.checkpw(password, user.get().getPassword())) {
+                LOG.error("Incorrect password --> " + password + " for [" + username + "]");
+
+                request.setAttribute("error_message", ErrorMessage.get("password_invalid"));
+                valid = false;
+            } else {
+                LOG.trace("User [username --> '" + username + "', password --> '" + password
+                        + "'] successfully signed in");
+
+                session.setAttribute("user", user.get());
+            }
+            return valid;
+        });
+        if (result.isEmpty()) {
+            request.setAttribute("error_message", ErrorMessage.get("database_query_error"));
+            return Path.PAGE_ERROR;
+        }
+        if (!(boolean) result.get()) {
+            return Path.PAGE_LOGIN;
+        }
+
+        // Redirect to previous page or to home page
         String forward = Path.REDIRECT_HOME;
-
-        // Validation database
-        if (user == null) {
-            LOG.error("There is no such a username --> [" + username + "]");
-
-            request.setAttribute("error_message", username + " is invalid.");
-            return Path.PAGE_LOGIN;
-        } else if (!BCrypt.checkpw(password, user.getPassword())) {
-            LOG.error("Incorrect password --> " + password + " for [" + username + "]");
-
-            request.setAttribute("error_message", username + " exist but invalid password.");
-            return Path.PAGE_LOGIN;
-        } else {
-            LOG.trace("User [username --> '" + username + "', password --> '" + password + "'] successfully signed in");
-
-            session.setAttribute("user", user);
-        }
-
-        // On a passé toutes les validations, forward = Path.REDIRECT_HOME
-        // Important de filtrer les espaces !!
-        if (redirect != null && !redirect.trim().isEmpty()) {
+        if (!Validation.emptyString(redirect)) {
             forward = redirect;
         }
 

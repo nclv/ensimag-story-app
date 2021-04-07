@@ -2,6 +2,7 @@ package utils;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Optional;
 
 import javax.naming.Context;
 import javax.naming.InitialContext;
@@ -15,7 +16,9 @@ public final class DatabaseManager {
 
     private static final Logger LOG = LogManager.getLogger();
 
-    public static Connection getConnection() throws SQLException {
+    private DatabaseManager() {}
+
+    public static Optional<Connection> getConnection() {
         Connection connection = null;
         try {
             Context initContext = new InitialContext();
@@ -28,10 +31,8 @@ public final class DatabaseManager {
             LOG.error("Failed while getting a JDBC connection. Bad lookup.", ex);
         } catch (SQLException ex) {
             LOG.error("Failed while getting a JDBC connection. Datasource error.", ex);
-            throw ex;
         }
 
-        return connection;
+        return Optional.ofNullable(connection);
     }
-
 }

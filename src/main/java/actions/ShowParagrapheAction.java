@@ -7,22 +7,19 @@ package actions;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import dao.DAOManager;
 import dao.InvitedDAO;
-import dao.InvitedDAOimpl;
 import dao.ParagrapheDAO;
-import dao.ParagrapheDAOimpl;
 import dao.StoryDAO;
-import dao.StoryDAOimpl;
 import dao.UserDAO;
-import dao.UserDAOimpl;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -32,6 +29,7 @@ import models.Paragraphe;
 import models.Story;
 import models.User;
 import utils.DatabaseManager;
+import utils.ErrorMessage;
 import utils.Path;
 
 /**
@@ -59,62 +57,68 @@ public class ShowParagrapheAction implements Action {
 
         String paragrapheIdString = request.getParameter("paragraphe_id");
         long paragrapheId = Long.parseLong(paragrapheIdString);
-        
-        StoryDAO storyDAO = new StoryDAOimpl();
-        ParagrapheDAO paragrapheDAO = new ParagrapheDAOimpl();
-        UserDAO userDAO = new UserDAOimpl();
-        InvitedDAO invitedDAO = new InvitedDAOimpl();
 
-        Story story = null;
-        Paragraphe paragraphe = null;
-        User author = null;
-        Set<Long> invitedUsersIds = null;
-        List<User> invitedUsers = null;
-        try (Connection connection = DatabaseManager.getConnection()) {
-            StoryDAOimpl.setConnection(connection);
-            ParagrapheDAOimpl.setConnection(connection);
-            UserDAOimpl.setConnection(connection);
-            InvitedDAOimpl.setConnection(connection);
+        // Database operations
+        Optional<Connection> connection = DatabaseManager.getConnection();
+        if (connection.isEmpty()) {
+            request.setAttribute("error_message", ErrorMessage.get("connection_error"));
+            return Path.PAGE_CREATE_STORY;
+        }
 
-            story = storyDAO.findStory(storyId);
-            paragraphe = paragrapheDAO.findParagraphe(storyId, paragrapheId);
-            author = userDAO.findUser(story.getUser_id());
+        DAOManager daoManager = new DAOManager(connection.get());
 
-            invitedUsersIds = invitedDAO.findAllInvitedUsers(storyId).stream().map(Invited::getUser_id)
+        Optional<Object> result = daoManager.transactionAndClose((daoFactory) -> {
+            StoryDAO storyDAO = daoFactory.getStoryDAO();
+            ParagrapheDAO paragrapheDAO = daoFactory.getParagrapheDAO();
+            UserDAO userDAO = daoFactory.getUserDAO();
+            InvitedDAO invitedDAO = daoFactory.getInvitedDAO();
+
+            // get() car existence déjà vérifiée dans les filtres
+            Story story = storyDAO.findStory(storyId).get();
+            Paragraphe paragraphe = paragrapheDAO.findParagraphe(storyId, paragrapheId).get();
+
+            // get() car la story existe donc son auteur existe (intégrité BDD)
+            User author = userDAO.findUser(story.getUser_id()).get();
+
+            Set<Long> invitedUsersIds = invitedDAO.findAllInvitedUsers(storyId).stream().map(Invited::getUser_id)
                     .collect(Collectors.toSet());
             LOG.error(invitedUsersIds);
+
+            List<User> invitedUsers = null;
             if (!invitedUsersIds.isEmpty()) {
                 invitedUsers = userDAO.findUsers(invitedUsersIds);
             }
 
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
+            request.setAttribute("story", story);
+            request.setAttribute("paragraphe", paragraphe);
+            request.setAttribute("author", author);
+            request.setAttribute("invitedUsers", invitedUsers);
 
-        request.setAttribute("story", story);
-        request.setAttribute("paragraphe", paragraphe);
-        request.setAttribute("author", author);
-        request.setAttribute("invitedUsers", invitedUsers);
-
-        // On peut lire la story s'il existe au moins un paragraphe final
-        if (paragraphe != null) {
+            // On peut lire la story s'il existe au moins un paragraphe final
             boolean canRead = paragraphe.isLast();
             request.setAttribute("canRead", canRead);
-        }
 
-        // On peut éditer la story ssi. un utilisateur est connecté et
-        // - elle est ouverte,
-        // - elle est fermée et l'utilisateur connecté est invité,
-        // - elle est fermée et l'utilisateur connecté en est l'auteur
-        if (connectedUser != null && (story.isOpen() || (!story.isOpen()
-                && (invitedUsersIds.contains(connectedUser.getId()) || author.getId() == connectedUser.getId())))) {
-            LOG.error("canEditStory");
-            request.setAttribute("canEditStory", true);
-        }
+            // On peut éditer la story ssi. un utilisateur est connecté et
+            // - elle est ouverte,
+            // - elle est fermée et l'utilisateur connecté est invité,
+            // - elle est fermée et l'utilisateur connecté en est l'auteur
+            if (connectedUser != null && (story.isOpen() || (!story.isOpen()
+                    && (invitedUsersIds.contains(connectedUser.getId()) || author.getId() == connectedUser.getId())))) {
+                LOG.error("canEditStory");
+                request.setAttribute("canEditStory", true);
+            }
 
-        if (!story.isOpen() && connectedUser != null && author.getId() == connectedUser.getId()) {
-            LOG.error("canInvite");
-            request.setAttribute("canInvite", true);
+            if (!story.isOpen() && connectedUser != null && author.getId() == connectedUser.getId()) {
+                LOG.error("canInvite");
+                request.setAttribute("canInvite", true);
+            }
+
+            return true;
+        });
+        if (result.isEmpty()) {
+            LOG.error("Database query error.");
+            request.setAttribute("error_message", ErrorMessage.get("database_query_error"));
+            return Path.PAGE_ERROR;
         }
 
         LOG.error("ShowParagraphe Action finished");

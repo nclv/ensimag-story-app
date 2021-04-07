@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,10 +25,10 @@ public class ParagrapheDAOimpl implements ParagrapheDAO {
 
     private final static String SQL_GET_PARAGRAPHE_ID = "SELECT \"PARAGRAPHE_PARA_ID_SEQ\".currval FROM DUAL";
 
-    private static Connection connection = null;
+    private Connection connection = null;
 
-    public static void setConnection(Connection connection) {
-        ParagrapheDAOimpl.connection = connection;
+    public ParagrapheDAOimpl(Connection connection) {
+        this.connection = connection;
     }
 
     @Override
@@ -53,7 +54,7 @@ public class ParagrapheDAOimpl implements ParagrapheDAO {
     }
 
     @Override
-    public Paragraphe findParagraphe(long story_id, long paragraphe_id) throws SQLException {
+    public Optional<Paragraphe> findParagraphe(long story_id, long paragraphe_id) throws SQLException {
         Paragraphe paragraphe = null;
         try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_FIND_PARAGRAPHE)) {
             preparedStatement.setLong(1, story_id);
@@ -62,7 +63,7 @@ public class ParagrapheDAOimpl implements ParagrapheDAO {
             paragraphe = getParagraphe(preparedStatement);
         }
 
-        return paragraphe;
+        return Optional.ofNullable(paragraphe);
     }
 
     @Override
