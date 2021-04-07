@@ -50,7 +50,8 @@ public class ShowUserStoriesAction implements Action {
 
             List<Story> stories = storyDAO.findStories(user.getId());
 
-            request.setAttribute("stories", stories);
+            setAttributes(request, stories);
+
             return true;
         });
         if (result.isEmpty()) {
@@ -62,5 +63,8 @@ public class ShowUserStoriesAction implements Action {
 
         return Path.PAGE_SHOW_USER_STORIES;
     }
-    
+
+    private void setAttributes(HttpServletRequest request, List<Story> stories) {
+        request.setAttribute("stories", stories);
+    }
 }

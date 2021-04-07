@@ -52,23 +52,14 @@ public class LoginAction implements Action {
             Optional<User> user = userDAO.findUser(username);
 
             // Validation database
-            boolean valid = true;
-            if (user.isEmpty()) {
-                LOG.error("There is no such a username --> [" + username + "]");
+            boolean valid = validation(request, user, username, password);
 
-                request.setAttribute("error_message", ErrorMessage.get("username_invalid"));
-                valid = false;
-            } else if (!BCrypt.checkpw(password, user.get().getPassword())) {
-                LOG.error("Incorrect password --> " + password + " for [" + username + "]");
-
-                request.setAttribute("error_message", ErrorMessage.get("password_invalid"));
-                valid = false;
-            } else {
+            if (valid) {
                 LOG.trace("User [username --> '" + username + "', password --> '" + password
                         + "'] successfully signed in");
-
-                session.setAttribute("user", user.get());
+                setAttributes(session, user.get());
             }
+
             return valid;
         });
         if (result.isEmpty()) {
@@ -88,5 +79,25 @@ public class LoginAction implements Action {
         LOG.debug("Login Action finished");
 
         return forward;
+    }
+
+    private boolean validation(HttpServletRequest request, Optional<User> user, String username, String password) {
+        boolean valid = true;
+        if (user.isEmpty()) {
+            LOG.error("There is no such a username --> [" + username + "]");
+
+            request.setAttribute("error_message", ErrorMessage.get("username_invalid"));
+            valid = false;
+        } else if (!BCrypt.checkpw(password, user.get().getPassword())) {
+            LOG.error("Incorrect password --> " + password + " for [" + username + "]");
+
+            request.setAttribute("error_message", ErrorMessage.get("password_invalid"));
+            valid = false;
+        }
+        return valid;
+    }
+
+    private void setAttributes(HttpSession session, User user) {
+        session.setAttribute("user", user);
     }
 }

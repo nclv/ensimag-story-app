@@ -89,29 +89,7 @@ public class ShowParagrapheAction implements Action {
                 invitedUsers = userDAO.findUsers(invitedUsersIds);
             }
 
-            request.setAttribute("story", story);
-            request.setAttribute("paragraphe", paragraphe);
-            request.setAttribute("author", author);
-            request.setAttribute("invitedUsers", invitedUsers);
-
-            // On peut lire la story s'il existe au moins un paragraphe final
-            boolean canRead = paragraphe.isLast();
-            request.setAttribute("canRead", canRead);
-
-            // On peut éditer la story ssi. un utilisateur est connecté et
-            // - elle est ouverte,
-            // - elle est fermée et l'utilisateur connecté est invité,
-            // - elle est fermée et l'utilisateur connecté en est l'auteur
-            if (connectedUser != null && (story.isOpen() || (!story.isOpen()
-                    && (invitedUsersIds.contains(connectedUser.getId()) || author.getId() == connectedUser.getId())))) {
-                LOG.error("canEditStory");
-                request.setAttribute("canEditStory", true);
-            }
-
-            if (!story.isOpen() && connectedUser != null && author.getId() == connectedUser.getId()) {
-                LOG.error("canInvite");
-                request.setAttribute("canInvite", true);
-            }
+            setAttributes(request, story, paragraphe, connectedUser, author, invitedUsersIds, invitedUsers);
 
             return true;
         });
@@ -126,4 +104,30 @@ public class ShowParagrapheAction implements Action {
         return Path.PAGE_SHOW_PARAGRAPHE;
     }
 
+    private void setAttributes(HttpServletRequest request, Story story, Paragraphe paragraphe, User connectedUser,
+            User author, Set<Long> invitedUsersIds, List<User> invitedUsers) {
+        request.setAttribute("story", story);
+        request.setAttribute("paragraphe", paragraphe);
+        request.setAttribute("author", author);
+        request.setAttribute("invitedUsers", invitedUsers);
+
+        // On peut lire la story s'il existe au moins un paragraphe final
+        boolean canRead = paragraphe.isLast();
+        request.setAttribute("canRead", canRead);
+
+        // On peut éditer la story ssi. un utilisateur est connecté et
+        // - elle est ouverte,
+        // - elle est fermée et l'utilisateur connecté est invité,
+        // - elle est fermée et l'utilisateur connecté en est l'auteur
+        if (connectedUser != null && (story.isOpen() || (!story.isOpen()
+                && (invitedUsersIds.contains(connectedUser.getId()) || author.getId() == connectedUser.getId())))) {
+            LOG.error("canEditStory");
+            request.setAttribute("canEditStory", true);
+        }
+
+        if (!story.isOpen() && connectedUser != null && author.getId() == connectedUser.getId()) {
+            LOG.error("canInvite");
+            request.setAttribute("canInvite", true);
+        }
+    }
 }

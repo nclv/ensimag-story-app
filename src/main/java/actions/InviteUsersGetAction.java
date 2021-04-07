@@ -55,14 +55,11 @@ public class InviteUsersGetAction implements Action {
 
             Optional<Story> story = storyDAO.findStory(storyId);
             List<User> users = userDAO.findAllUsersExcept(connectedUser.getId());
-            request.setAttribute("users", users);
 
-            boolean valid = true;
-            if (story.isPresent() && story.get().isOpen()) {
-                LOG.error("Open story.");
+            boolean valid = validation(request, story);
 
-                request.setAttribute("error_message", ErrorMessage.get("open_story"));
-                valid = false;
+            if (valid) {
+                setAttributes(request, users);
             }
 
             return valid;
@@ -80,4 +77,19 @@ public class InviteUsersGetAction implements Action {
         return Path.PAGE_INVITE_USERS;
     }
 
+    private void setAttributes(HttpServletRequest request, List<User> users) {
+        request.setAttribute("users", users);
+    }
+
+    private boolean validation(HttpServletRequest request, Optional<Story> story) {
+        boolean valid = true;
+        if (story.isPresent() && story.get().isOpen()) {
+            LOG.error("Open story.");
+
+            request.setAttribute("error_message", ErrorMessage.get("open_story"));
+            valid = false;
+        }
+
+        return valid;
+    }
 }

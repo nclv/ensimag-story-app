@@ -45,8 +45,7 @@ public class HomePageAction implements Action {
             List<Story> stories = storyDAO.findAllOpenPublishedStories();
             List<Story> publishedStories = storyDAO.findAllPublishedStories();
 
-            request.setAttribute("stories", stories);
-            request.setAttribute("published_stories", publishedStories);
+            setAttributes(request, stories, publishedStories);
             // var object = new Object() {
             // public final List<Story> stories = storyDAO.findAllOpenPublishedStories();
             // public final List<Story> publishedStories =
@@ -55,6 +54,7 @@ public class HomePageAction implements Action {
             // LOG.error(object.stories);
             // LOG.error(object.publishedStories);
             // return object;
+            
             return true;
         });
         if (result.isEmpty()) {
@@ -72,4 +72,8 @@ public class HomePageAction implements Action {
         return Path.PAGE_HOME;
     }
 
+    private void setAttributes(HttpServletRequest request, List<Story> stories, List<Story> publishedStories) {
+        request.setAttribute("stories", stories);
+        request.setAttribute("published_stories", publishedStories);
+    }
 }
