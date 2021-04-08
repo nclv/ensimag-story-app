@@ -45,7 +45,7 @@ public class InviteUsersPostAction implements Action {
         Optional<Connection> connection = DatabaseManager.getConnection();
         if (connection.isEmpty()) {
             request.setAttribute("error_message", ErrorMessage.get("connection_error"));
-            return Path.PAGE_ERROR;
+            return Path.PAGE_SHOW_STORY + "&story_id=" + storyIdString;
         }
 
         DAOManager daoManager = new DAOManager(connection.get());

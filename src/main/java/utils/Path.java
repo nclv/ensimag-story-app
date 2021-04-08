@@ -21,6 +21,7 @@ public final class Path {
     public static final String PAGE_SHOW_STORY = JSP_PATH_PRIVATE + "show_story.jsp";
     public static final String PAGE_SHOW_USER_STORIES = JSP_PATH_PRIVATE + "authenticated_user/show_user_stories.jsp";
     public static final String PAGE_SHOW_PARAGRAPHE = JSP_PATH_PRIVATE + "show_paragraphe.jsp";
+    public static final String PAGE_READ_STORY = JSP_PATH_PRIVATE + "read_story.jsp";
     public static final String PAGE_INVITE_USERS = JSP_PATH_PRIVATE + "authenticated_user/invite_users.jsp";
     public static final String PAGE_HOME = JSP_PATH_PRIVATE + "index.jsp";
 

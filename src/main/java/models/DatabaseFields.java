@@ -26,4 +26,6 @@ public final class DatabaseFields {
     public static final String PARENT_SECTION_PARAG_CONDITION_PARA_ID = "parag_condition_para_id";
     public static final String PARENT_SECTION_CHOICE_TEXT = "choice_text";
     public static final String PARENT_SECTION_CHOICE_NUMBER = "choice_num";
+
+    public static final String HISTORIC_ID = "historic_id";
 }

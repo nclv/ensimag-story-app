@@ -62,7 +62,7 @@ public class ShowParagrapheAction implements Action {
         Optional<Connection> connection = DatabaseManager.getConnection();
         if (connection.isEmpty()) {
             request.setAttribute("error_message", ErrorMessage.get("connection_error"));
-            return Path.PAGE_CREATE_STORY;
+            return Path.PAGE_ERROR;
         }
 
         DAOManager daoManager = new DAOManager(connection.get());

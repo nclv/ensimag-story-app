@@ -30,7 +30,8 @@ public class StoryIdValidationFilter implements Filter {
         String actionName = req.getMethod() + "/" + req.getParameter("action");
         boolean canFilter = actionName.equals("GET/invite_users") || actionName.equals("POST/invite_users")
                 || actionName.equals("GET/show_story") || actionName.equals("GET/remove_invited")
-                || actionName.equals("POST/add_paragraphe") || actionName.equals("GET/show_paragraphe");
+                || actionName.equals("POST/add_paragraphe") || actionName.equals("GET/show_paragraphe")
+                || actionName.equals("GET/read_story");
         LOG.error(actionName);
         LOG.error(canFilter);
 
