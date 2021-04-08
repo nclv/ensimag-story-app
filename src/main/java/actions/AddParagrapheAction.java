@@ -7,7 +7,10 @@ package actions;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -42,24 +45,18 @@ public class AddParagrapheAction implements Action {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
 
-        // for POST request on /controller?action=create_story
-        // if (user == null) {
-        //     request.setAttribute("error_message", "There is no connected user.");
-        //     return Path.PAGE_ERROR;
-        // }
-
-        boolean is_final = request.getParameter("is_final").equals("final") ? true : false;
-        String content = request.getParameter("paragraphe_content");
-
-        // if (content == null || content.trim().isEmpty()) {
-        //     LOG.error("There is no content --> [" + content + "]");
-
-        //     request.setAttribute("error_message", "Enter a paragraphe.");
-        //     return Path.PAGE_ADD_PARAGRAPHE;
-        // }
-
         String storyIdString = request.getParameter("story_id");
         long storyId = Long.parseLong(storyIdString);
+
+        String content = request.getParameter("paragraphe_content");
+
+        boolean is_final = request.getParameter("is_final").equals("final") ? true : false;
+        LOG.error("Final paragraphe: " + is_final);
+
+        List<String> choices = Collections.list(request.getParameterNames()).stream()
+                .filter(parameterName -> parameterName.startsWith("choice_")).map(request::getParameter)
+                .collect(Collectors.toList());
+        LOG.error(choices);
 
         Paragraphe paragraphe = Paragraphe.builder().story_id(storyId).user_id(user.getId()).content(content)
                 .last(is_final).build();
@@ -68,6 +65,7 @@ public class AddParagrapheAction implements Action {
         Optional<Connection> connection = DatabaseManager.getConnection();
         if (connection.isEmpty()) {
             request.setAttribute("error_message", ErrorMessage.get("connection_error"));
+            request.setAttribute("choices", choices);
             return Path.PAGE_ADD_PARAGRAPHE;
         }
 

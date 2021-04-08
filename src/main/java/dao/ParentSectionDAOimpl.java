@@ -49,18 +49,6 @@ public class ParentSectionDAOimpl implements ParentSectionDAO {
             preparedStatement.executeUpdate();
         }
     }
-
-    private ParentSection getParentSection(ResultSet resultSet) throws SQLException {
-        return ParentSection.builder().story_id(resultSet.getLong(DatabaseFields.STORY_ID))
-                .paragraphe_id(resultSet.getLong(DatabaseFields.PARAGRAPHE_ID))
-                .parent_story_id(resultSet.getLong(DatabaseFields.PARENT_SECTION_PARENT_STORY_ID))
-                .parent_paragraphe_id(resultSet.getLong(DatabaseFields.PARENT_SECTION_PARENT_PARA_ID))
-                .paragraphe_conditionnel_story_id(
-                        resultSet.getLong(DatabaseFields.PARENT_SECTION_PARAG_CONDITION_STORY_ID))
-                .paragraphe_conditionnel_id(resultSet.getLong(DatabaseFields.PARENT_SECTION_PARAG_CONDITION_PARA_ID))
-                .choice_text(resultSet.getString(DatabaseFields.PARENT_SECTION_CHOICE_TEXT))
-                .choice_number(resultSet.getLong(DatabaseFields.PARENT_SECTION_CHOICE_NUMBER)).build();
-    }
     
     public List<Paragraphe> getChildrenParagraphe(long storyId, long parentParagrapheId) throws SQLException {
         List <Paragraphe> Childrens = new ArrayList<Paragraphe>();
@@ -86,5 +74,15 @@ public class ParentSectionDAOimpl implements ParentSectionDAO {
         }
     }
     
-    
+    private ParentSection getParentSection(ResultSet resultSet) throws SQLException {
+        return ParentSection.builder().story_id(resultSet.getLong(DatabaseFields.STORY_ID))
+                .paragraphe_id(resultSet.getLong(DatabaseFields.PARAGRAPHE_ID))
+                .parent_story_id(resultSet.getLong(DatabaseFields.PARENT_SECTION_PARENT_STORY_ID))
+                .parent_paragraphe_id(resultSet.getLong(DatabaseFields.PARENT_SECTION_PARENT_PARA_ID))
+                .paragraphe_conditionnel_story_id(
+                        resultSet.getLong(DatabaseFields.PARENT_SECTION_PARAG_CONDITION_STORY_ID))
+                .paragraphe_conditionnel_id(resultSet.getLong(DatabaseFields.PARENT_SECTION_PARAG_CONDITION_PARA_ID))
+                .choice_text(resultSet.getString(DatabaseFields.PARENT_SECTION_CHOICE_TEXT))
+                .choice_number(resultSet.getLong(DatabaseFields.PARENT_SECTION_CHOICE_NUMBER)).build();
+    }
 }

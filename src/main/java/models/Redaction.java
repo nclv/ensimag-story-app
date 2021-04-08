@@ -17,6 +17,7 @@ public class Redaction implements Serializable {
     @Setter(AccessLevel.NONE)
     private static final long serialVersionUID = 5685951056329538292L;
     private long story_id;
+    private long paragraphe_id;
     private long user_id;
     private boolean validated;
 }
