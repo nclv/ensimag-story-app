@@ -54,7 +54,7 @@ public class ReadStoryAction implements Action {
 
         DAOManager daoManager = new DAOManager(connection.get());
 
-        Optional<Object> result = daoManager.transactionAndClose((daoFactory) -> {
+        Object result = daoManager.transactionAndClose((daoFactory) -> {
             StoryDAO storyDAO = daoFactory.getStoryDAO();
             ParagrapheDAO paragrapheDAO = daoFactory.getParagrapheDAO();
             UserDAO userDAO = daoFactory.getUserDAO();
@@ -82,7 +82,7 @@ public class ReadStoryAction implements Action {
 
             return true;
         });
-        if (result.isEmpty()) {
+        if (result == null) {
             LOG.error("Database query error.");
             request.setAttribute("error_message", ErrorMessage.get("database_query_error"));
             return Path.PAGE_ERROR;

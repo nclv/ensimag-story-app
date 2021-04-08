@@ -33,12 +33,11 @@
                     <c:if test="${not empty canInvite}">
                         <li><a href="${context}${Path.REDIRECT_INVITE_USERS}&story_id=${story.id}"> Invite Users </a><li>
                     </c:if>
-                    <c:if test="${not empty canRead}">
-                        <li><a href="${context}${Path.REDIRECT_READ_STORY}&story_id=${story.id}"> Read Story </a><li>
-                    </c:if>
                     <li><a href="${context}${Path.REDIRECT_LOGOUT}"> Logout </a></li>
                     <li> ${user.name} </li>
                 </c:if>
+                <%-- On peut lire le paragraphe donc on peut lire la story --%>
+                <li><a href="${context}${Path.REDIRECT_READ_STORY}&story_id=${story.id}"> Read Story </a><li>
             </ul>
         </nav>
         <h1>show_paragraphe.jsp</h1>

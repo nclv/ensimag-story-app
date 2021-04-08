@@ -4,7 +4,13 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Optional;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 public class DAOManager {
+
+    private static final Logger LOG = LogManager.getLogger();
+
     private Connection connection = null;
 
     public DAOManager(Connection connection) {
@@ -50,7 +56,7 @@ public class DAOManager {
      * @param command
      * @return empty Optional if there is a query error
      */
-    public Optional<Object> executeAndClose(DAOCommand command) {
+    public Object executeAndClose(DAOCommand command) {
         Object returnValue = null;
         try {
             returnValue = command.execute(this);
@@ -63,7 +69,7 @@ public class DAOManager {
                 e.printStackTrace();
             }
         }
-        return Optional.ofNullable(returnValue);
+        return returnValue;
     }
 
     /**
@@ -71,7 +77,7 @@ public class DAOManager {
      * @param command
      * @return empty Optional if there is a query error
      */
-    public Optional<Object> transaction(DAOCommand command) {
+    public Object transaction(DAOCommand command) {
         Object returnValue = null;
         try {
             boolean autoCommit = connection.getAutoCommit();
@@ -91,10 +97,10 @@ public class DAOManager {
             }
         }
 
-        return Optional.ofNullable(returnValue);
+        return returnValue;
     }
 
-    public Optional<Object> transactionAndClose(DAOCommand command) {
+    public Object transactionAndClose(DAOCommand command) {
         return executeAndClose((daoFactory) -> daoFactory.transaction(command));
     }
 }

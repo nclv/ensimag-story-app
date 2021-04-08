@@ -43,7 +43,7 @@ public class RegisterAction implements Action {
 
         DAOManager daoManager = new DAOManager(connection.get());
 
-        Optional<Object> result = daoManager.executeAndClose((daoFactory) -> {
+        Object result = daoManager.executeAndClose((daoFactory) -> {
             UserDAO userDAO = daoFactory.getUserDAO();
 
             long userId = userDAO.saveUser(user);
@@ -52,7 +52,7 @@ public class RegisterAction implements Action {
 
             return true;
         });
-        if (result.isEmpty()) {
+        if (result == null) {
             // Database error: already used username or another SQLException
             LOG.error("You need to change your username --> [" + username + "]");
 

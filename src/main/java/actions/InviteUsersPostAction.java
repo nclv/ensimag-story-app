@@ -50,7 +50,7 @@ public class InviteUsersPostAction implements Action {
 
         DAOManager daoManager = new DAOManager(connection.get());
 
-        Optional<Object> result = daoManager.transactionAndClose((daoFactory) -> {
+        Object result = daoManager.transactionAndClose((daoFactory) -> {
             InvitedDAO invitedDAO = daoFactory.getInvitedDAO();
 
             // Récupération des utilisateurs déja invités
@@ -68,7 +68,7 @@ public class InviteUsersPostAction implements Action {
             }
             return true;
         });
-        if (result.isEmpty()) {
+        if (result == null) {
             LOG.error("Database query error.");
             request.setAttribute("error_message", ErrorMessage.get("database_invite_users_error"));
             // return Path.REDIRECT_INVITE_USERS + "&story_id=" + storyIdString +

@@ -46,7 +46,8 @@ public final class ErrorMessage {
         errorMessages.put("username_used", "This username is already used.");
         errorMessages.put("redaction_invalidated",
                 "You are writing another paragraphe. You can only write a paragraphe at a time");
-
+        errorMessages.put("story_not_published", "The story is not published and you are not it's author.");
+        
         LOG.debug("Command container was successfully initialized");
         LOG.trace("Number of errors --> " + errorMessages.size());
     }

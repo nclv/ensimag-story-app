@@ -103,17 +103,17 @@ public final class Validation {
         DAOManager daoManager = new DAOManager(connection.get());
 
         final long userIdFinal = userId;
-        Optional<Object> result = daoManager.executeAndClose((daoFactory) -> {
+        Object result = daoManager.executeAndClose((daoFactory) -> {
             UserDAO userDAO = daoFactory.getUserDAO();
             return userDAO.findUser(userIdFinal).isPresent();
         });
-        if (result.isEmpty()) {
+        if (result == null) {
             LOG.error("Database query error.");
 
             setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("database_query_error"));
             return false;
         }
-        if (!(boolean) result.get()) {
+        if (!(boolean) result) {
             LOG.error("user_id --> [" + userIdString + "] doesn't exist.");
 
             setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("userId_inexistent"));
@@ -152,17 +152,17 @@ public final class Validation {
         DAOManager daoManager = new DAOManager(connection.get());
 
         final long storyIdFinal = storyId;
-        Optional<Object> result = daoManager.executeAndClose((daoFactory) -> {
+        Object result = daoManager.executeAndClose((daoFactory) -> {
             StoryDAO storyDAO = daoFactory.getStoryDAO();
             return storyDAO.findStory(storyIdFinal).isPresent();
         });
-        if (result.isEmpty()) {
+        if (result == null) {
             LOG.error("Database query error.");
 
             setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("database_query_error"));
             return false;
         }
-        if (!(boolean) result.get()) {
+        if (!(boolean) result) {
             LOG.error("story_id --> [" + storyIdString + "] doesn't exist.");
 
             setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("storyId_inexistent"));
@@ -215,17 +215,17 @@ public final class Validation {
         DAOManager daoManager = new DAOManager(connection.get());
 
         final long paragrapheIdFinal = paragrapheId;
-        Optional<Object> result = daoManager.executeAndClose((daoFactory) -> {
+        Object result = daoManager.executeAndClose((daoFactory) -> {
             ParagrapheDAO paragrapheDAO = daoFactory.getParagrapheDAO();
             return !paragrapheDAO.findParagraphe(storyId, paragrapheIdFinal).isEmpty();
         });
-        if (result.isEmpty()) {
+        if (result == null) {
             LOG.error("Database query error.");
 
             setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("database_query_error"));
             return false;
         }
-        if (!(boolean) result.get()) {
+        if (!(boolean) result) {
             LOG.error("story_id, paragraphe_id --> [" + storyId + ", " + paragrapheIdString + "] doesn't exist.");
 
             setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("paragrapheId_inexistent"));

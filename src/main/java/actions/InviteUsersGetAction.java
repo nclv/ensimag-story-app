@@ -49,7 +49,7 @@ public class InviteUsersGetAction implements Action {
 
         DAOManager daoManager = new DAOManager(connection.get());
 
-        Optional<Object> result = daoManager.executeAndClose((daoFactory) -> {
+        Object result = daoManager.executeAndClose((daoFactory) -> {
             StoryDAO storyDAO = daoFactory.getStoryDAO();
             UserDAO userDAO = daoFactory.getUserDAO();
 
@@ -64,11 +64,11 @@ public class InviteUsersGetAction implements Action {
 
             return valid;
         });
-        if (result.isEmpty()) {
+        if (result == null) {
             request.setAttribute("error_message", ErrorMessage.get("database_query_error"));
             return Path.PAGE_ERROR;
         }
-        if (!(boolean) result.get()) {
+        if (!(boolean) result) {
             return Path.PAGE_ERROR;
         }
 

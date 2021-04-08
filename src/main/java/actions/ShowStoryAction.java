@@ -56,7 +56,7 @@ public class ShowStoryAction implements Action {
 
         DAOManager daoManager = new DAOManager(connection.get());
 
-        Optional<Object> result = daoManager.transactionAndClose((daoFactory) -> {
+        Object result = daoManager.transactionAndClose((daoFactory) -> {
             StoryDAO storyDAO = daoFactory.getStoryDAO();
             ParagrapheDAO paragrapheDAO = daoFactory.getParagrapheDAO();
             UserDAO userDAO = daoFactory.getUserDAO();
@@ -68,6 +68,12 @@ public class ShowStoryAction implements Action {
 
             // get() car la story existe donc son auteur existe (intégrité BDD)
             User author = userDAO.findUser(story.getUser_id()).get();
+
+            boolean valid = validation(request, connectedUser, author, story);
+            LOG.error(valid);
+            if (!valid) {
+                return false;
+            }
 
             Set<Long> invitedUsersIds = invitedDAO.findAllInvitedUsers(storyId).stream().map(Invited::getUser_id)
                     .collect(Collectors.toSet());
@@ -82,15 +88,32 @@ public class ShowStoryAction implements Action {
 
             return true;
         });
-        if (result.isEmpty()) {
+        if (result == null) {
             LOG.error("Database query error.");
             request.setAttribute("error_message", ErrorMessage.get("database_query_error"));
+            return Path.PAGE_ERROR;
+        }
+        LOG.error(result);
+        if (!(boolean) result) {
             return Path.PAGE_ERROR;
         }
 
         LOG.error("ShowStory Action finished");
 
         return Path.PAGE_SHOW_STORY;
+    }
+
+    private boolean validation(HttpServletRequest request, User connectedUser, User author, Story story) {
+        boolean valid = true;
+        // Si la story n'est pas publiée et que je n'en suis pas l'auteur.
+        if (!story.isPublished() && connectedUser != null && author.getId() != connectedUser.getId()) {
+            LOG.error("The story is not published and you are not it's author: " + story + ", " + connectedUser + ", "
+                    + author);
+
+            request.setAttribute("error_message", ErrorMessage.get("story_not_published"));
+            valid = false;
+        }
+        return valid;
     }
 
     private void setAttributes(HttpServletRequest request, Story story, List<Paragraphe> paragraphes,
@@ -100,8 +123,12 @@ public class ShowStoryAction implements Action {
         request.setAttribute("author", author);
         request.setAttribute("invitedUsers", invitedUsers);
 
-        // On peut lire la story s'il existe au moins un paragraphe final
-        boolean canRead = paragraphes.stream().map(Paragraphe::isLast).collect(Collectors.toList()).contains(true);
+        // On peut lire la story ssi:
+        // - il existe au moins un paragraphe final
+        // - l'utilisateur connecté n'en est pas l'auteur et la story est publiée
+        // - l'utilisateur connecté en est l'auteur
+        boolean canRead = paragraphes.stream().map(Paragraphe::isLast).collect(Collectors.toList()).contains(true)
+                && ((connectedUser != null && author.getId() == connectedUser.getId()) || story.isPublished());
         request.setAttribute("canRead", canRead);
 
         // On peut éditer la story ssi. un utilisateur est connecté et

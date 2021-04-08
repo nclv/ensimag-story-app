@@ -44,14 +44,14 @@ public class RemoveInvitedAction implements Action {
 
         DAOManager daoManager = new DAOManager(connection.get());
 
-        Optional<Object> result = daoManager.executeAndClose((daoFactory) -> {
+        Object result = daoManager.executeAndClose((daoFactory) -> {
             InvitedDAO invitedDAO = daoFactory.getInvitedDAO();
 
             invitedDAO.removeInvited(invited);
 
             return true;
         });
-        if (result.isEmpty()) {
+        if (result == null) {
             request.setAttribute("error_message", ErrorMessage.get("database_remove_invited_user_error"));
             return Path.PAGE_ERROR;
         }

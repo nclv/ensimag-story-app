@@ -70,7 +70,7 @@ public class AddParagrapheAction implements Action {
 
         DAOManager daoManager = new DAOManager(connection.get());
         
-        Optional<Object> result = daoManager.executeAndClose((daoFactory) -> {
+        Object result = daoManager.executeAndClose((daoFactory) -> {
             ParagrapheDAO paragrapheDAO = daoFactory.getParagrapheDAO();
             RedactionDAO redactionDAO = daoFactory.getRedactionDAO();
 
@@ -86,11 +86,11 @@ public class AddParagrapheAction implements Action {
             
             return true;
         });
-        if (result.isEmpty()) {
+        if (result == null) {
             request.setAttribute("error_message", ErrorMessage.get("database_paragraphe_create_error"));
             return Path.PAGE_ADD_PARAGRAPHE;
         }
-        if (!(boolean) result.get()) {
+        if (!(boolean) result) {
             return Path.PAGE_ADD_PARAGRAPHE;
         }
 

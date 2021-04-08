@@ -72,7 +72,7 @@ public class CreateStoryAction implements Action {
         DAOManager daoManager = new DAOManager(connection.get());
 
         final Story storyFinal = story;
-        Optional<Object> result = daoManager.transactionAndClose((daoFactory) -> {
+        Object result = daoManager.transactionAndClose((daoFactory) -> {
             StoryDAO storyDAO = daoFactory.getStoryDAO();
             ParagrapheDAO paragrapheDAO = daoFactory.getParagrapheDAO();
             ParentSectionDAO parentSectionDAO = daoFactory.getParentSectionDAO();
@@ -106,7 +106,7 @@ public class CreateStoryAction implements Action {
             }
             return true;
         });
-        if (result.isEmpty()) {
+        if (result == null) {
             LOG.error("Database query error.");
             request.setAttribute("error_message", ErrorMessage.get("database_story_create_error"));
             request.setAttribute("choices", choices);

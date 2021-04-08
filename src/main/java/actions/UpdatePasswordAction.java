@@ -46,14 +46,14 @@ public class UpdatePasswordAction implements Action {
 
         DAOManager daoManager = new DAOManager(connection.get());
 
-        Optional<Object> result = daoManager.executeAndClose((daoFactory) -> {
+        Object result = daoManager.executeAndClose((daoFactory) -> {
             UserDAO userDAO = daoFactory.getUserDAO();
 
             userDAO.updateUser(user);
 
             return true;
         });
-        if (result.isEmpty()) {
+        if (result == null) {
             request.setAttribute("error_message", ErrorMessage.get("database_update_password_error"));
             return Path.PAGE_UPDATE_PASSWORD;
         }

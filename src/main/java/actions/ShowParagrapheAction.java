@@ -67,7 +67,7 @@ public class ShowParagrapheAction implements Action {
 
         DAOManager daoManager = new DAOManager(connection.get());
 
-        Optional<Object> result = daoManager.transactionAndClose((daoFactory) -> {
+        Object result = daoManager.transactionAndClose((daoFactory) -> {
             StoryDAO storyDAO = daoFactory.getStoryDAO();
             ParagrapheDAO paragrapheDAO = daoFactory.getParagrapheDAO();
             UserDAO userDAO = daoFactory.getUserDAO();
@@ -93,7 +93,7 @@ public class ShowParagrapheAction implements Action {
 
             return true;
         });
-        if (result.isEmpty()) {
+        if (result == null) {
             LOG.error("Database query error.");
             request.setAttribute("error_message", ErrorMessage.get("database_query_error"));
             return Path.PAGE_ERROR;
@@ -111,9 +111,11 @@ public class ShowParagrapheAction implements Action {
         request.setAttribute("author", author);
         request.setAttribute("invitedUsers", invitedUsers);
 
-        // On peut lire la story s'il existe au moins un paragraphe final
-        boolean canRead = paragraphe.isLast();
-        request.setAttribute("canRead", canRead);
+        // On peut lire le paragraphe si:
+        // - on en est l'auteur
+        // - la story est publiée
+        // boolean canRead = (author.getId() == connectedUser.getId() || story.isPublished());
+        // request.setAttribute("canRead", canRead);
 
         // On peut éditer la story ssi. un utilisateur est connecté et
         // - elle est ouverte,
