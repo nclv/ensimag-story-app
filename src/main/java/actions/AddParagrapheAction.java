@@ -74,16 +74,20 @@ public class AddParagrapheAction implements Action {
             ParagrapheDAO paragrapheDAO = daoFactory.getParagrapheDAO();
             RedactionDAO redactionDAO = daoFactory.getRedactionDAO();
 
-            // On vérifie que l'utilisateur actuel n'édite pas un autre paragraphe.
+            // TODO: déplacer dans AddParagrapheActionGet
+            // On vérifie que l'utilisateur actuel n'édite pas un autre paragraphe. (GET)
             Optional<Redaction> invalidated = redactionDAO.getInvalidated(user.getId());
             boolean valid = validation(request, invalidated);
             if (!valid) {
                 return valid;
             }
+            // créer une entrée non validée dans Redaction (GET)
 
             long paragrapheId = paragrapheDAO.saveParagraphe(paragraphe);
             LOG.error(paragrapheId + " " + paragraphe);
             
+            // TODO:
+            // valider l'entrée crée dans AddParagrapheActionGet
 
             return true;
         });
