@@ -44,7 +44,8 @@ public final class ErrorMessage {
         errorMessages.put("username_invalid", "Username is invalid.");
         errorMessages.put("password_invalid", "Password is invalid.");
         errorMessages.put("username_used", "This username is already used.");
-
+        errorMessages.put("redaction_invalidated",
+                "You are writing another paragraphe. You can only write a paragraphe at a time");
 
         LOG.debug("Command container was successfully initialized");
         LOG.trace("Number of errors --> " + errorMessages.size());

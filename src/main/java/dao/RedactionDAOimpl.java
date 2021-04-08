@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,6 +18,7 @@ public class RedactionDAOimpl implements RedactionDAO {
 
     private final static String SQL_INSERT_REDACTION = "INSERT INTO \"Redaction\" (\"user_id\", \"story_id\", \"para_id\", \"is_validated\") VALUES (?, ?, ?, ?)";
     private final static String SQL_UPDATE_REDACTION = "UPDATE \"Redaction\" SET \"is_validated\"=? WHERE \"user_id\"=? AND \"story_id\"=? AND \"para_id\"=?";
+    private final static String SQL_FIND_INVALIDATED = "SELECT * FROM \"Redaction\" WHERE \"user_id\"=? AND \"is_validated\"=0";
 
     private Connection connection = null;
 
@@ -46,6 +48,30 @@ public class RedactionDAOimpl implements RedactionDAO {
 
             preparedStatement.executeUpdate();
         }
+    }
+
+    @Override
+    public Optional<Redaction> getInvalidated(long userId) throws SQLException {
+        Redaction redaction = null;
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_FIND_INVALIDATED)) {
+            preparedStatement.setLong(1, userId);
+
+            redaction = getRedaction(preparedStatement);
+        }
+
+        return Optional.ofNullable(redaction);
+    }
+
+    private Redaction getRedaction(PreparedStatement preparedStatement) throws SQLException {
+        Redaction redaction = null;
+
+        try (ResultSet resultSet = preparedStatement.executeQuery()) {
+            if (resultSet.next()) {
+                redaction = getRedaction(resultSet);
+            }
+        }
+
+        return redaction;
     }
 
     private Redaction getRedaction(ResultSet resultSet) throws SQLException {
