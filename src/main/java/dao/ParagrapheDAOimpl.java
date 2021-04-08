@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.NoSuchElementException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -119,28 +118,5 @@ public class ParagrapheDAOimpl implements ParagrapheDAO {
                 .story_id(resultSet.getLong(DatabaseFields.STORY_ID)).user_id(resultSet.getLong(DatabaseFields.USER_ID))
                 .content(resultSet.getString(DatabaseFields.PARAGRAPHE_CONTENT))
                 .last((resultSet.getInt(DatabaseFields.PARAGRAPHE_IS_FINAL) == 1)).build();
-    }
-    
-    public List<Paragraphe> getChildrenParagraphe(long storyId, long parentParagrapheId) throws SQLException {
-        List <Paragraphe> Childrens = new ArrayList<Paragraphe>();
-        try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_GET_CHILDREN_PARAGRAPHE)) {
-            preparedStatement.setLong(1, storyId);
-            preparedStatement.setLong(2, parentParagrapheId);
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                Paragraphe paragraphe = null;
-                while (resultSet.next()) {
-                    
-                    try {
-                        paragraphe = findParagraphe(resultSet.getLong(DatabaseFields.STORY_ID), 
-                                resultSet.getLong(DatabaseFields.PARAGRAPHE_ID)).get();
-                        Childrens.add(paragraphe);
-                    } catch (NoSuchElementException e) {
-                        
-                    }
-                    
-                }
-                return Childrens;
-            }
-        }
     }
 }

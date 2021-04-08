@@ -7,6 +7,7 @@ package actions;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -18,6 +19,7 @@ import org.apache.logging.log4j.Logger;
 import dao.DAOManager;
 import dao.InvitedDAO;
 import dao.ParagrapheDAO;
+import dao.ParentSectionDAO;
 import dao.StoryDAO;
 import dao.UserDAO;
 import jakarta.servlet.ServletException;
@@ -26,6 +28,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import models.Invited;
 import models.Paragraphe;
+import models.ParentSection;
 import models.Story;
 import models.User;
 import utils.DatabaseManager;
@@ -73,6 +76,7 @@ public class ShowParagrapheAction implements Action {
             ParagrapheDAO paragrapheDAO = daoFactory.getParagrapheDAO();
             UserDAO userDAO = daoFactory.getUserDAO();
             InvitedDAO invitedDAO = daoFactory.getInvitedDAO();
+            ParentSectionDAO parentSectionDAO = daoFactory.getParentSectionDAO();
 
             // get() car existence déjà vérifiée dans les filtres
             Story story = storyDAO.findStory(storyId).get();
@@ -94,10 +98,19 @@ public class ShowParagrapheAction implements Action {
             if (!invitedUsersIds.isEmpty()) {
                 invitedUsers = userDAO.findUsers(invitedUsersIds);
             }
-            
-            List<Paragraphe> children = paragrapheDAO.getChildrenParagraphe(storyId, paragrapheId);
 
-            setAttributes(request, story, paragraphe, connectedUser, author, invitedUsersIds, invitedUsers, children);
+            // Pas possible d'utiliser les streams car on doit handle une SQLException
+            List<ParentSection> parentSectionChildren = parentSectionDAO.findChildrenParagraphe(storyId, paragrapheId);
+            List<Paragraphe> paragrapheChildren = new ArrayList<Paragraphe>(parentSectionChildren.size());
+            Paragraphe paragrapheChild;
+            for (ParentSection parentSection : parentSectionChildren) {
+                paragrapheChild = paragrapheDAO
+                        .findParagraphe(parentSection.getStory_id(), parentSection.getParagraphe_id()).get();
+                paragrapheChildren.add(paragrapheChild);
+            }
+
+            setAttributes(request, story, paragraphe, connectedUser, author, invitedUsersIds, invitedUsers,
+                    paragrapheChildren);
 
             return true;
         });
@@ -130,7 +143,8 @@ public class ShowParagrapheAction implements Action {
         // On peut lire le paragraphe si:
         // - on en est l'auteur
         // - la story est publiée
-        // boolean canRead = (author.getId() == connectedUser.getId() || story.isPublished());
+        // boolean canRead = (author.getId() == connectedUser.getId() ||
+        // story.isPublished());
         // request.setAttribute("canRead", canRead);
 
         // On peut éditer la story ssi. un utilisateur est connecté et
