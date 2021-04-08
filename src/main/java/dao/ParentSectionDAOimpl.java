@@ -7,7 +7,7 @@ import java.sql.SQLException;
 
 import java.util.List;
 import java.util.ArrayList;
-import java.util.NoSuchElementException;
+
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -23,11 +23,7 @@ public class ParentSectionDAOimpl implements ParentSectionDAO {
     private static final Logger LOG = LogManager.getLogger();
 
     private final static String SQL_INSERT_PARENT_SECTION = "INSERT INTO \"Parent Section\" (\"story_id\", \"para_id\", \"parent_story_id\", \"parent_para_id\", \"parag_condition_story_id\", \"parag_condition_para_id\", \"choice_text\", \"choice_num\") VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-    private final static String SQL_GET_CHILDREN_PARAGRAPHE = "SELECT \"story_id\", \"para_id\", \"choice_text\", \"parag_condition_story_id\", \"parag_condition_para_id\"" +
-                    "FROM \"Parent Section\"" +
-                    "WHERE \"parent_story_id\" = ?" +
-                    "AND \"parent_para_id\" = ?" +
-                    "ORDER BY \"choice_num\"";
+    
     private Connection connection = null;
 
     public ParentSectionDAOimpl(Connection connection) {
@@ -49,30 +45,7 @@ public class ParentSectionDAOimpl implements ParentSectionDAO {
             preparedStatement.executeUpdate();
         }
     }
-    
-    public List<Paragraphe> getChildrenParagraphe(long storyId, long parentParagrapheId) throws SQLException {
-        List <Paragraphe> Childrens = new ArrayList<Paragraphe>();
-        try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_GET_CHILDREN_PARAGRAPHE)) {
-            preparedStatement.setLong(1, storyId);
-            preparedStatement.setLong(2, parentParagrapheId);
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                Paragraphe paragraphe = null;
-                ParagrapheDAO dao = new ParagrapheDAOimpl(connection);
-                while (resultSet.next()) {
-                    
-                    try {
-                        paragraphe = dao.findParagraphe(resultSet.getLong(DatabaseFields.STORY_ID), 
-                                resultSet.getLong(DatabaseFields.PARAGRAPHE_ID)).get();
-                        Childrens.add(paragraphe);
-                    } catch (NoSuchElementException e) {
-                        
-                    }
-                    
-                }
-                return Childrens;
-            }
-        }
-    }
+  
     
     private ParentSection getParentSection(ResultSet resultSet) throws SQLException {
         return ParentSection.builder().story_id(resultSet.getLong(DatabaseFields.STORY_ID))

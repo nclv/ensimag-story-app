@@ -42,6 +42,28 @@
         </nav>
         <h1>show_paragraphe.jsp</h1>
         <c:out value="${paragraphe.content}" />
+        <section>
+            <table>
+                <caption><h2>Choices</h2></caption>
+                <thead>
+                    <tr>
+                        <th>Paragraphe Id</th>
+                        <th>User Id</th>
+                        <th>Title</th>
+                    </tr>
+                </thead>
+                <c:forEach var="child" items="${children}">
+                    <tr>
+                        <td>
+                            <a href="${context}${Path.REDIRECT_SHOW_PARAGRAPHE}&story_id=${child.story_id}&paragraphe_id=${child.id}"> <c:out value="${child.id}" /></a>
+                        </td>
+                        <td><c:out value="${child.user_id}" /></td>
+                        <td><c:out value="${child.content}" /></td>
+                    </tr>
+                </c:forEach>
+            </table>
+        </section>
+
     </body>
     
     

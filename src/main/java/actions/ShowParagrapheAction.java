@@ -94,8 +94,10 @@ public class ShowParagrapheAction implements Action {
             if (!invitedUsersIds.isEmpty()) {
                 invitedUsers = userDAO.findUsers(invitedUsersIds);
             }
+            
+            List<Paragraphe> children = paragrapheDAO.getChildrenParagraphe(storyId, paragrapheId);
 
-            setAttributes(request, story, paragraphe, connectedUser, author, invitedUsersIds, invitedUsers);
+            setAttributes(request, story, paragraphe, connectedUser, author, invitedUsersIds, invitedUsers, children);
 
             return true;
         });
@@ -118,11 +120,12 @@ public class ShowParagrapheAction implements Action {
     }
 
     private void setAttributes(HttpServletRequest request, Story story, Paragraphe paragraphe, User connectedUser,
-            User author, Set<Long> invitedUsersIds, List<User> invitedUsers) {
+            User author, Set<Long> invitedUsersIds, List<User> invitedUsers, List<Paragraphe> children) {
         request.setAttribute("story", story);
         request.setAttribute("paragraphe", paragraphe);
         request.setAttribute("author", author);
         request.setAttribute("invitedUsers", invitedUsers);
+        request.setAttribute("children", children);
 
         // On peut lire le paragraphe si:
         // - on en est l'auteur

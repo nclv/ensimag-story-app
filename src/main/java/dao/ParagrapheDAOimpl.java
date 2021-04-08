@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.NoSuchElementException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -22,7 +23,11 @@ public class ParagrapheDAOimpl implements ParagrapheDAO {
     private final static String SQL_INSERT_PARAGRAPHE = "INSERT INTO \"Paragraphe\" (\"story_id\", \"user_id\", \"content\", \"is_final\") VALUES (?, ?, ?, ?)";
     private final static String SQL_UPDATE_PARAGRAPHE = "UPDATE \"Paragraphe\" SET \"story_id\"=?, \"user_id\"=?, \"content\"=?, \"is_final\"=? WHERE \"para_id\"=?";
     private final static String SQL_FIND_ALL_STORY_PARAGRAPHES = "SELECT * FROM \"Paragraphe\" WHERE \"story_id\"=?";;
-
+    private final static String SQL_GET_CHILDREN_PARAGRAPHE = "SELECT \"story_id\", \"para_id\", \"choice_text\", \"parag_condition_story_id\", \"parag_condition_para_id\"" +
+                    "FROM \"Parent Section\"" +
+                    "WHERE \"parent_story_id\" = ?" +
+                    "AND \"parent_para_id\" = ?" +
+                    "ORDER BY \"choice_num\"";
     private final static String SQL_GET_PARAGRAPHE_ID = "SELECT \"PARAGRAPHE_PARA_ID_SEQ\".currval FROM DUAL";
 
     private Connection connection = null;
@@ -114,5 +119,28 @@ public class ParagrapheDAOimpl implements ParagrapheDAO {
                 .story_id(resultSet.getLong(DatabaseFields.STORY_ID)).user_id(resultSet.getLong(DatabaseFields.USER_ID))
                 .content(resultSet.getString(DatabaseFields.PARAGRAPHE_CONTENT))
                 .last((resultSet.getInt(DatabaseFields.PARAGRAPHE_IS_FINAL) == 1)).build();
+    }
+    
+    public List<Paragraphe> getChildrenParagraphe(long storyId, long parentParagrapheId) throws SQLException {
+        List <Paragraphe> Childrens = new ArrayList<Paragraphe>();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_GET_CHILDREN_PARAGRAPHE)) {
+            preparedStatement.setLong(1, storyId);
+            preparedStatement.setLong(2, parentParagrapheId);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                Paragraphe paragraphe = null;
+                while (resultSet.next()) {
+                    
+                    try {
+                        paragraphe = findParagraphe(resultSet.getLong(DatabaseFields.STORY_ID), 
+                                resultSet.getLong(DatabaseFields.PARAGRAPHE_ID)).get();
+                        Childrens.add(paragraphe);
+                    } catch (NoSuchElementException e) {
+                        
+                    }
+                    
+                }
+                return Childrens;
+            }
+        }
     }
 }
