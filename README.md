@@ -2,13 +2,13 @@
 
 Dans notre application, l'utilisation du *pattern* MVC se fait à plusieurs échelles:
 - au niveau de l'architecture globale,
-  - **M**: les interfaces *DAOs* (notre *Business Model*),
+  - **M**: les interfaces des *DAOs* (notre *Business Model*),
   - **V**: le code HTML des pages JSP,
-  - **C**: les *servlets* (*Controller* et *Home* implémentés dans notre application) ainsi que les tags JSTL.
+  - **C**: les *filtres* (`/filters`) et *servlets* (`/servlets`) ainsi que les tags JSTL.
 - au niveau du développeur,
-  - **M**: les entités représentant le schéma SQL de la *database* (notre *Data Model*) et les implémentations des *DAOs*,
+  - **M**: les entités (*Beans*) représentant le schéma SQL de la *database* (notre *Data Model*) et les implémentations des *DAOs*,
   - **V**: les pages JSP,
-  - **C**: les actions dispatchées par le *Controller*,
+  - **C**: les actions (`/actions`) dispatchées par le *Controller*,
 - au niveau de l'utilisateur,
   - **M**: /,
   - **V**: le rendu HTML des pages JSP,
@@ -18,7 +18,9 @@ Nous avons choisi d'utiliser le *Front Controller Pattern*. Nous utilisons donc 
 
 Les *Actions* suivent le *Strategy Pattern*. Les classes concrètes représentant les actions implémentent la méthode *execute* de l'interface *Action*. La classe *ActionsMap* implémente le *Factory Method Pattern* en nous permettant de récupérer les implémentations de l'interface *Action* selon le protocole de la requête et le nom de l'action.
 
-Les *filtres* font usage du patron de conception *Chain of Responsability* lors de l'appel à la fonction *doFilter()*. Nous utilisons deux filtres: un pour l'encodage des pages en UTF-8 et un pour filtrer l'accès aux pages réservées aux utilisateurs identifiés.
+Nous utilisons le pattern *Data Access Object* (DAO). Nous avons donc des interfaces regroupant les opérations sur un modèle et leur implémentation pour le SGBD Oracle. Les DAOs sont accessibles par le pattern *Factory*. La classe *DAOManager* fait à la fois office de *Factory* pour les DAOs et de *Manager* - gestion des erreurs lors des opérations sur la BDD (query, transaction, rollback) - pour le SGBD Oracle. Elle aurait pu être nommée *OracleDAOManager*.
+
+Les *filtres* font usage du patron de conception *Chain of Responsability* lors de l'appel à la fonction *doFilter()*. Nous utilisons deux filtres spécifiques: un pour l'encodage des pages en UTF-8 et un pour filtrer l'accès aux pages réservées aux utilisateurs identifiés. Les autres filtres sont des filtres de validation. Ils vérifient que les paramètres de la requêtes sont corrects avant de réaliser les actions.
 
 # Resources
 - [web.xml init-param/context-param](https://stackoverflow.com/a/28393315)
