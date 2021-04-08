@@ -36,7 +36,7 @@
                 <input type="radio" id="private" name="open" value="private" ${param.open eq "private" ? "checked": ""}>
                 <label for="private">Private</label>
 
-                <textarea rows="10" cols="60" name="first_paragraphe_content" placeholder="Enter your first paragraphe content..." required>${not empty param.first_paragraphe_content ? param.first_paragraphe_content: ""}</textarea>
+                <textarea rows="10" cols="60" name="paragraphe_content" placeholder="Enter your first paragraphe content..." required>${not empty param.paragraphe_content ? param.paragraphe_content: ""}</textarea>
                 
                 <p> Is your paragraphe <strong>final</strong>? </p>
                 <input type="radio" id="final" name="is_final" value="final" required ${param.is_final eq "final" ? "checked": ""}>

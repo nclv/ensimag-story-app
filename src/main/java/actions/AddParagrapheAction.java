@@ -84,6 +84,7 @@ public class AddParagrapheAction implements Action {
             long paragrapheId = paragrapheDAO.saveParagraphe(paragraphe);
             LOG.error(paragrapheId + " " + paragraphe);
             
+
             return true;
         });
         if (result == null) {
@@ -94,8 +95,8 @@ public class AddParagrapheAction implements Action {
             return Path.PAGE_ADD_PARAGRAPHE;
         }
 
-        LOG.debug("AddParagraphe Action finished");
-        return Path.PAGE_SHOW_STORY;
+        LOG.error("AddParagraphe Action finished");
+        return Path.REDIRECT_SHOW_STORY + "&story_id=" + storyIdString;
     }
 
     private boolean validation(HttpServletRequest request, Optional<Redaction> invalidated) {

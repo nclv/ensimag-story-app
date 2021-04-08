@@ -1,6 +1,8 @@
 package filters;
 
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.util.Enumeration;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.logging.log4j.LogManager;
@@ -48,8 +50,18 @@ public class AuthenticationFilter implements Filter {
         if (loggedIn || !loginNeeded) {
             chain.doFilter(req, resp);
         } else {
+            // Get all parameters from the url
+            Enumeration<String> parameterNames = req.getParameterNames();
+            String parameters = "";
+            while (parameterNames.hasMoreElements()) {
+                String key = (String) parameterNames.nextElement();
+                String val = req.getParameter(key);
+                parameters += key + "=" + val + "&";
+                LOG.error("A= <" + key + "> Value<" + val + ">");
+            }
             // req.getRequestDispatcher(forward).forward(req, resp);
-            resp.sendRedirect(req.getContextPath() + forward + "?redirect=/controller?action=" + actionName);
+            resp.sendRedirect(req.getContextPath() + forward + "?redirect="
+                    + URLEncoder.encode("/controller?" + parameters, "UTF-8"));
         }
     }
 }

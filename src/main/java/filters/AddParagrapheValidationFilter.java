@@ -34,7 +34,7 @@ public class AddParagrapheValidationFilter implements Filter {
         LOG.error(canFilter);
 
         if (canFilter) {
-            String content = req.getParameter("first_paragraphe_content");
+            String content = req.getParameter("paragraphe_content");
             List<String> choices = Collections.list(req.getParameterNames()).stream()
                     .filter(parameterName -> parameterName.startsWith("choice_")).map(request::getParameter)
                     .collect(Collectors.toList());

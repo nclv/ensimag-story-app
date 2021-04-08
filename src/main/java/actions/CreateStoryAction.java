@@ -59,7 +59,7 @@ public class CreateStoryAction implements Action {
             story = Story.builder().open(open).user_id(user.getId()).published(true).build();
         }
 
-        String content = request.getParameter("first_paragraphe_content");
+        String content = request.getParameter("paragraphe_content");
 
         // Database operations
         Optional<Connection> connection = DatabaseManager.getConnection();

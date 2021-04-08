@@ -34,7 +34,7 @@ public class CreateStoryValidationFilter implements Filter {
         LOG.error(canFilter);
 
         if (canFilter) {
-            String content = req.getParameter("first_paragraphe_content");
+            String content = req.getParameter("paragraphe_content");
             boolean isFinal = req.getParameter("is_final").equals("final") ? true : false;
             List<String> choices = Collections.list(req.getParameterNames()).stream()
                     .filter(parameterName -> parameterName.startsWith("choice_")).map(request::getParameter)
