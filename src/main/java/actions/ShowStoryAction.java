@@ -106,7 +106,9 @@ public class ShowStoryAction implements Action {
     private boolean validation(HttpServletRequest request, User connectedUser, User author, Story story) {
         boolean valid = true;
         // Si la story n'est pas publiée et que je n'en suis pas l'auteur.
-        if (!story.isPublished() && connectedUser != null && author.getId() != connectedUser.getId()) {
+        // ou la story n'est pas publiée et aucun utilisateur n'est connecté
+        if (!story.isPublished()
+                && ((connectedUser != null && author.getId() != connectedUser.getId()) || connectedUser == null)) {
             LOG.error("The story is not published and you are not it's author: " + story + ", " + connectedUser + ", "
                     + author);
 
