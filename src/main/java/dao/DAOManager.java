@@ -39,6 +39,10 @@ public class DAOManager {
         return new InvitedDAOimpl(this.connection);
     }
 
+    public HistoricDAO getHistoricDAO() {
+        return new HistoricDAOimpl(this.connection);
+    }
+
     /* Wrappers */
 
     /**
