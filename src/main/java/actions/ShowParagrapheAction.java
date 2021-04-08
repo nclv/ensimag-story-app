@@ -31,6 +31,7 @@ import models.User;
 import utils.DatabaseManager;
 import utils.ErrorMessage;
 import utils.Path;
+import utils.Validation;
 
 /**
  *
@@ -80,6 +81,11 @@ public class ShowParagrapheAction implements Action {
             // get() car la story existe donc son auteur existe (intégrité BDD)
             User author = userDAO.findUser(story.getUser_id()).get();
 
+            boolean valid = validation(request, connectedUser, author, story);
+            if (!valid) {
+                return false;
+            }
+
             Set<Long> invitedUsersIds = invitedDAO.findAllInvitedUsers(storyId).stream().map(Invited::getUser_id)
                     .collect(Collectors.toSet());
             LOG.error(invitedUsersIds);
@@ -102,6 +108,10 @@ public class ShowParagrapheAction implements Action {
         LOG.error("ShowParagraphe Action finished");
 
         return Path.PAGE_SHOW_PARAGRAPHE;
+    }
+
+    private boolean validation(HttpServletRequest request, User connectedUser, User author, Story story) {
+        return Validation.published(request, connectedUser, author, story);
     }
 
     private void setAttributes(HttpServletRequest request, Story story, Paragraphe paragraphe, User connectedUser,

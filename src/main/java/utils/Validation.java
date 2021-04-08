@@ -14,6 +14,8 @@ import dao.UserDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import models.Story;
+import models.User;
 
 public final class Validation {
 
@@ -233,5 +235,20 @@ public final class Validation {
         }
 
         return true;
+    }
+
+    public static boolean published(HttpServletRequest request, User connectedUser, User author, Story story) {
+        boolean valid = true;
+        // Si la story n'est pas publiée et que je n'en suis pas l'auteur.
+        // ou la story n'est pas publiée et aucun utilisateur n'est connecté
+        if (!story.isPublished()
+                && ((connectedUser != null && author.getId() != connectedUser.getId()) || connectedUser == null)) {
+            LOG.error("The story is not published and you are not it's author: " + story + ", " + connectedUser + ", "
+                    + author);
+
+            request.setAttribute("error_message", ErrorMessage.get("story_not_published"));
+            valid = false;
+        }
+        return valid;
     }
 }

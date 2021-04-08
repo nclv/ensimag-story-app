@@ -26,6 +26,7 @@ import models.User;
 import utils.DatabaseManager;
 import utils.ErrorMessage;
 import utils.Path;
+import utils.Validation;
 
 public class ShowStoryAction implements Action {
 
@@ -70,7 +71,6 @@ public class ShowStoryAction implements Action {
             User author = userDAO.findUser(story.getUser_id()).get();
 
             boolean valid = validation(request, connectedUser, author, story);
-            LOG.error(valid);
             if (!valid) {
                 return false;
             }
@@ -104,18 +104,8 @@ public class ShowStoryAction implements Action {
     }
 
     private boolean validation(HttpServletRequest request, User connectedUser, User author, Story story) {
-        boolean valid = true;
-        // Si la story n'est pas publiée et que je n'en suis pas l'auteur.
-        // ou la story n'est pas publiée et aucun utilisateur n'est connecté
-        if (!story.isPublished()
-                && ((connectedUser != null && author.getId() != connectedUser.getId()) || connectedUser == null)) {
-            LOG.error("The story is not published and you are not it's author: " + story + ", " + connectedUser + ", "
-                    + author);
+        return Validation.published(request, connectedUser, author, story);
 
-            request.setAttribute("error_message", ErrorMessage.get("story_not_published"));
-            valid = false;
-        }
-        return valid;
     }
 
     private void setAttributes(HttpServletRequest request, Story story, List<Paragraphe> paragraphes,
