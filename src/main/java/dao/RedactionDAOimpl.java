@@ -16,6 +16,7 @@ public class RedactionDAOimpl implements RedactionDAO {
     private static final Logger LOG = LogManager.getLogger();
 
     private final static String SQL_INSERT_REDACTION = "INSERT INTO \"Redaction\" (\"user_id\", \"story_id\", \"para_id\", \"is_validated\") VALUES (?, ?, ?, ?)";
+    private final static String SQL_UPDATE_REDACTION = "UPDATE \"Redaction\" SET \"is_validated\"=? WHERE \"user_id\"=? AND \"story_id\"=? AND \"para_id\"=?";
 
     private Connection connection = null;
 
@@ -30,6 +31,18 @@ public class RedactionDAOimpl implements RedactionDAO {
             preparedStatement.setLong(2, redaction.getStory_id());
             preparedStatement.setLong(3, redaction.getParagraphe_id());
             preparedStatement.setLong(4, redaction.isValidated() ? 1 : 0);
+
+            preparedStatement.executeUpdate();
+        }
+    }
+
+    @Override
+    public void updateRedaction(Redaction redaction) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_UPDATE_REDACTION)) {
+            preparedStatement.setLong(1, redaction.isValidated() ? 1 : 0);
+            preparedStatement.setLong(2, redaction.getUser_id());
+            preparedStatement.setLong(3, redaction.getStory_id());
+            preparedStatement.setLong(4, redaction.getParagraphe_id());
 
             preparedStatement.executeUpdate();
         }
