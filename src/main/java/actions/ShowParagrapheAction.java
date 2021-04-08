@@ -104,6 +104,9 @@ public class ShowParagrapheAction implements Action {
             request.setAttribute("error_message", ErrorMessage.get("database_query_error"));
             return Path.PAGE_ERROR;
         }
+        if (!(boolean) result) {
+            return Path.PAGE_ERROR;
+        }
 
         LOG.error("ShowParagraphe Action finished");
 
