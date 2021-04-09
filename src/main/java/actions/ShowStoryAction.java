@@ -13,6 +13,7 @@ import org.apache.logging.log4j.Logger;
 import dao.DAOManager;
 import dao.InvitedDAO;
 import dao.ParagrapheDAO;
+import dao.RedactionDAO;
 import dao.StoryDAO;
 import dao.UserDAO;
 import jakarta.servlet.ServletException;
@@ -21,6 +22,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import models.Invited;
 import models.Paragraphe;
+import models.Redaction;
 import models.Story;
 import models.User;
 import utils.DatabaseManager;
@@ -62,6 +64,7 @@ public class ShowStoryAction implements Action {
             ParagrapheDAO paragrapheDAO = daoFactory.getParagrapheDAO();
             UserDAO userDAO = daoFactory.getUserDAO();
             InvitedDAO invitedDAO = daoFactory.getInvitedDAO();
+            RedactionDAO redactionDAO = daoFactory.getRedactionDAO();
 
             // get() car existence déjà vérifiée dans les filtres
             Story story = storyDAO.findStory(storyId).get();
@@ -69,6 +72,16 @@ public class ShowStoryAction implements Action {
 
             // get() car la story existe donc son auteur existe (intégrité BDD)
             User author = userDAO.findUser(story.getUser_id()).get();
+
+            // On vérifie que l'utilisateur actuel n'édite pas un autre paragraphe. (GET)
+            Redaction invalidated = null;
+            if (connectedUser != null) {
+                List<Redaction> invalidatedList = redactionDAO.getInvalidated(connectedUser.getId());
+                LOG.error(invalidatedList);
+                if (!invalidatedList.isEmpty()) {
+                    invalidated = invalidatedList.get(0);
+                }
+            }
 
             boolean valid = validation(request, connectedUser, author, story);
             if (!valid) {
@@ -84,7 +97,8 @@ public class ShowStoryAction implements Action {
                 invitedUsers = userDAO.findUsers(invitedUsersIds);
             }
 
-            setAttributes(request, story, paragraphes, connectedUser, author, invitedUsersIds, invitedUsers);
+            setAttributes(request, story, paragraphes, connectedUser, author, invitedUsersIds, invitedUsers,
+                    invalidated);
 
             return true;
         });
@@ -109,11 +123,13 @@ public class ShowStoryAction implements Action {
     }
 
     private void setAttributes(HttpServletRequest request, Story story, List<Paragraphe> paragraphes,
-            User connectedUser, User author, Set<Long> invitedUsersIds, List<User> invitedUsers) {
+            User connectedUser, User author, Set<Long> invitedUsersIds, List<User> invitedUsers,
+            Redaction invalidated) {
         request.setAttribute("story", story);
         request.setAttribute("paragraphes", paragraphes);
         request.setAttribute("author", author);
         request.setAttribute("invitedUsers", invitedUsers);
+        request.setAttribute("invalidated", invalidated);
 
         // On peut lire la story ssi:
         // - il existe au moins un paragraphe final

@@ -100,7 +100,18 @@
                 </thead>
                 <c:forEach var="paragraphe" items="${paragraphes}">
                     <tr>
-                        <td> <a href="${context}${Path.REDIRECT_SHOW_PARAGRAPHE}&story_id=${story.id}&paragraphe_id=${paragraphe.id}"> <c:out value="${paragraphe.id}" /></td>
+                        <td> 
+                            <c:choose>
+                                <c:when test="${not empty invalidated && invalidated.paragraphe_id == paragraphe.id && invalidated.story_id == paragraphe.story_id}">
+                                    <span style="background-color: #F08080">
+                                        <a href="${context}${Path.REDIRECT_SHOW_PARAGRAPHE}&story_id=${story.id}&paragraphe_id=${paragraphe.id}"> <c:out value="${paragraphe.id}" />
+                                    </span>
+                                </c:when>
+                                <c:otherwise>
+                                    <a href="${context}${Path.REDIRECT_SHOW_PARAGRAPHE}&story_id=${story.id}&paragraphe_id=${paragraphe.id}"> <c:out value="${paragraphe.id}" />
+                                </c:otherwise>
+                            </c:choose>
+                        </td>
                         <td><c:out value="${paragraphe.content}" /></td>
                         <td><c:out value="${paragraphe.last}" /></td>
                     </tr>

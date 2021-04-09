@@ -72,7 +72,7 @@ public class EditParagraphePostAction implements Action {
 
         DAOManager daoManager = new DAOManager(connection.get());
 
-        Object result = daoManager.executeAndClose((daoFactory) -> {
+        Object result = daoManager.transactionAndClose((daoFactory) -> {
             ParagrapheDAO paragrapheDAO = daoFactory.getParagrapheDAO();
             RedactionDAO redactionDAO = daoFactory.getRedactionDAO();
 
