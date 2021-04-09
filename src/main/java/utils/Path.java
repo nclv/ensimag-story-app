@@ -15,7 +15,7 @@ public final class Path {
     public static final String PAGE_LOGIN = JSP_PATH_ACCESSIBLE + "login.jsp";
     public static final String PAGE_REGISTER = JSP_PATH_ACCESSIBLE + "register.jsp";
     public static final String PAGE_CREATE_STORY = JSP_PATH_ACCESSIBLE + "authenticated_user/create_story.jsp";
-    public static final String PAGE_ADD_PARAGRAPHE = JSP_PATH_ACCESSIBLE + "authenticated_user/add_paragraphe.jsp";
+    public static final String PAGE_EDIT_PARAGRAPHE = JSP_PATH_ACCESSIBLE + "authenticated_user/edit_paragraphe.jsp";
     public static final String PAGE_UPDATE_PASSWORD = JSP_PATH_ACCESSIBLE + "authenticated_user/update_password.jsp";
     /* Private files hidden in WEB-INF */
     public static final String PAGE_SHOW_STORY = JSP_PATH_PRIVATE + "show_story.jsp";
@@ -33,7 +33,7 @@ public final class Path {
     public static final String REDIRECT_CREATE_STORY = "/controller?action=create_story";
     public static final String REDIRECT_SHOW_USER_STORIES = "/controller?action=show_user_stories";
     public static final String REDIRECT_SHOW_STORY = "/controller?action=show_story";
-    public static final String REDIRECT_ADD_PARAGRAPHE = "/controller?action=add_paragraphe";
+    public static final String REDIRECT_EDIT_PARAGRAPHE = "/controller?action=edit_paragraphe";
     public static final String REDIRECT_UPDATE_PASSWORD = "/controller?action=update_password";
     public static final String REDIRECT_INVITE_USERS = "/controller?action=invite_users";
     public static final String REDIRECT_READ_STORY = "/controller?action=read_story";

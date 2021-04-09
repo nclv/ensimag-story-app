@@ -36,8 +36,8 @@ public final class ActionsMap {
         actions.put("POST/register", new RegisterAction());
         actions.put("GET/create_story", (request, response) -> Path.PAGE_CREATE_STORY); // PRG pattern
         actions.put("POST/create_story", new CreateStoryAction());
-        actions.put("GET/add_paragraphe", (request, response) -> Path.PAGE_ADD_PARAGRAPHE);
-        actions.put("POST/add_paragraphe", new AddParagrapheAction());
+        actions.put("GET/edit_paragraphe", (request, response) -> Path.PAGE_EDIT_PARAGRAPHE);
+        actions.put("POST/edit_paragraphe", new EditParagrapheAction());
         actions.put("GET/update_password", (request, response) -> Path.PAGE_UPDATE_PASSWORD);
         actions.put("POST/update_password", new UpdatePasswordAction());
         actions.put("GET/invite_users", new InviteUsersGetAction());

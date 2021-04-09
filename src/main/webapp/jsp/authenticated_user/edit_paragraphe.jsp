@@ -28,12 +28,12 @@
         <nav>
             <a href="${context}${Path.REDIRECT_HOME}"><img alt="Logo" src="https://via.placeholder.com/200x70?text=Logo" height="70"></a>
         </nav>
-        <h1> add_paragraphe.jsp </h1>
+        <h1> edit_paragraphe.jsp </h1>
     </header>
     
     <main>
         <section>
-            <form action="${context}${Path.REDIRECT_ADD_PARAGRAPHE}&story_id=${param.story_id}" method="post">
+            <form action="${context}${Path.REDIRECT_EDIT_PARAGRAPHE}&story_id=${param.story_id}" method="post">
                 <strong>Title</strong>:<input type="text" name="title" value="${param.title}"><br>
 
                 <textarea rows="10" cols="60" name="paragraphe_content" placeholder="Enter your first paragraphe content..." required>${not empty param.paragraphe_content ? param.paragraphe_content: ""}</textarea>

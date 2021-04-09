@@ -17,7 +17,7 @@ import utils.Path;
 import utils.Validation;
 
 @WebFilter("/controller")
-public class AddParagrapheGetValidationFilter implements Filter {
+public class EditParagraphePostValidationFilter implements Filter {
     private static final Logger LOG = LogManager.getLogger();
 
     @Override
@@ -27,12 +27,11 @@ public class AddParagrapheGetValidationFilter implements Filter {
         HttpServletResponse resp = (HttpServletResponse) response;
 
         String actionName = req.getMethod() + "/" + req.getParameter("action");
-        boolean canFilter = actionName.equals("GET/add_paragraphe");
+        boolean canFilter = actionName.equals("POST/add_paragraphe");
         LOG.error(actionName);
         LOG.error(canFilter);
 
-        if (!canFilter || (canFilter && Validation.loggedIn(req, resp, Path.PAGE_LOGIN)
-                && Validation.invalidated(req, resp, Path.PAGE_ERROR))) {
+        if (!canFilter || (canFilter && Validation.content(req, resp, Path.PAGE_EDIT_PARAGRAPHE))) {
             chain.doFilter(req, resp);
         }
     }

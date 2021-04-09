@@ -28,7 +28,7 @@ import utils.DatabaseManager;
 import utils.ErrorMessage;
 import utils.Path;
 
-public class AddParagrapheAction implements Action {
+public class EditParagrapheAction implements Action {
 
     private static final Logger LOG = LogManager.getLogger();
 
@@ -63,7 +63,7 @@ public class AddParagrapheAction implements Action {
         if (connection.isEmpty()) {
             request.setAttribute("error_message", ErrorMessage.get("connection_error"));
             request.setAttribute("choices", choices);
-            return Path.PAGE_ADD_PARAGRAPHE;
+            return Path.PAGE_EDIT_PARAGRAPHE;
         }
 
 
@@ -85,10 +85,10 @@ public class AddParagrapheAction implements Action {
         });
         if (result == null) {
             request.setAttribute("error_message", ErrorMessage.get("database_paragraphe_create_error"));
-            return Path.PAGE_ADD_PARAGRAPHE;
+            return Path.PAGE_EDIT_PARAGRAPHE;
         }
         if (!(boolean) result) {
-            return Path.PAGE_ADD_PARAGRAPHE;
+            return Path.PAGE_EDIT_PARAGRAPHE;
         }
 
         LOG.error("AddParagraphe Action finished");
