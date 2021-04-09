@@ -27,7 +27,7 @@ public class EditParagrapheGetValidationFilter implements Filter {
         HttpServletResponse resp = (HttpServletResponse) response;
 
         String actionName = req.getMethod() + "/" + req.getParameter("action");
-        boolean canFilter = actionName.equals("GET/add_paragraphe");
+        boolean canFilter = actionName.equals("GET/edit_paragraphe");
         LOG.error(actionName);
         LOG.error(canFilter);
 

@@ -1,5 +1,5 @@
 <%-- 
-    Document   : add_paragraphe
+    Document   : edit_paragraphe
     Created on : Mar 29, 2021, 5:04:51 PM
     Author     : vincent
 --%>
@@ -18,7 +18,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
-    <title>Add Paragraphe</title>
+    <title>Edit Paragraphe</title>
 
     <script type="text/javascript" src="${context}/utils.js"></script>
 </head>
@@ -68,7 +68,7 @@
 
                 <input type="button" name="addMoreFields" onclick="moreFields()" value="Add a choice." />
 
-                <input type="submit" name="add_paragraphe" value="Add my paragraphe">
+                <input type="submit" name="edit_paragraphe" value="Edit my paragraphe">
             </form>
         </section>
         <c:if test="${not empty error_message}">

@@ -19,6 +19,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import models.Redaction;
 import models.Story;
 import models.User;
 
@@ -83,7 +84,9 @@ public final class Validation {
         Object result = daoManager.executeAndClose((daoFactory) -> {
             RedactionDAO redactionDAO = daoFactory.getRedactionDAO();
             // On vérifie que l'utilisateur actuel n'édite pas un autre paragraphe. (GET)
-            return redactionDAO.getInvalidated(user.getId()).isPresent();
+            Optional<Redaction> invalidated = redactionDAO.getInvalidated(user.getId());
+            LOG.error(invalidated);
+            return invalidated.isPresent();
         });
         if (result == null) {
             LOG.error("Database query error.");
@@ -91,7 +94,7 @@ public final class Validation {
             setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("database_query_error"));
             return false;
         }
-        if (!(boolean) result) {
+        if ((boolean) result) {
             LOG.error("You are writing another paragraphe ");
 
             setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("redaction_invalidated"));

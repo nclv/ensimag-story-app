@@ -28,7 +28,7 @@ import utils.DatabaseManager;
 import utils.ErrorMessage;
 import utils.Path;
 
-public class EditParagrapheAction implements Action {
+public class EditParagraphePostAction implements Action {
 
     private static final Logger LOG = LogManager.getLogger();
 
@@ -37,7 +37,7 @@ public class EditParagrapheAction implements Action {
     @Override
     public String execute(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        LOG.debug("AddParagraphe Action starts");
+        LOG.debug("EditParagraphePost Action starts");
 
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
@@ -79,7 +79,7 @@ public class EditParagrapheAction implements Action {
             LOG.error(paragrapheId + " " + paragraphe);
             
             // TODO:
-            // valider l'entrée crée dans AddParagrapheActionGet
+            // valider l'entrée crée dans EditParagrapheActionGet
 
             return true;
         });
@@ -91,7 +91,7 @@ public class EditParagrapheAction implements Action {
             return Path.PAGE_EDIT_PARAGRAPHE;
         }
 
-        LOG.error("AddParagraphe Action finished");
+        LOG.error("EditParagraphePost Action finished");
         return Path.REDIRECT_SHOW_STORY + "&story_id=" + storyIdString;
     }
 }
