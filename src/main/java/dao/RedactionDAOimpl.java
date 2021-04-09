@@ -4,7 +4,8 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Optional;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -51,15 +52,21 @@ public class RedactionDAOimpl implements RedactionDAO {
     }
 
     @Override
-    public Optional<Redaction> getInvalidated(long userId) throws SQLException {
-        Redaction redaction = null;
+    public List<Redaction> getInvalidated(long userId) throws SQLException {
+        List<Redaction> redactions = new ArrayList<Redaction>();
         try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_FIND_INVALIDATED)) {
             preparedStatement.setLong(1, userId);
 
-            redaction = getRedaction(preparedStatement);
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                Redaction redaction = null;
+                while (resultSet.next()) {
+                    redaction = getRedaction(resultSet);
+                    redactions.add(redaction);
+                }
+            }
         }
 
-        return Optional.ofNullable(redaction);
+        return redactions;
     }
 
     private Redaction getRedaction(PreparedStatement preparedStatement) throws SQLException {

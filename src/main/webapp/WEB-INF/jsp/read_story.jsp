@@ -22,7 +22,7 @@
             <ul>
                 <%-- Un utilisateur connecté --%>
                 <c:if test="${not empty user}">
-                    <li><a href="${context}${Path.PAGE_CREATE_STORY}"> Create a Story </a></li>
+                    <li><a href="${context}${Path.REDIRECT_CREATE_STORY}"> Create a Story </a></li>
                     <%-- Story éditable (voir conditions dans l'action) --%>
                     <%-- <c:if test="${not empty canEditStory}">
                         <li><a href="${context}${Path.REDIRECT_EDIT_PARAGRAPHE}&story_id=${story.id}"> Edit Paragraphe </a><li>

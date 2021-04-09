@@ -72,6 +72,12 @@ public final class Validation {
         HttpSession session = req.getSession();
         User user = (User) session.getAttribute("user");
 
+        String storyIdString = req.getParameter("story_id");
+        long storyId = Long.parseLong(storyIdString);
+
+        String paragrapheIdString = req.getParameter("paragraphe_id");
+        long paragrapheId = Long.parseLong(paragrapheIdString);
+
         // Database operations
         Optional<Connection> connection = DatabaseManager.getConnection();
         if (connection.isEmpty()) {
@@ -83,10 +89,22 @@ public final class Validation {
 
         Object result = daoManager.executeAndClose((daoFactory) -> {
             RedactionDAO redactionDAO = daoFactory.getRedactionDAO();
+
             // On vérifie que l'utilisateur actuel n'édite pas un autre paragraphe. (GET)
-            Optional<Redaction> invalidated = redactionDAO.getInvalidated(user.getId());
+            List<Redaction> invalidated = redactionDAO.getInvalidated(user.getId());
             LOG.error(invalidated);
-            return invalidated.isPresent();
+
+            // il n'y a pas de paragraphe non validé
+            if (invalidated.isEmpty()) {
+                return true;
+            }
+
+            // le paragraphe que l'on veut éditer est celui non validé
+            Redaction redacting = invalidated.get(0);
+            if (redacting.getStory_id() == storyId && redacting.getParagraphe_id() == paragrapheId) {
+                return true;
+            }
+            return false;
         });
         if (result == null) {
             LOG.error("Database query error.");
@@ -94,7 +112,7 @@ public final class Validation {
             setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("database_query_error"));
             return false;
         }
-        if ((boolean) result) {
+        if (!(boolean) result) {
             LOG.error("You are writing another paragraphe ");
 
             setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("redaction_invalidated"));

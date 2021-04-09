@@ -32,6 +32,7 @@ public class EditParagrapheGetValidationFilter implements Filter {
         LOG.error(canFilter);
 
         if (!canFilter || (canFilter && Validation.loggedIn(req, resp, Path.PAGE_LOGIN)
+                && Validation.storyId(req, resp, Path.PAGE_ERROR) && Validation.paragrapheId(req, resp, Path.PAGE_ERROR)
                 && Validation.invalidated(req, resp, Path.PAGE_ERROR))) {
             chain.doFilter(req, resp);
         }

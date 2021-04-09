@@ -33,10 +33,10 @@
     
     <main>
         <section>
-            <form action="${context}${Path.REDIRECT_EDIT_PARAGRAPHE}&story_id=${param.story_id}" method="post">
+            <form action="${context}${Path.REDIRECT_EDIT_PARAGRAPHE}&story_id=${param.story_id}&paragraphe_id=${param.paragraphe_id}" method="post">
                 <strong>Title</strong>:<input type="text" name="title" value="${param.title}"><br>
 
-                <textarea rows="10" cols="60" name="paragraphe_content" placeholder="Enter your first paragraphe content..." required>${not empty param.paragraphe_content ? param.paragraphe_content: ""}</textarea>
+                <textarea rows="10" cols="60" name="paragraphe_content" placeholder="Enter your first paragraphe content..." required>${not empty paragraphe_content ? paragraphe_content: ""}</textarea>
                 
                 <p> Is your paragraphe <strong>final</strong>? </p>
                 <input type="radio" id="final" name="is_final" value="final" required ${param.is_final eq "final" ? "checked": ""}>

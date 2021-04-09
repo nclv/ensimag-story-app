@@ -22,7 +22,7 @@
             <a href="${context}${Path.REDIRECT_HOME}"><img alt="Logo" src="https://via.placeholder.com/200x70?text=Logo" height="70"></a>
             <ul>
                 <c:if test="${not empty user}">
-                    <li><a href="${context}${Path.PAGE_CREATE_STORY}"> Create a Story </a></li>
+                    <li><a href="${context}${Path.REDIRECT_CREATE_STORY}"> Create a Story </a></li>
                     <li><a href="${context}${Path.REDIRECT_LOGOUT}"> Logout </a></li>
                     <li> ${user.name} </li>
                 </c:if>

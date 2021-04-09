@@ -28,7 +28,8 @@ public class ParagrapheIdValidationFilter implements Filter {
         HttpServletResponse resp = (HttpServletResponse) response;
 
         String actionName = req.getMethod() + "/" + req.getParameter("action");
-        boolean canFilter = actionName.equals("GET/show_paragraphe");
+        boolean canFilter = actionName.equals("GET/show_paragraphe") || actionName.equals("GET/edit_paragraphe")
+                || actionName.equals("POST/edit_paragraphe");
         LOG.error(actionName);
         LOG.error(canFilter);
 
