@@ -37,9 +37,9 @@
     <main>
         <hr>
         <section>
-        <p> Le créateur de cette histoire est <c:out value="${author.name}" />. </p>
-        <br>
-        <p> Les auteurs de cette histoire sont: 
+        <p> 
+        Le créateur de cette histoire est <c:out value="${author.name}" />. <br>
+        Les auteurs de cette histoire sont: 
         <c:forEach var="redactor" items="${redactors}">
             <c:out value="${redactor.name}" /> ${!loop.last ? ',' : ''}
         </c:forEach>
