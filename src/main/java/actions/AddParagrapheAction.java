@@ -23,7 +23,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import models.Paragraphe;
-import models.Redaction;
 import models.User;
 import utils.DatabaseManager;
 import utils.ErrorMessage;
@@ -74,13 +73,6 @@ public class AddParagrapheAction implements Action {
             ParagrapheDAO paragrapheDAO = daoFactory.getParagrapheDAO();
             RedactionDAO redactionDAO = daoFactory.getRedactionDAO();
 
-            // TODO: déplacer dans AddParagrapheActionGet
-            // On vérifie que l'utilisateur actuel n'édite pas un autre paragraphe. (GET)
-            Optional<Redaction> invalidated = redactionDAO.getInvalidated(user.getId());
-            boolean valid = validation(request, invalidated);
-            if (!valid) {
-                return valid;
-            }
             // créer une entrée non validée dans Redaction (GET)
 
             long paragrapheId = paragrapheDAO.saveParagraphe(paragraphe);
@@ -101,16 +93,5 @@ public class AddParagrapheAction implements Action {
 
         LOG.error("AddParagraphe Action finished");
         return Path.REDIRECT_SHOW_STORY + "&story_id=" + storyIdString;
-    }
-
-    private boolean validation(HttpServletRequest request, Optional<Redaction> invalidated) {
-        boolean valid = true;
-        if (invalidated.isPresent()) {
-            LOG.error("You are writing another paragraphe: " + invalidated);
-
-            request.setAttribute("error_message", ErrorMessage.get("redaction_invalidated"));
-            valid = false;
-        }
-        return valid;
     }
 }

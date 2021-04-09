@@ -17,6 +17,7 @@ import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import utils.Path;
+import utils.Validation;
 
 @WebFilter("/controller")
 public class CreateStoryValidationFilter implements Filter {
@@ -34,25 +35,18 @@ public class CreateStoryValidationFilter implements Filter {
         LOG.error(canFilter);
 
         if (canFilter) {
-            String content = req.getParameter("paragraphe_content");
             boolean isFinal = req.getParameter("is_final").equals("final") ? true : false;
             List<String> choices = Collections.list(req.getParameterNames()).stream()
                     .filter(parameterName -> parameterName.startsWith("choice_")).map(request::getParameter)
                     .collect(Collectors.toList());
 
-            if (content == null || content.trim().isEmpty()) {
-                LOG.error("There is no content --> [" + content + "]");
-
-                request.setAttribute("error_message", "Enter a first paragraphe.");
-                request.setAttribute("choices", choices);
-                req.getRequestDispatcher(Path.PAGE_CREATE_STORY).include(req, resp);
-            } else if (request.getParameter("create_and_publish") != null && isFinal == false) {
+            if (request.getParameter("create_and_publish") != null && isFinal == false) {
                 LOG.error("Your can't published a story without any final paragraphe.");
 
                 request.setAttribute("error_message", "You need to have a final paragraphe to publish your story.");
                 request.setAttribute("choices", choices);
                 req.getRequestDispatcher(Path.PAGE_CREATE_STORY).include(req, resp);
-            } else {
+            } else if (Validation.content(req, resp, Path.PAGE_CREATE_STORY)){
                 chain.doFilter(req, resp);
             }
         } else {

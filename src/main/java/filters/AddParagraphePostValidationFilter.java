@@ -1,9 +1,6 @@
 package filters;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,9 +14,10 @@ import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import utils.Path;
+import utils.Validation;
 
 @WebFilter("/controller")
-public class AddParagrapheValidationFilter implements Filter {
+public class AddParagraphePostValidationFilter implements Filter {
     private static final Logger LOG = LogManager.getLogger();
 
     @Override
@@ -33,22 +31,7 @@ public class AddParagrapheValidationFilter implements Filter {
         LOG.error(actionName);
         LOG.error(canFilter);
 
-        if (canFilter) {
-            String content = req.getParameter("paragraphe_content");
-            List<String> choices = Collections.list(req.getParameterNames()).stream()
-                    .filter(parameterName -> parameterName.startsWith("choice_")).map(request::getParameter)
-                    .collect(Collectors.toList());
-
-            if (content == null || content.trim().isEmpty()) {
-                LOG.error("There is no content --> [" + content + "]");
-
-                request.setAttribute("error_message", "Enter a first paragraphe.");
-                request.setAttribute("choices", choices);
-                req.getRequestDispatcher(Path.PAGE_ADD_PARAGRAPHE).include(req, resp);
-            } else {
-                chain.doFilter(req, resp);
-            }
-        } else {
+        if (!canFilter || (canFilter && Validation.content(req, resp, Path.PAGE_ADD_PARAGRAPHE))) {
             chain.doFilter(req, resp);
         }
     }

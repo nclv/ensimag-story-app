@@ -2,18 +2,23 @@ package utils;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import dao.DAOManager;
 import dao.ParagrapheDAO;
+import dao.RedactionDAO;
 import dao.StoryDAO;
 import dao.UserDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import models.Story;
 import models.User;
 
@@ -29,6 +34,70 @@ public final class Validation {
 
     public static boolean emptyString(String string) {
         return string == null || string.trim().isEmpty();
+    }
+
+    public static boolean loggedIn(HttpServletRequest req, HttpServletResponse resp, String forwardPage)
+            throws ServletException, IOException {
+        HttpSession session = req.getSession(false);
+        boolean valid = true;
+        if (!(session != null && session.getAttribute("user") != null)) {
+            LOG.error("You are not logged in.");
+            valid = false;
+
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("not_logged"));
+        }
+        return valid;
+    }
+
+    public static boolean content(HttpServletRequest req, HttpServletResponse resp, String forwardPage)
+            throws ServletException, IOException {
+        String content = req.getParameter("paragraphe_content");
+        List<String> choices = Collections.list(req.getParameterNames()).stream()
+                .filter(parameterName -> parameterName.startsWith("choice_")).map(req::getParameter)
+                .collect(Collectors.toList());
+        boolean valid = true;
+        if (emptyString(content)) {
+            LOG.error("There is no content --> [" + content + "]");
+            valid = false;
+
+            req.setAttribute("choices", choices);
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("empty_content"));
+        }
+        return valid;
+    }
+
+    public static boolean invalidated(HttpServletRequest req, HttpServletResponse resp, String forwardPage)
+            throws ServletException, IOException {
+        HttpSession session = req.getSession();
+        User user = (User) session.getAttribute("user");
+
+        // Database operations
+        Optional<Connection> connection = DatabaseManager.getConnection();
+        if (connection.isEmpty()) {
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("connection_error"));
+            return false;
+        }
+
+        DAOManager daoManager = new DAOManager(connection.get());
+
+        Object result = daoManager.executeAndClose((daoFactory) -> {
+            RedactionDAO redactionDAO = daoFactory.getRedactionDAO();
+            // On vérifie que l'utilisateur actuel n'édite pas un autre paragraphe. (GET)
+            return redactionDAO.getInvalidated(user.getId()).isPresent();
+        });
+        if (result == null) {
+            LOG.error("Database query error.");
+
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("database_query_error"));
+            return false;
+        }
+        if (!(boolean) result) {
+            LOG.error("You are writing another paragraphe ");
+
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("redaction_invalidated"));
+            return false;
+        }
+        return true;
     }
 
     public static boolean usernamePassword(HttpServletRequest req, HttpServletResponse resp, String forwardPage)

@@ -18,11 +18,8 @@ public class ParentSectionDAOimpl implements ParentSectionDAO {
     private static final Logger LOG = LogManager.getLogger();
 
     private final static String SQL_INSERT_PARENT_SECTION = "INSERT INTO \"Parent Section\" (\"story_id\", \"para_id\", \"parent_story_id\", \"parent_para_id\", \"parag_condition_story_id\", \"parag_condition_para_id\", \"choice_text\", \"choice_num\") VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-    private final static String SQL_FIND_CHILDREN_PARAGRAPHE = "SELECT \"story_id\", \"para_id\", \"choice_text\", \"parag_condition_story_id\", \"parag_condition_para_id\"" +
-                    "FROM \"Parent Section\"" +
-                    "WHERE \"parent_story_id\" = ?" +
-                    "AND \"parent_para_id\" = ?" +
-                    "ORDER BY \"choice_num\"";
+    private final static String SQL_FIND_CHILDREN_PARAGRAPHE = "SELECT *" + "FROM \"Parent Section\""
+            + "WHERE \"parent_story_id\" = ?" + "AND \"parent_para_id\" = ?" + "ORDER BY \"choice_num\"";
 
     private Connection connection = null;
 
@@ -52,7 +49,7 @@ public class ParentSectionDAOimpl implements ParentSectionDAO {
         try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_FIND_CHILDREN_PARAGRAPHE)) {
             preparedStatement.setLong(1, storyId);
             preparedStatement.setLong(2, parentParagrapheId);
-            
+
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 ParentSection parentSection = null;
                 while (resultSet.next()) {
@@ -63,8 +60,7 @@ public class ParentSectionDAOimpl implements ParentSectionDAO {
         }
         return children;
     }
-  
-    
+
     private ParentSection getParentSection(ResultSet resultSet) throws SQLException {
         return ParentSection.builder().story_id(resultSet.getLong(DatabaseFields.STORY_ID))
                 .paragraphe_id(resultSet.getLong(DatabaseFields.PARAGRAPHE_ID))

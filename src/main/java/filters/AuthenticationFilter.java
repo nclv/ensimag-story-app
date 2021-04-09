@@ -17,8 +17,8 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 import utils.Path;
+import utils.Validation;
 
 @WebFilter(urlPatterns = { "/jsp/authenticated_user/*", "/WEB-INF/jsp/authenticated_user/*", "/controller" })
 public class AuthenticationFilter implements Filter {
@@ -31,7 +31,6 @@ public class AuthenticationFilter implements Filter {
         HttpServletRequest req = (HttpServletRequest) request;
         HttpServletResponse resp = (HttpServletResponse) response;
 
-        HttpSession session = req.getSession(false);
         String forward = Path.PAGE_LOGIN;
 
         // On filtre si l'action du controller le nécessite et on redirige sur
@@ -45,9 +44,7 @@ public class AuthenticationFilter implements Filter {
         LOG.error(actionName);
         LOG.error(loginNeeded);
 
-        boolean loggedIn = session != null && session.getAttribute("user") != null;
-        LOG.error(loggedIn);
-        if (loggedIn || !loginNeeded) {
+        if (Validation.loggedIn(req, resp, forward) || !loginNeeded) {
             chain.doFilter(req, resp);
         } else {
             // Get all parameters from the url
