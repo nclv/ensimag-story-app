@@ -460,13 +460,6 @@ public final class Validation {
     public static boolean finalChoice(HttpServletRequest req, HttpServletResponse resp, String forwardPage)
             throws ServletException, IOException {
 
-        // Récupération de l'ID de la story et du paragraphe
-        String storyIdString = req.getParameter("story_id");
-        long storyId = Long.parseLong(storyIdString);
-
-        String paragrapheIdString = req.getParameter("paragraphe_id");
-        long paragrapheId = Long.parseLong(paragrapheIdString);
-        
         List<String> choices = Collections.list(req.getParameterNames()).stream()
                 .filter(parameterName -> parameterName.startsWith("choice_")).map(req::getParameter)
                 .filter(item -> !item.isEmpty()).collect(Collectors.toList());
@@ -493,10 +486,27 @@ public final class Validation {
             ParentSectionDAO parentSectionDAO = daoFactory.getParentSectionDAO();
             ParagrapheDAO paragrapheDAO = daoFactory.getParagrapheDAO();
 
+            // Récupération de l'ID de la story et du paragraphe
+            String storyIdString = req.getParameter("story_id");
+            long storyId;
+            try {
+                storyId = Long.parseLong(storyIdString);
+            } catch (NumberFormatException e) {
+                return true;
+            }
+
+            String paragrapheIdString = req.getParameter("paragraphe_id");
+            long paragrapheId;
+            try {
+                paragrapheId = Long.parseLong(paragrapheIdString);
+            } catch (NumberFormatException e) {
+                return true;
+            }
+
             List<String> oldChoices = parentSectionDAO.findChildrenParagraphe(storyId, paragrapheId).stream()
                     .map(ParentSection::getChoice_text).filter(item -> !item.isEmpty()).collect(Collectors.toList());
             LOG.error(oldChoices);
-            
+
             Set<Long> storyParagraphesIds = paragrapheDAO.findAllStoryParagraphes(storyId).stream()
                     .map(Paragraphe::getId).collect(Collectors.toSet());
             Set<Long> childParagraphesIds = parentSectionDAO.findChildrenParagraphe(storyId, paragrapheId).stream()
