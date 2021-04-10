@@ -32,6 +32,9 @@ public class EditParagraphePostValidationFilter implements Filter {
         LOG.error(canFilter);
 
         if (!canFilter || (canFilter && Validation.loggedIn(req, resp, Path.PAGE_LOGIN)
+                && Validation.storyId(req, resp, Path.PAGE_ERROR)
+                && Validation.paragrapheId(req, resp, Path.PAGE_ERROR)
+                && Validation.invited(req, resp, Path.PAGE_ERROR)
                 && Validation.content(req, resp, Path.PAGE_EDIT_PARAGRAPHE)
                 && Validation.finalChoice(req, resp, Path.PAGE_EDIT_PARAGRAPHE))) {
             chain.doFilter(req, resp);

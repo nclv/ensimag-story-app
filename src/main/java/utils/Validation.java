@@ -5,12 +5,14 @@ import java.sql.Connection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import dao.DAOManager;
+import dao.InvitedDAO;
 import dao.ParagrapheDAO;
 import dao.RedactionDAO;
 import dao.StoryDAO;
@@ -19,6 +21,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import models.Invited;
 import models.Redaction;
 import models.Story;
 import models.User;
@@ -347,13 +350,8 @@ public final class Validation {
         boolean isFinal = req.getParameter("is_final").equals("final") ? true : false;
         List<String> choices = Collections.list(req.getParameterNames()).stream()
                 .filter(parameterName -> parameterName.startsWith("choice_")).map(req::getParameter)
-                .filter(item -> !item.isEmpty())
-                .collect(Collectors.toList());
+                .filter(item -> !item.isEmpty()).collect(Collectors.toList());
 
-        LOG.error(choices);
-        LOG.error(choices.isEmpty());
-        LOG.error(isFinal);
-        LOG.error(choices.isEmpty() && !isFinal);
         boolean valid = true;
         if (choices.isEmpty() && !isFinal) {
             LOG.error("You can't create a paragraphe non final without a choice.");
@@ -369,8 +367,8 @@ public final class Validation {
             throws ServletException, IOException {
         boolean isFinal = req.getParameter("is_final").equals("final") ? true : false;
         List<String> choices = Collections.list(req.getParameterNames()).stream()
-                    .filter(parameterName -> parameterName.startsWith("choice_")).map(req::getParameter)
-                    .collect(Collectors.toList());
+                .filter(parameterName -> parameterName.startsWith("choice_")).map(req::getParameter)
+                .collect(Collectors.toList());
 
         boolean valid = true;
         if (req.getParameter("create_and_publish") != null && !isFinal) {
@@ -381,5 +379,54 @@ public final class Validation {
             setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("create_publish_no_final"));
         }
         return valid;
+    }
+
+    public static boolean invited(HttpServletRequest req, HttpServletResponse resp, String forwardPage)
+            throws ServletException, IOException {
+
+        HttpSession session = req.getSession();
+        User user = (User) session.getAttribute("user");
+
+        String storyIdString = req.getParameter("story_id");
+        final long storyId = Long.parseLong(storyIdString);
+
+        Optional<Connection> connection = DatabaseManager.getConnection();
+        if (connection.isEmpty()) {
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("connection_error"));
+            return false;
+        }
+
+        DAOManager daoManager = new DAOManager(connection.get());
+
+        Object result = daoManager.executeAndClose((daoFactory) -> {
+            InvitedDAO invitedDAO = daoFactory.getInvitedDAO();
+            StoryDAO storyDAO = daoFactory.getStoryDAO();
+
+            // on peut get() (filtre)
+            Story story = storyDAO.findStory(storyId).get();
+            if (story.isOpen()) {
+                return true;
+            }
+
+            Set<Long> invitedUsersIds = invitedDAO.findAllInvitedUsers(storyId).stream().map(Invited::getUser_id)
+                    .collect(Collectors.toSet());
+            LOG.error(story);
+            LOG.error(invitedUsersIds);
+            return (!story.isOpen() && invitedUsersIds.contains(user.getId()));
+        });
+        if (result == null) {
+            LOG.error("Database query error.");
+
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("database_query_error"));
+            return false;
+        }
+        if (!(boolean) result) {
+            LOG.error("You are not invited to the story.");
+
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("closed_not_invited"));
+            return false;
+        }
+
+        return true;
     }
 }

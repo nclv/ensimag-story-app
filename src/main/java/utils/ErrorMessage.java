@@ -51,7 +51,8 @@ public final class ErrorMessage {
         errorMessages.put("not_logged", "You are not logged in.");
         errorMessages.put("no_final_no_choices", "You can't create a paragraphe non final without a choice.");
         errorMessages.put("create_publish_no_final", "You need to have a final paragraphe to publish your story.");
-        
+        errorMessages.put("closed_not_invited", "You are not invited to the story.");
+
         LOG.debug("Command container was successfully initialized");
         LOG.trace("Number of errors --> " + errorMessages.size());
     }
