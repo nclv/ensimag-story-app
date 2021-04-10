@@ -30,8 +30,9 @@ public class UpdatePasswordValidationFilter implements Filter {
         boolean canFilter = actionName.equals("POST/update_password");
         LOG.error(actionName);
         LOG.error(canFilter);
-        
-        if (!canFilter || (canFilter && Validation.updatePassword(req, resp, Path.PAGE_UPDATE_PASSWORD))) {
+
+        if (!canFilter || (canFilter && Validation.loggedIn(req, resp, Path.PAGE_LOGIN)
+                && Validation.updatePassword(req, resp, Path.PAGE_UPDATE_PASSWORD))) {
             chain.doFilter(req, resp);
         }
     }

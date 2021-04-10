@@ -46,7 +46,8 @@ public class CreateStoryValidationFilter implements Filter {
                 request.setAttribute("error_message", "You need to have a final paragraphe to publish your story.");
                 request.setAttribute("choices", choices);
                 req.getRequestDispatcher(Path.PAGE_CREATE_STORY).include(req, resp);
-            } else if (Validation.content(req, resp, Path.PAGE_CREATE_STORY)){
+            } else if (Validation.loggedIn(req, resp, Path.PAGE_LOGIN)
+                    && Validation.content(req, resp, Path.PAGE_CREATE_STORY)) {
                 chain.doFilter(req, resp);
             }
         } else {

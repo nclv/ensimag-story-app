@@ -31,7 +31,8 @@ public class EditParagraphePostValidationFilter implements Filter {
         LOG.error(actionName);
         LOG.error(canFilter);
 
-        if (!canFilter || (canFilter && Validation.content(req, resp, Path.PAGE_EDIT_PARAGRAPHE))) {
+        if (!canFilter || (canFilter && Validation.loggedIn(req, resp, Path.PAGE_LOGIN)
+                && Validation.content(req, resp, Path.PAGE_EDIT_PARAGRAPHE))) {
             chain.doFilter(req, resp);
         }
     }
