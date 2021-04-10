@@ -17,6 +17,7 @@ public class Story implements Serializable {
     @Setter(AccessLevel.NONE)
     private static final long serialVersionUID = -3890461151767415322L;
     private long id;
+    private String title;
     private boolean open;
     private boolean published;
     private long user_id;

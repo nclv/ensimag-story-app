@@ -21,8 +21,8 @@ public class StoryDAOimpl implements StoryDAO {
 
     private final static String SQL_FIND_STORIES_USER_ID = "SELECT * FROM \"Story\" WHERE \"user_id\"=?";
     private final static String SQL_FIND_STORY_STORY_ID = "SELECT * FROM \"Story\" WHERE \"story_id\"=?";
-    private final static String SQL_INSERT_STORY = "INSERT INTO \"Story\" (\"open\", \"published\", \"user_id\") VALUES (?, ?, ?)";
-    private final static String SQL_UPDATE_STORY = "UPDATE \"Story\" SET \"open\"=?, \"published\"=?, \"user_id\"=? WHERE \"story_id\"=?";
+    private final static String SQL_INSERT_STORY = "INSERT INTO \"Story\" (\"title\", \"open\", \"published\", \"user_id\") VALUES (?, ?, ?, ?)";
+    private final static String SQL_UPDATE_STORY = "UPDATE \"Story\" SET \"title\"=?, \"open\"=?, \"published\"=?, \"user_id\"=? WHERE \"story_id\"=?";
     private final static String SQL_FIND_ALL_OPEN_PUBLISHED_STORIES = "SELECT * FROM \"Story\" WHERE \"open\"=1 AND \"published\"=1";
     private final static String SQL_FIND_ALL_PUBLISHED_STORIES = "SELECT * FROM \"Story\" WHERE \"published\"=1";
 
@@ -38,9 +38,10 @@ public class StoryDAOimpl implements StoryDAO {
     public long saveStory(Story story) throws SQLException {
         long id = -1;
         try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_INSERT_STORY)) {
-            preparedStatement.setInt(1, story.isOpen() ? 1 : 0);
-            preparedStatement.setInt(2, story.isPublished() ? 1 : 0);
-            preparedStatement.setLong(3, story.getUser_id());
+            preparedStatement.setString(1, story.getTitle());
+            preparedStatement.setInt(2, story.isOpen() ? 1 : 0);
+            preparedStatement.setInt(3, story.isPublished() ? 1 : 0);
+            preparedStatement.setLong(4, story.getUser_id());
 
             preparedStatement.executeUpdate();
 
@@ -70,10 +71,11 @@ public class StoryDAOimpl implements StoryDAO {
     @Override
     public void updateStory(Story story) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_UPDATE_STORY)) {
-            preparedStatement.setInt(1, story.isOpen() ? 1 : 0);
-            preparedStatement.setInt(2, story.isPublished() ? 1 : 0);
-            preparedStatement.setLong(3, story.getUser_id());
-            preparedStatement.setLong(4, story.getId());
+            preparedStatement.setString(1, story.getTitle());
+            preparedStatement.setInt(2, story.isOpen() ? 1 : 0);
+            preparedStatement.setInt(3, story.isPublished() ? 1 : 0);
+            preparedStatement.setLong(4, story.getUser_id());
+            preparedStatement.setLong(5, story.getId());
 
             preparedStatement.executeUpdate();
         }
@@ -147,6 +149,7 @@ public class StoryDAOimpl implements StoryDAO {
 
     private Story getStory(ResultSet resultSet) throws SQLException {
         return Story.builder().id(resultSet.getLong(DatabaseFields.STORY_ID))
+                .title(resultSet.getString(DatabaseFields.STORY_TITLE))
                 .user_id(resultSet.getLong(DatabaseFields.USER_ID))
                 .open((resultSet.getInt(DatabaseFields.STORY_OPEN) == 1))
                 .published((resultSet.getInt(DatabaseFields.STORY_PUBLISHED) == 1)).build();

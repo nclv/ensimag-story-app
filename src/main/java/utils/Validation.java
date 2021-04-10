@@ -53,6 +53,24 @@ public final class Validation {
         return valid;
     }
 
+    public static boolean title(HttpServletRequest req, HttpServletResponse resp, String forwardPage)
+            throws ServletException, IOException {
+        String storyTitle = req.getParameter("story_title");
+        List<String> choices = Collections.list(req.getParameterNames()).stream()
+                .filter(parameterName -> parameterName.startsWith("choice_")).map(req::getParameter)
+                .filter(item -> !item.isEmpty()).collect(Collectors.toList());
+        
+        boolean valid = true;
+        if (emptyString(storyTitle)) {
+            LOG.error("There is no title --> [" + storyTitle + "]");
+            valid = false;
+
+            req.setAttribute("choices", choices);
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("empty_title"));
+        }
+        return valid;
+    }
+
     public static boolean content(HttpServletRequest req, HttpServletResponse resp, String forwardPage)
             throws ServletException, IOException {
         String content = req.getParameter("paragraphe_content");

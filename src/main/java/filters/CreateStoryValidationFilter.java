@@ -32,6 +32,7 @@ public class CreateStoryValidationFilter implements Filter {
         LOG.error(canFilter);
 
         if (!canFilter || (canFilter && Validation.loggedIn(req, resp, Path.PAGE_LOGIN)
+                && Validation.title(req, resp, Path.PAGE_CREATE_STORY)
                 && Validation.content(req, resp, Path.PAGE_CREATE_STORY)
                 && Validation.finalChoice(req, resp, Path.PAGE_CREATE_STORY)
                 && Validation.createAndPublishFinal(req, resp, Path.PAGE_CREATE_STORY))) {

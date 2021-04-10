@@ -28,7 +28,7 @@
     <main>
         <section>
             <form action="${context}${Path.REDIRECT_CREATE_STORY}" method="post">
-                <strong>Title</strong>:<input type="text" name="title" value="${param.title}"><br>
+                <strong>Story Title</strong>:<input type="text" name="story_title" value="${param.story_title}" required><br>
                 
                 <p> Is your story <strong>open</strong> or <strong>private</strong>? </p>
                 <input type="radio" id="open" name="open" value="open" required ${param.open eq "open" ? "checked": ""}>

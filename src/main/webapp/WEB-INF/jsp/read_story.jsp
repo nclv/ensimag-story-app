@@ -51,6 +51,7 @@
                 <thead>
                     <tr>
                         <th>Story Id</th>
+                        <th>Title</th>
                         <th>User Id</th>
                         <th>Open</th>
                         <th>Published</th>
@@ -58,6 +59,7 @@
                 </thead>
                 <tr>
                     <td><c:out value="${story.id}" /></td>
+                    <td><c:out value="${story.title}" /></td>
                     <td><c:out value="${story.user_id}" /></td>
                     <td><c:out value="${story.open}" /></td>
                     <td><c:out value="${story.published}" /></td>

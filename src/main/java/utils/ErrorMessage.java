@@ -48,6 +48,7 @@ public final class ErrorMessage {
                 "You are writing another paragraphe. You can only write a paragraphe at a time."
                         + "\nOr someone is already editing this paragraphe.");
         errorMessages.put("story_not_published", "The story is not published and you are not it's author.");
+        errorMessages.put("empty_title", "Enter a story title.");
         errorMessages.put("empty_content", "Enter a paragraphe content.");
         errorMessages.put("not_logged", "You are not logged in.");
         errorMessages.put("no_final_no_choices", "You can't create a paragraphe non final without a choice.");

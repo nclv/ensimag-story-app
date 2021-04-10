@@ -39,6 +39,7 @@ public class CreateStoryAction implements Action {
         HttpSession session = request.getSession();
         User user = (User) session.getAttribute("user");
 
+        String storyTitle = request.getParameter("story_title");
         boolean open = request.getParameter("open").equals("open") ? true : false;
         boolean isFinal = request.getParameter("is_final").equals("final") ? true : false;
         LOG.error("Open story: " + open);
@@ -52,11 +53,11 @@ public class CreateStoryAction implements Action {
         Story story = null;
         if (request.getParameter("create") != null) {
             // create action
-            story = Story.builder().open(open).user_id(user.getId()).published(false).build();
+            story = Story.builder().title(storyTitle).open(open).user_id(user.getId()).published(false).build();
 
         } else if (request.getParameter("create_and_publish") != null) {
             // create and publish action
-            story = Story.builder().open(open).user_id(user.getId()).published(true).build();
+            story = Story.builder().title(storyTitle).open(open).user_id(user.getId()).published(true).build();
         }
 
         String content = request.getParameter("paragraphe_content");

@@ -16,6 +16,7 @@ end;
 /
 CREATE TABLE "Story" (
 	"story_id" NUMBER(10) NOT NULL,
+	"title" CLOB NOT NULL,
 	"open" NUMBER(1) DEFAULT 0 NOT NULL ,
 	"published" NUMBER(1) DEFAULT 0 NOT NULL,
 	"user_id" NUMBER(10) NOT NULL,
