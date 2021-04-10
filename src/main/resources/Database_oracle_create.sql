@@ -110,7 +110,7 @@ ALTER TABLE "Parent Section" ADD CONSTRAINT "Parent Section_fk4" FOREIGN KEY ("p
 -- ALTER TABLE "Parent Section" ADD CONSTRAINT "Parent Section_fk5" FOREIGN KEY ("parag_condition_para_id") REFERENCES "Paragraphe"("para_id");
 
 ALTER TABLE "Historique" ADD CONSTRAINT "Historique_fk0" FOREIGN KEY ("user_id") REFERENCES "User"("user_id");
-ALTER TABLE "Historique" ADD CONSTRAINT "Historique_fk1" FOREIGN KEY ("story_id", "para_id") REFERENCES "Paragraphe"("story_id", "para_id");
+ALTER TABLE "Historique" ADD CONSTRAINT "Historique_fk1" FOREIGN KEY ("story_id", "para_id") REFERENCES "Paragraphe"("story_id", "para_id") ON DELETE CASCADE;
 -- ALTER TABLE "Historique" ADD CONSTRAINT "Historique_fk2" FOREIGN KEY ("para_id") REFERENCES "Paragraphe"("para_id");
 
 ALTER TABLE "Invited" ADD CONSTRAINT "Invited_fk0" FOREIGN KEY ("user_id") REFERENCES "User"("user_id");
