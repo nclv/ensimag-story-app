@@ -62,8 +62,8 @@ public class EditParagrapheGetAction implements Action {
 
             // On récupère si le paragraphe a déjà été édité.
             Optional<Redaction> redactionOpt = redactionDAO.findRedaction(connectedUser.getId(), storyId, paragrapheId);
-            Redaction redaction = redactionOpt.orElse(Redaction.builder().user_id(connectedUser.getId())
-                    .story_id(storyId).paragraphe_id(paragrapheId).validated(false).build());
+            Redaction redaction = Redaction.builder().user_id(connectedUser.getId()).story_id(storyId)
+                    .paragraphe_id(paragrapheId).validated(false).build();
 
             if (redactionOpt.isEmpty()) {
                 // créer une entrée non validée dans Redaction (GET)
