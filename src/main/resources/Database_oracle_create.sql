@@ -102,7 +102,7 @@ ALTER TABLE "Story" ADD CONSTRAINT "Story_fk0" FOREIGN KEY ("user_id") REFERENCE
 
 ALTER TABLE "Paragraphe" ADD CONSTRAINT "Paragraphe_fk0" FOREIGN KEY ("story_id") REFERENCES "Story"("story_id");
 
-ALTER TABLE "Parent Section" ADD CONSTRAINT "Parent Section_fk0" FOREIGN KEY ("story_id", "para_id") REFERENCES "Paragraphe"("story_id", "para_id");
+ALTER TABLE "Parent Section" ADD CONSTRAINT "Parent Section_fk0" FOREIGN KEY ("story_id", "para_id") REFERENCES "Paragraphe"("story_id", "para_id") ON DELETE CASCADE;
 -- ALTER TABLE "Parent Section" ADD CONSTRAINT "Parent Section_fk1" FOREIGN KEY ("para_id") REFERENCES "Paragraphe"("para_id");
 ALTER TABLE "Parent Section" ADD CONSTRAINT "Parent Section_fk2" FOREIGN KEY ("parent_story_id", "parent_para_id") REFERENCES "Paragraphe"("story_id", "para_id");
 -- ALTER TABLE "Parent Section" ADD CONSTRAINT "Parent Section_fk3" FOREIGN KEY ("parent_para_id") REFERENCES "Paragraphe"("para_id");
@@ -117,6 +117,6 @@ ALTER TABLE "Invited" ADD CONSTRAINT "Invited_fk0" FOREIGN KEY ("user_id") REFER
 ALTER TABLE "Invited" ADD CONSTRAINT "Invited_fk1" FOREIGN KEY ("story_id") REFERENCES "Story"("story_id");
 
 ALTER TABLE "Redaction" ADD CONSTRAINT "Redaction_fk0" FOREIGN KEY ("user_id") REFERENCES "User"("user_id");
-ALTER TABLE "Redaction" ADD CONSTRAINT "Redaction_fk1" FOREIGN KEY ("story_id", "para_id") REFERENCES "Paragraphe"("story_id", "para_id");
+ALTER TABLE "Redaction" ADD CONSTRAINT "Redaction_fk1" FOREIGN KEY ("story_id", "para_id") REFERENCES "Paragraphe"("story_id", "para_id") ON DELETE CASCADE;
 -- ALTER TABLE "Redaction" ADD CONSTRAINT "Redaction_fk2" FOREIGN KEY ("para_id") REFERENCES "Paragraphe"("para_id");
 

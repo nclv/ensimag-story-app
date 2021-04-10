@@ -17,8 +17,7 @@ import utils.Path;
 import utils.Validation;
 
 @WebFilter("/controller")
-public class StoryIdValidationFilter implements Filter {
-
+public class RemoveParagrapheValidationFilter implements Filter {
     private static final Logger LOG = LogManager.getLogger();
 
     @Override
@@ -28,14 +27,15 @@ public class StoryIdValidationFilter implements Filter {
         HttpServletResponse resp = (HttpServletResponse) response;
 
         String actionName = req.getMethod() + "/" + req.getParameter("action");
-        boolean canFilter = actionName.equals("GET/invite_users") || actionName.equals("POST/invite_users")
-                || actionName.equals("GET/show_story") || actionName.equals("GET/show_paragraphe")
-                || actionName.equals("GET/remove_invited") || actionName.equals("GET/remove_paragraphe")
-                || actionName.equals("GET/read_story");
+        boolean canFilter = actionName.equals("GET/remove_paragraphe");
         LOG.error(actionName);
         LOG.error(canFilter);
 
-        if (!canFilter || (canFilter && Validation.storyId(req, resp, Path.PAGE_ERROR))) {
+        if (!canFilter || (canFilter && Validation.loggedIn(req, resp, Path.PAGE_LOGIN)
+                && Validation.storyId(req, resp, Path.PAGE_ERROR)
+                && Validation.paragrapheId(req, resp, Path.PAGE_ERROR)
+                && Validation.isAuthor(req, resp, Path.PAGE_ERROR)
+                && Validation.children(req, resp, Path.PAGE_ERROR))) {
             chain.doFilter(req, resp);
         }
     }

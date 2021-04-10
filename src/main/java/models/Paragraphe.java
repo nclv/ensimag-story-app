@@ -24,4 +24,5 @@ public class Paragraphe implements Serializable {
 
     // pour l'affichage
     private boolean validated;
+    private String title;
 }

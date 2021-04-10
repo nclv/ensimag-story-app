@@ -44,7 +44,7 @@ public class AuthenticationFilter implements Filter {
         LOG.error(actionName);
         LOG.error(loginNeeded);
 
-        if (Validation.loggedIn(req, resp, forward) || !loginNeeded) {
+        if (!loginNeeded || Validation.loggedIn(req, resp, forward)) {
             chain.doFilter(req, resp);
         } else {
             // Get all parameters from the url

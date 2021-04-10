@@ -24,6 +24,7 @@ public final class ErrorMessage {
                 "Error when adding your paragraphe. Fill the fields and submit your paragraphe again.");
         errorMessages.put("database_invite_users_error", "Error when inviting users.");
         errorMessages.put("database_remove_invited_user_error", "Couldn't remove invited user.");
+        errorMessages.put("database_remove_paragraphe_error", "Couldn't remove paragraphe.");
         errorMessages.put("database_update_password_error", "Database error. Please retry.");
 
         errorMessages.put("username_empty", "Enter an user name.");
@@ -54,6 +55,8 @@ public final class ErrorMessage {
         errorMessages.put("no_final_no_choices", "You can't create a paragraphe non final without a choice.");
         errorMessages.put("create_publish_no_final", "You need to have a final paragraphe to publish your story.");
         errorMessages.put("closed_not_invited", "You are not invited to the story.");
+        errorMessages.put("not_paragraphe_author", "You are not the author of this paragraphe.");
+        errorMessages.put("paragraphe_has_children", "This paragraphe has children.");
 
         LOG.debug("Command container was successfully initialized");
         LOG.trace("Number of errors --> " + errorMessages.size());

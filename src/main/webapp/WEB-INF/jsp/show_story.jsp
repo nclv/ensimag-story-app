@@ -78,13 +78,13 @@
                         <th></th>
                     </tr>
                 </thead>
-                <c:forEach var="user" items="${invitedUsers}">
+                <c:forEach var="invitedUser" items="${invitedUsers}">
                     <tr>
-                        <td><c:out value="${user.id}" /></td>
-                        <td><c:out value="${user.name}" /></td>
-                        <td><c:out value="${user.password}" /></td>
+                        <td><c:out value="${invitedUser.id}" /></td>
+                        <td><c:out value="${invitedUser.name}" /></td>
+                        <td><c:out value="${invitedUser.password}" /></td>
                         <c:if test="${not empty canInvite}">
-                            <td><a href="${context}${Path.REDIRECT_REMOVE_INVITED}&user_id=${user.id}&story_id=${story.id}"> Remove </a></td>
+                            <td><a href="${context}${Path.REDIRECT_REMOVE_INVITED}&user_id=${invitedUser.id}&story_id=${story.id}"> Remove </a></td>
                         </c:if>
                     </tr>
                 </c:forEach>
@@ -98,6 +98,7 @@
                         <th>Paragraphe Id</th>
                         <th>Content</th>
                         <th>Is final</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <c:forEach var="paragraphe" items="${paragraphes}">
@@ -121,6 +122,9 @@
                         </td>
                         <td><c:out value="${paragraphe.content}" /></td>
                         <td><c:out value="${paragraphe.last}" /></td>
+                        <c:if test="${paragraphe.user_id == user.id}">
+                            <td><a href="${context}${Path.REDIRECT_REMOVE_PARAGRAPHE}&story_id=${story.id}&paragraphe_id=${paragraphe.id}"> Remove </a></td>
+                        </c:if>
                     </tr>
                 </c:forEach>
             </table>

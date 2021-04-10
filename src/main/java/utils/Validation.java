@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Logger;
 import dao.DAOManager;
 import dao.InvitedDAO;
 import dao.ParagrapheDAO;
+import dao.ParentSectionDAO;
 import dao.RedactionDAO;
 import dao.StoryDAO;
 import dao.UserDAO;
@@ -22,6 +23,8 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import models.Invited;
+import models.Paragraphe;
+import models.ParentSection;
 import models.Redaction;
 import models.Story;
 import models.User;
@@ -59,7 +62,7 @@ public final class Validation {
         List<String> choices = Collections.list(req.getParameterNames()).stream()
                 .filter(parameterName -> parameterName.startsWith("choice_")).map(req::getParameter)
                 .filter(item -> !item.isEmpty()).collect(Collectors.toList());
-        
+
         boolean valid = true;
         if (emptyString(storyTitle)) {
             LOG.error("There is no title --> [" + storyTitle + "]");
@@ -290,6 +293,90 @@ public final class Validation {
         return true;
     }
 
+    public static boolean isAuthor(HttpServletRequest req, HttpServletResponse resp, String forwardPage)
+            throws ServletException, IOException {
+        HttpSession session = req.getSession();
+        User connectedUser = (User) session.getAttribute("user");
+
+        String storyIdString = req.getParameter("story_id");
+        long storyId = Long.parseLong(storyIdString);
+
+        String paragrapheIdString = req.getParameter("paragraphe_id");
+        long paragrapheId = Long.parseLong(paragrapheIdString);
+
+        // Database operations
+        Optional<Connection> connection = DatabaseManager.getConnection();
+        if (connection.isEmpty()) {
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("connection_error"));
+            return false;
+        }
+
+        DAOManager daoManager = new DAOManager(connection.get());
+
+        Object result = daoManager.executeAndClose((daoFactory) -> {
+            ParagrapheDAO paragrapheDAO = daoFactory.getParagrapheDAO();
+
+            Paragraphe paragraphe = paragrapheDAO.findParagraphe(storyId, paragrapheId).get();
+
+            return (paragraphe.getUser_id() == connectedUser.getId());
+        });
+        if (result == null) {
+            LOG.error("Database query error.");
+
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("database_query_error"));
+            return false;
+        }
+        if (!(boolean) result) {
+            LOG.error("You are not the author of this paragraphe.");
+
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("not_paragraphe_author"));
+            return false;
+        }
+
+        return true;
+    }
+
+    public static boolean children(HttpServletRequest req, HttpServletResponse resp, String forwardPage)
+            throws ServletException, IOException {
+
+        String storyIdString = req.getParameter("story_id");
+        long storyId = Long.parseLong(storyIdString);
+
+        String paragrapheIdString = req.getParameter("paragraphe_id");
+        long paragrapheId = Long.parseLong(paragrapheIdString);
+
+        // Database operations
+        Optional<Connection> connection = DatabaseManager.getConnection();
+        if (connection.isEmpty()) {
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("connection_error"));
+            return false;
+        }
+
+        DAOManager daoManager = new DAOManager(connection.get());
+
+        Object result = daoManager.executeAndClose((daoFactory) -> {
+            ParentSectionDAO parentSectionDAO = daoFactory.getParentSectionDAO();
+
+            List<ParentSection> parentSectionChildren = parentSectionDAO.findChildrenParagraphe(storyId, paragrapheId);
+
+            return parentSectionChildren.isEmpty();
+        });
+        if (result == null) {
+            LOG.error("Database query error.");
+
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("database_query_error"));
+            return false;
+        }
+        if (!(boolean) result) {
+            LOG.error("This paragraphe has children.");
+
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("paragraphe_has_children"));
+            return false;
+        }
+
+        return true;
+    }
+
     /**
      * Require a previous call to Validation.storyId
      * 
@@ -373,13 +460,16 @@ public final class Validation {
         List<String> choices = Collections.list(req.getParameterNames()).stream()
                 .filter(parameterName -> parameterName.startsWith("choice_")).map(req::getParameter)
                 .filter(item -> !item.isEmpty()).collect(Collectors.toList());
-        
+
         String isFinalString = req.getParameter("is_final");
 
         boolean isFinal = false;
-        if (!choices.isEmpty() && isFinalString != null) {
+        if (isFinalString != null) {
             isFinal = isFinalString.equals("final") ? true : false;
         }
+
+        LOG.error(choices);
+        LOG.error(isFinal);
 
         boolean valid = true;
         if (choices.isEmpty() && !isFinal) {

@@ -86,6 +86,14 @@ public class EditParagraphePostAction implements Action {
 
             paragrapheDAO.updateParagraphe(paragraphe);
 
+            // Récupération des choix des paragraphes enfants
+            // List<ParentSection> parentSections = parentSectionDAO.findChildrenParagraphe(storyId, paragrapheId);
+            // List<String> parentSectionChildrenChoices = null;
+            // if (parentSections != null) {
+            //     parentSectionChildrenChoices = parentSections.stream().map(ParentSection::getChoice_text)
+            //             .collect(Collectors.toList());
+            // }
+
             // Ajout des choix supplémentaires
             ParentSection parentSection = ParentSection.builder().story_id(storyId).parent_story_id(storyId)
                     .parent_paragraphe_id(paragrapheId).paragraphe_conditionnel_story_id(storyId)
@@ -96,7 +104,15 @@ public class EditParagraphePostAction implements Action {
 
             int index = 0;
             for (String choice : choices) {
+                // if (parentSectionChildrenChoices != null && parentSectionChildrenChoices.contains(choice)) {
+                //     // choice est déjà choice_text d'une parentSection
+                //     // on récupère l'ID du paragraphe
+                // }
+
+                // save paragraphe et create parentSection si nouveau choix
                 childParagrapheId = paragrapheDAO.saveParagraphe(childParagraphe);
+
+                // update parentSection si paragraphe déjà existant
 
                 parentSection.setChoice_text(choice);
                 parentSection.setChoice_number(index);

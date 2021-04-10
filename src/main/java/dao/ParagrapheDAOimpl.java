@@ -23,6 +23,7 @@ public class ParagrapheDAOimpl implements ParagrapheDAO {
     private final static String SQL_UPDATE_PARAGRAPHE = "UPDATE \"Paragraphe\" SET \"story_id\"=?, \"user_id\"=?, \"content\"=?, \"is_final\"=? WHERE \"para_id\"=?";
     private final static String SQL_FIND_ALL_STORY_PARAGRAPHES = "SELECT * FROM \"Paragraphe\" WHERE \"story_id\"=?";;
     private final static String SQL_GET_PARAGRAPHE_ID = "SELECT \"PARAGRAPHE_PARA_ID_SEQ\".currval FROM DUAL";
+    private final static String SQL_REMOVE_PARAGRAPHE = "DELETE FROM \"Paragraphe\" WHERE \"story_id\"=? AND \"para_id\"=?";
 
     private Connection connection = null;
 
@@ -73,6 +74,16 @@ public class ParagrapheDAOimpl implements ParagrapheDAO {
             preparedStatement.setString(3, paragraphe.getContent());
             preparedStatement.setInt(4, paragraphe.isLast() ? 1 : 0);
             preparedStatement.setLong(5, paragraphe.getId());
+
+            preparedStatement.executeUpdate();
+        }
+    }
+
+    @Override
+    public void removeParagraphe(Paragraphe paragraphe) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_REMOVE_PARAGRAPHE)) {
+            preparedStatement.setLong(1, paragraphe.getStory_id());
+            preparedStatement.setLong(2, paragraphe.getId());
 
             preparedStatement.executeUpdate();
         }

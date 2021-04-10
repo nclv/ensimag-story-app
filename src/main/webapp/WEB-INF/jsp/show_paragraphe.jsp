@@ -41,7 +41,7 @@
             </ul>
         </nav>
         <h1>show_paragraphe.jsp</h1>
-        <c:out value="${paragraphe.content}" />
+        <c:out value="${paragraphe.title}" />
         <section>
             <table>
                 <caption><h2>Choices</h2></caption>
