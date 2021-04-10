@@ -10,6 +10,20 @@
 <%@ page import="utils.Path"%>
 
 <c:set var="context" value="${pageContext.request.contextPath}" />
+<c:choose>
+    <c:when test="${not empty paragraphe_content}">
+        <c:set var="paragraphe_content" value="${paragraphe_content}" />
+        <c:set var="is_final" value="${is_final}" />
+    </c:when>
+    <c:when test="${not empty param.paragraphe_content}">
+        <c:set var="paragraphe_content" value="${param.paragraphe_content}" />
+        <c:set var="is_final" value="${param.is_final}" />
+    </c:when>
+    <c:otherwise>
+        <c:set var="paragraphe_content" value="" />
+    </c:otherwise>
+</c:choose>
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -36,12 +50,12 @@
             <form action="${context}${Path.REDIRECT_EDIT_PARAGRAPHE}&story_id=${param.story_id}&paragraphe_id=${param.paragraphe_id}" method="post">
                 <strong>Title</strong>:<input type="text" name="title" value="${param.title}"><br>
 
-                <textarea rows="10" cols="60" name="paragraphe_content" placeholder="Enter your first paragraphe content..." required>${not empty paragraphe_content ? paragraphe_content: ""}</textarea>
+                <textarea rows="10" cols="60" name="paragraphe_content" placeholder="Enter your first paragraphe content..." required>${paragraphe_content}</textarea>
                 
                 <p> Is your paragraphe <strong>final</strong>? </p>
-                <input type="radio" id="final" name="is_final" value="final" required ${param.is_final eq "final" ? "checked": ""}>
+                <input type="radio" id="final" name="is_final" value="final" required ${is_final eq "final" ? "checked": ""}>
                 <label for="final">Yes</label>
-                <input type="radio" id="non-final" name="is_final" value="non-final" ${param.is_final eq "non-final" ? "checked": ""}>
+                <input type="radio" id="non-final" name="is_final" value="non-final" ${is_final eq "non-final" ? "checked": ""}>
                 <label for="non-final">No</label>
 
                 <%-- Invisible choice text input --%>

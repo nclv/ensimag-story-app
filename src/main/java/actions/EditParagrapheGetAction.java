@@ -60,15 +60,17 @@ public class EditParagrapheGetAction implements Action {
             ParentSectionDAO parentSectionDAO = daoFactory.getParentSectionDAO();
             RedactionDAO redactionDAO = daoFactory.getRedactionDAO();
 
-            // On vérifie que l'utilisateur actuel n'édite pas un autre paragraphe. (GET)
-            List<Redaction> invalidated = redactionDAO.getInvalidated(connectedUser.getId());
-            LOG.error(invalidated);
+            // On récupère si le paragraphe a déjà été édité.
+            Optional<Redaction> redactionOpt = redactionDAO.findRedaction(connectedUser.getId(), storyId, paragrapheId);
+            Redaction redaction = redactionOpt.orElse(Redaction.builder().user_id(connectedUser.getId())
+                    .story_id(storyId).paragraphe_id(paragrapheId).validated(false).build());
 
-            // il n'y a pas de paragraphe non validé
-            if (invalidated.isEmpty()) {
+            if (redactionOpt.isEmpty()) {
                 // créer une entrée non validée dans Redaction (GET)
-                redactionDAO.saveRedaction(Redaction.builder().user_id(connectedUser.getId()).story_id(storyId)
-                        .paragraphe_id(paragrapheId).validated(false).build());
+                redactionDAO.saveRedaction(redaction);
+            } else {
+                // non vide, on update l'entrée actuelle
+                redactionDAO.updateRedaction(redaction);
             }
 
             // l'existence du paragraphe est vérifiée dans les filtres
@@ -83,9 +85,6 @@ public class EditParagrapheGetAction implements Action {
         });
         if (result == null) {
             request.setAttribute("error_message", ErrorMessage.get("database_query_error"));
-            return Path.PAGE_ERROR;
-        }
-        if (!(boolean) result) {
             return Path.PAGE_ERROR;
         }
 

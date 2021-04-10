@@ -73,10 +73,10 @@ public class ShowStoryAction implements Action {
             // get() car la story existe donc son auteur existe (intégrité BDD)
             User author = userDAO.findUser(story.getUser_id()).get();
 
-            // On vérifie que l'utilisateur actuel n'édite pas un autre paragraphe. (GET)
+            // On récupère le paragraphe en cours d'écriture
             Redaction invalidated = null;
             if (connectedUser != null) {
-                List<Redaction> invalidatedList = redactionDAO.getInvalidated(connectedUser.getId());
+                List<Redaction> invalidatedList = redactionDAO.findAllInvalidated(connectedUser.getId());
                 LOG.error(invalidatedList);
                 if (!invalidatedList.isEmpty()) {
                     invalidated = invalidatedList.get(0);

@@ -1,9 +1,6 @@
 package filters;
 
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,23 +31,10 @@ public class CreateStoryValidationFilter implements Filter {
         LOG.error(actionName);
         LOG.error(canFilter);
 
-        if (canFilter) {
-            boolean isFinal = req.getParameter("is_final").equals("final") ? true : false;
-            List<String> choices = Collections.list(req.getParameterNames()).stream()
-                    .filter(parameterName -> parameterName.startsWith("choice_")).map(request::getParameter)
-                    .collect(Collectors.toList());
-
-            if (request.getParameter("create_and_publish") != null && isFinal == false) {
-                LOG.error("Your can't published a story without any final paragraphe.");
-
-                request.setAttribute("error_message", "You need to have a final paragraphe to publish your story.");
-                request.setAttribute("choices", choices);
-                req.getRequestDispatcher(Path.PAGE_CREATE_STORY).include(req, resp);
-            } else if (Validation.loggedIn(req, resp, Path.PAGE_LOGIN)
-                    && Validation.content(req, resp, Path.PAGE_CREATE_STORY)) {
-                chain.doFilter(req, resp);
-            }
-        } else {
+        if (!canFilter || (canFilter && Validation.loggedIn(req, resp, Path.PAGE_LOGIN)
+                && Validation.content(req, resp, Path.PAGE_CREATE_STORY)
+                && Validation.finalChoice(req, resp, Path.PAGE_CREATE_STORY)
+                && Validation.createAndPublishFinal(req, resp, Path.PAGE_CREATE_STORY))) {
             chain.doFilter(req, resp);
         }
     }

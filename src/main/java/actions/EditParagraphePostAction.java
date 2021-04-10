@@ -89,9 +89,6 @@ public class EditParagraphePostAction implements Action {
             request.setAttribute("error_message", ErrorMessage.get("database_paragraphe_create_error"));
             return Path.PAGE_EDIT_PARAGRAPHE;
         }
-        if (!(boolean) result) {
-            return Path.PAGE_EDIT_PARAGRAPHE;
-        }
 
         LOG.error("EditParagraphePost Action finished");
         return Path.REDIRECT_SHOW_STORY + "&story_id=" + storyIdString;

@@ -91,7 +91,7 @@ public final class Validation {
             RedactionDAO redactionDAO = daoFactory.getRedactionDAO();
 
             // On vérifie que l'utilisateur actuel n'édite pas un autre paragraphe. (GET)
-            List<Redaction> invalidated = redactionDAO.getInvalidated(user.getId());
+            List<Redaction> invalidated = redactionDAO.findAllInvalidated(user.getId());
             LOG.error(invalidated);
 
             // il n'y a pas de paragraphe non validé
@@ -338,6 +338,47 @@ public final class Validation {
 
             request.setAttribute("error_message", ErrorMessage.get("story_not_published"));
             valid = false;
+        }
+        return valid;
+    }
+
+    public static boolean finalChoice(HttpServletRequest req, HttpServletResponse resp, String forwardPage)
+            throws ServletException, IOException {
+        boolean isFinal = req.getParameter("is_final").equals("final") ? true : false;
+        List<String> choices = Collections.list(req.getParameterNames()).stream()
+                .filter(parameterName -> parameterName.startsWith("choice_")).map(req::getParameter)
+                .filter(item -> !item.isEmpty())
+                .collect(Collectors.toList());
+
+        LOG.error(choices);
+        LOG.error(choices.isEmpty());
+        LOG.error(isFinal);
+        LOG.error(choices.isEmpty() && !isFinal);
+        boolean valid = true;
+        if (choices.isEmpty() && !isFinal) {
+            LOG.error("You can't create a paragraphe non final without a choice.");
+            valid = false;
+
+            req.setAttribute("choices", choices);
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("no_final_no_choices"));
+        }
+        return valid;
+    }
+
+    public static boolean createAndPublishFinal(HttpServletRequest req, HttpServletResponse resp, String forwardPage)
+            throws ServletException, IOException {
+        boolean isFinal = req.getParameter("is_final").equals("final") ? true : false;
+        List<String> choices = Collections.list(req.getParameterNames()).stream()
+                    .filter(parameterName -> parameterName.startsWith("choice_")).map(req::getParameter)
+                    .collect(Collectors.toList());
+
+        boolean valid = true;
+        if (req.getParameter("create_and_publish") != null && !isFinal) {
+            LOG.error("Your can't published a story without any final paragraphe.");
+            valid = false;
+
+            req.setAttribute("choices", choices);
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("create_publish_no_final"));
         }
         return valid;
     }
