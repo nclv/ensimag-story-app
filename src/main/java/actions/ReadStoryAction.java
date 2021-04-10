@@ -2,7 +2,6 @@ package actions;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -79,13 +78,14 @@ public class ReadStoryAction implements Action {
             // get() car la story existe donc son auteur existe (intégrité BDD)
             User author = userDAO.findUser(story.getUser_id()).get();
 
-            boolean valid = validation(request, connectedUser, author, story);
+            Set<Long> invitedUsersIds = invitedDAO.findAllInvitedUsers(storyId).stream().map(Invited::getUser_id)
+                    .collect(Collectors.toSet());
+
+            boolean valid = validation(request, connectedUser, author, story, invitedUsersIds);
             if (!valid) {
                 return false;
             }
 
-            Set<Long> invitedUsersIds = invitedDAO.findAllInvitedUsers(storyId).stream().map(Invited::getUser_id)
-                    .collect(Collectors.toSet());
             Set<Long> redactorsIds = paragrapheDAO.findAllStoryParagraphes(storyId).stream().map(Paragraphe::getUser_id)
                     .collect(Collectors.toSet());
             LOG.error(redactorsIds);
@@ -113,8 +113,10 @@ public class ReadStoryAction implements Action {
         return Path.PAGE_READ_STORY;
     }
 
-    private boolean validation(HttpServletRequest request, User connectedUser, User author, Story story) {
-        return Validation.published(request, connectedUser, author, story);
+    private boolean validation(HttpServletRequest request, User connectedUser, User author, Story story,
+            Set<Long> invitedUsersIds) {
+        return Validation.published(request, story) || Validation.author(request, connectedUser, author)
+                || (connectedUser != null && invitedUsersIds.contains(connectedUser.getId()));
     }
 
     private void setAttributes(HttpServletRequest request, Story story, List<Paragraphe> paragraphes,

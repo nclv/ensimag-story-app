@@ -91,14 +91,14 @@ public class ShowStoryAction implements Action {
             }
             LOG.error(paragraphes);
 
-            boolean valid = validation(request, connectedUser, author, story);
-            if (!valid) {
-                return false;
-            }
-
             Set<Long> invitedUsersIds = invitedDAO.findAllInvitedUsers(storyId).stream().map(Invited::getUser_id)
                     .collect(Collectors.toSet());
             LOG.error(invitedUsersIds);
+
+            boolean valid = validation(request, connectedUser, author, story, invitedUsersIds);
+            if (!valid) {
+                return false;
+            }
 
             List<User> invitedUsers = null;
             if (!invitedUsersIds.isEmpty()) {
@@ -125,9 +125,10 @@ public class ShowStoryAction implements Action {
         return Path.PAGE_SHOW_STORY;
     }
 
-    private boolean validation(HttpServletRequest request, User connectedUser, User author, Story story) {
-        return Validation.published(request, connectedUser, author, story);
-
+    private boolean validation(HttpServletRequest request, User connectedUser, User author, Story story,
+            Set<Long> invitedUsersIds) {
+        return Validation.published(request, story) || Validation.author(request, connectedUser, author)
+                || (connectedUser != null && invitedUsersIds.contains(connectedUser.getId()));
     }
 
     private void setAttributes(HttpServletRequest request, Story story, List<Paragraphe> paragraphes,

@@ -48,7 +48,7 @@ public final class ErrorMessage {
         errorMessages.put("redaction_invalidated",
                 "You are writing another paragraphe. You can only write a paragraphe at a time."
                         + "\nOr someone is already editing this paragraphe.");
-        errorMessages.put("story_not_published", "The story is not published and you are not it's author.");
+        errorMessages.put("story_not_published", "The story is not published.");
         errorMessages.put("empty_title", "Enter a story title.");
         errorMessages.put("empty_content", "Enter a paragraphe content.");
         errorMessages.put("not_logged", "You are not logged in.");
@@ -57,6 +57,7 @@ public final class ErrorMessage {
         errorMessages.put("closed_not_invited", "You are not invited to the story.");
         errorMessages.put("not_paragraphe_author", "You are not the author of this paragraphe.");
         errorMessages.put("paragraphe_has_children", "This paragraphe has children.");
+        errorMessages.put("not_story_author", "You are not the author of the story.");
 
         LOG.debug("Command container was successfully initialized");
         LOG.trace("Number of errors --> " + errorMessages.size());

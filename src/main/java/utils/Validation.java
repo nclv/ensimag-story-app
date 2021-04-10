@@ -442,16 +442,26 @@ public final class Validation {
         return true;
     }
 
-    public static boolean published(HttpServletRequest request, User connectedUser, User author, Story story) {
+    public static boolean published(HttpServletRequest request, Story story) {
         boolean valid = true;
         // Si la story n'est pas publiée et que je n'en suis pas l'auteur.
         // ou la story n'est pas publiée et aucun utilisateur n'est connecté
-        if (!story.isPublished()
-                && ((connectedUser != null && author.getId() != connectedUser.getId()) || connectedUser == null)) {
-            LOG.error("The story is not published and you are not it's author: " + story + ", " + connectedUser + ", "
-                    + author);
+        // j'y ai accès si je suis invité
+        if (!story.isPublished()) {
+            LOG.error("The story is not published : " + story);
 
             request.setAttribute("error_message", ErrorMessage.get("story_not_published"));
+            valid = false;
+        }
+        return valid;
+    }
+
+    public static boolean author(HttpServletRequest request, User connectedUser, User author) {
+        boolean valid = true;
+        if (((connectedUser != null && author.getId() != connectedUser.getId()) || connectedUser == null)) {
+            LOG.error("You are not the author of the story author: " + connectedUser + ", " + author);
+
+            request.setAttribute("error_message", ErrorMessage.get("not_story_author"));
             valid = false;
         }
         return valid;
