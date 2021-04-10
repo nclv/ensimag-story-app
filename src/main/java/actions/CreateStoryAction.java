@@ -40,13 +40,13 @@ public class CreateStoryAction implements Action {
         User user = (User) session.getAttribute("user");
 
         boolean open = request.getParameter("open").equals("open") ? true : false;
-        boolean is_final = request.getParameter("is_final").equals("final") ? true : false;
+        boolean isFinal = request.getParameter("is_final").equals("final") ? true : false;
         LOG.error("Open story: " + open);
-        LOG.error("Final paragraphe: " + is_final);
+        LOG.error("Final paragraphe: " + isFinal);
 
         List<String> choices = Collections.list(request.getParameterNames()).stream()
                 .filter(parameterName -> parameterName.startsWith("choice_")).map(request::getParameter)
-                .collect(Collectors.toList());
+                .filter(item -> !item.isEmpty()).collect(Collectors.toList());
         LOG.error(choices);
 
         Story story = null;
@@ -81,7 +81,7 @@ public class CreateStoryAction implements Action {
             LOG.error(storyId + " " + storyFinal);
 
             Paragraphe paragraphe = Paragraphe.builder().story_id(storyId).user_id(user.getId()).content(content)
-                    .last(is_final).build();
+                    .last(isFinal).build();
 
             long parentParagrapheId = paragrapheDAO.saveParagraphe(paragraphe);
             LOG.error(parentParagrapheId + " " + paragraphe);

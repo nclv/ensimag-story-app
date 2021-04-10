@@ -77,7 +77,7 @@ public class EditParagrapheGetAction implements Action {
             Paragraphe paragraphe = paragrapheDAO.findParagraphe(storyId, paragrapheId).get();
             // construction des choix à partir des paragraphes enfants
             List<String> choices = parentSectionDAO.findChildrenParagraphe(storyId, paragrapheId).stream()
-                    .map(ParentSection::getChoice_text).collect(Collectors.toList());
+                    .map(ParentSection::getChoice_text).filter(item -> !item.isEmpty()).collect(Collectors.toList());
 
             setAttributes(request, paragraphe, choices);
 

@@ -58,7 +58,7 @@ public final class Validation {
         String content = req.getParameter("paragraphe_content");
         List<String> choices = Collections.list(req.getParameterNames()).stream()
                 .filter(parameterName -> parameterName.startsWith("choice_")).map(req::getParameter)
-                .collect(Collectors.toList());
+                .filter(item -> !item.isEmpty()).collect(Collectors.toList());
         boolean valid = true;
         if (emptyString(content)) {
             LOG.error("There is no content --> [" + content + "]");
@@ -352,10 +352,16 @@ public final class Validation {
 
     public static boolean finalChoice(HttpServletRequest req, HttpServletResponse resp, String forwardPage)
             throws ServletException, IOException {
-        boolean isFinal = req.getParameter("is_final").equals("final") ? true : false;
         List<String> choices = Collections.list(req.getParameterNames()).stream()
                 .filter(parameterName -> parameterName.startsWith("choice_")).map(req::getParameter)
                 .filter(item -> !item.isEmpty()).collect(Collectors.toList());
+        
+        String isFinalString = req.getParameter("is_final");
+
+        boolean isFinal = false;
+        if (!choices.isEmpty() && isFinalString != null) {
+            isFinal = isFinalString.equals("final") ? true : false;
+        }
 
         boolean valid = true;
         if (choices.isEmpty() && !isFinal) {
@@ -373,7 +379,7 @@ public final class Validation {
         boolean isFinal = req.getParameter("is_final").equals("final") ? true : false;
         List<String> choices = Collections.list(req.getParameterNames()).stream()
                 .filter(parameterName -> parameterName.startsWith("choice_")).map(req::getParameter)
-                .collect(Collectors.toList());
+                .filter(item -> !item.isEmpty()).collect(Collectors.toList());
 
         boolean valid = true;
         if (req.getParameter("create_and_publish") != null && !isFinal) {

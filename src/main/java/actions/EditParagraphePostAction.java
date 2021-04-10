@@ -17,12 +17,14 @@ import org.apache.logging.log4j.Logger;
 
 import dao.DAOManager;
 import dao.ParagrapheDAO;
+import dao.ParentSectionDAO;
 import dao.RedactionDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import models.Paragraphe;
+import models.ParentSection;
 import models.Redaction;
 import models.User;
 import utils.DatabaseManager;
@@ -51,16 +53,21 @@ public class EditParagraphePostAction implements Action {
 
         String content = request.getParameter("paragraphe_content");
 
-        boolean is_final = request.getParameter("is_final").equals("final") ? true : false;
-        LOG.error("Final paragraphe: " + is_final);
-
         List<String> choices = Collections.list(request.getParameterNames()).stream()
                 .filter(parameterName -> parameterName.startsWith("choice_")).map(request::getParameter)
-                .collect(Collectors.toList());
+                .filter(item -> !item.isEmpty()).collect(Collectors.toList());
         LOG.error(choices);
 
+        String isFinalString = request.getParameter("is_final");
+
+        boolean isFinal = false;
+        if (!choices.isEmpty() && isFinalString != null) {
+            isFinal = isFinalString.equals("final") ? true : false;
+        }
+        LOG.error("Final paragraphe: " + isFinal);
+
         Paragraphe paragraphe = Paragraphe.builder().story_id(storyId).id(paragrapheId).user_id(user.getId())
-                .content(content).last(is_final).build();
+                .content(content).last(isFinal).build();
 
         // Database operations
         Optional<Connection> connection = DatabaseManager.getConnection();
@@ -75,8 +82,30 @@ public class EditParagraphePostAction implements Action {
         Object result = daoManager.transactionAndClose((daoFactory) -> {
             ParagrapheDAO paragrapheDAO = daoFactory.getParagrapheDAO();
             RedactionDAO redactionDAO = daoFactory.getRedactionDAO();
+            ParentSectionDAO parentSectionDAO = daoFactory.getParentSectionDAO();
 
             paragrapheDAO.updateParagraphe(paragraphe);
+
+            // Ajout des choix supplémentaires
+            ParentSection parentSection = ParentSection.builder().story_id(storyId).parent_story_id(storyId)
+                    .parent_paragraphe_id(paragrapheId).paragraphe_conditionnel_story_id(storyId)
+                    .paragraphe_conditionnel_id(paragrapheId).build();
+            long childParagrapheId;
+            Paragraphe childParagraphe = Paragraphe.builder().story_id(storyId).user_id(user.getId())
+                    .content("NO CONTENT YET").build();
+
+            int index = 0;
+            for (String choice : choices) {
+                childParagrapheId = paragrapheDAO.saveParagraphe(childParagraphe);
+
+                parentSection.setChoice_text(choice);
+                parentSection.setChoice_number(index);
+                parentSection.setParagraphe_id(childParagrapheId);
+
+                parentSectionDAO.saveParentSection(parentSection);
+
+                index++;
+            }
 
             // Valider l'entrée crée dans EditParagrapheActionGet
             Redaction validated = Redaction.builder().user_id(user.getId()).story_id(storyId)
