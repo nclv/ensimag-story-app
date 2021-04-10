@@ -21,4 +21,7 @@ public class Paragraphe implements Serializable {
     private long user_id;
     private String content;
     private boolean last;
+
+    // pour l'affichage
+    private boolean validated;
 }

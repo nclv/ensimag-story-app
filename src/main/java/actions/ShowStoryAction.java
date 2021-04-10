@@ -73,15 +73,23 @@ public class ShowStoryAction implements Action {
             // get() car la story existe donc son auteur existe (intégrité BDD)
             User author = userDAO.findUser(story.getUser_id()).get();
 
-            // On récupère le paragraphe en cours d'écriture
-            Redaction invalidated = null;
+            // On récupère mes paragraphes en cours d'écriture
+            List<Redaction> myInvalidated = null;
             if (connectedUser != null) {
-                List<Redaction> invalidatedList = redactionDAO.findAllInvalidated(connectedUser.getId());
-                LOG.error(invalidatedList);
-                if (!invalidatedList.isEmpty()) {
-                    invalidated = invalidatedList.get(0);
+                myInvalidated = redactionDAO.findAllInvalidatedUser(connectedUser.getId());
+                LOG.error(myInvalidated);
+            }
+
+            List<Redaction> invalidatedList = redactionDAO.findAllInvalidatedStory(storyId);
+            LOG.error(invalidatedList);
+            for (Paragraphe paragraphe : paragraphes) {
+                for (Redaction redaction : invalidatedList) {
+                    if (redaction.getParagraphe_id() == paragraphe.getId()) {
+                        paragraphe.setValidated(redaction.isValidated());
+                    }
                 }
             }
+            LOG.error(paragraphes);
 
             boolean valid = validation(request, connectedUser, author, story);
             if (!valid) {
@@ -98,7 +106,7 @@ public class ShowStoryAction implements Action {
             }
 
             setAttributes(request, story, paragraphes, connectedUser, author, invitedUsersIds, invitedUsers,
-                    invalidated);
+                    myInvalidated);
 
             return true;
         });
@@ -124,12 +132,18 @@ public class ShowStoryAction implements Action {
 
     private void setAttributes(HttpServletRequest request, Story story, List<Paragraphe> paragraphes,
             User connectedUser, User author, Set<Long> invitedUsersIds, List<User> invitedUsers,
-            Redaction invalidated) {
+            List<Redaction> myInvalidated) {
         request.setAttribute("story", story);
         request.setAttribute("paragraphes", paragraphes);
         request.setAttribute("author", author);
         request.setAttribute("invitedUsers", invitedUsers);
-        request.setAttribute("invalidated", invalidated);
+
+        if (myInvalidated != null && !myInvalidated.isEmpty()) {
+            Redaction redacting = myInvalidated.get(0);
+            if (redacting.getStory_id() == story.getId()) {
+                request.setAttribute("my_invalidated_paragraphe_id", redacting.getParagraphe_id());
+            }
+        }
 
         // On peut lire la story ssi:
         // - il existe au moins un paragraphe final

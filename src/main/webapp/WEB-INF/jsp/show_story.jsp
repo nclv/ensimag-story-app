@@ -102,13 +102,18 @@
                     <tr>
                         <td> 
                             <c:choose>
-                                <c:when test="${not empty invalidated && invalidated.paragraphe_id == paragraphe.id && invalidated.story_id == paragraphe.story_id}">
-                                    <span style="background-color: #F08080">
+                                <c:when test="${paragraphe.validated}">
+                                    <a href="${context}${Path.REDIRECT_SHOW_PARAGRAPHE}&story_id=${story.id}&paragraphe_id=${paragraphe.id}"> <c:out value="${paragraphe.id}" />
+                                </c:when>
+                                <c:when test="${my_invalidated_paragraphe_id == paragraphe.id}">
+                                    <span style="background-color: #00FF00">
                                         <a href="${context}${Path.REDIRECT_SHOW_PARAGRAPHE}&story_id=${story.id}&paragraphe_id=${paragraphe.id}"> <c:out value="${paragraphe.id}" />
                                     </span>
                                 </c:when>
                                 <c:otherwise>
-                                    <a href="${context}${Path.REDIRECT_SHOW_PARAGRAPHE}&story_id=${story.id}&paragraphe_id=${paragraphe.id}"> <c:out value="${paragraphe.id}" />
+                                    <span style="background-color: #F08080">
+                                        <a href="${context}${Path.REDIRECT_SHOW_PARAGRAPHE}&story_id=${story.id}&paragraphe_id=${paragraphe.id}"> <c:out value="${paragraphe.id}" />
+                                    </span>
                                 </c:otherwise>
                             </c:choose>
                         </td>

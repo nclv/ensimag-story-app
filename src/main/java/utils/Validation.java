@@ -94,19 +94,24 @@ public final class Validation {
             RedactionDAO redactionDAO = daoFactory.getRedactionDAO();
 
             // On vérifie que l'utilisateur actuel n'édite pas un autre paragraphe. (GET)
-            List<Redaction> invalidated = redactionDAO.findAllInvalidated(user.getId());
+            List<Redaction> invalidated = redactionDAO.findAllInvalidatedUser(user.getId());
             LOG.error(invalidated);
+            if (!invalidated.isEmpty()) {
+                // le paragraphe que l'on veut éditer est celui non validé
+                Redaction redacting = invalidated.get(0);
+                if (redacting.getStory_id() == storyId && redacting.getParagraphe_id() == paragrapheId) {
+                    return true;
+                }
+                return false;
+            }
 
-            // il n'y a pas de paragraphe non validé
+            // On vérifie qu'un autre utilisateur n'édite pas ce paragraphe
+            invalidated = redactionDAO.findAllInvalidatedParagraphe(storyId, paragrapheId);
+            LOG.error(invalidated);
             if (invalidated.isEmpty()) {
                 return true;
             }
 
-            // le paragraphe que l'on veut éditer est celui non validé
-            Redaction redacting = invalidated.get(0);
-            if (redacting.getStory_id() == storyId && redacting.getParagraphe_id() == paragrapheId) {
-                return true;
-            }
             return false;
         });
         if (result == null) {
@@ -116,7 +121,7 @@ public final class Validation {
             return false;
         }
         if (!(boolean) result) {
-            LOG.error("You are writing another paragraphe ");
+            LOG.error("You are writing another paragraphe or someone is already editing this paragraphe");
 
             setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("redaction_invalidated"));
             return false;
@@ -412,7 +417,7 @@ public final class Validation {
                     .collect(Collectors.toSet());
             LOG.error(story);
             LOG.error(invitedUsersIds);
-            return (!story.isOpen() && invitedUsersIds.contains(user.getId()));
+            return ((!story.isOpen() && invitedUsersIds.contains(user.getId())) || user.getId() == story.getUser_id());
         });
         if (result == null) {
             LOG.error("Database query error.");

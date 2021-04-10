@@ -20,7 +20,9 @@ public class RedactionDAOimpl implements RedactionDAO {
 
     private final static String SQL_INSERT_REDACTION = "INSERT INTO \"Redaction\" (\"user_id\", \"story_id\", \"para_id\", \"is_validated\") VALUES (?, ?, ?, ?)";
     private final static String SQL_UPDATE_REDACTION = "UPDATE \"Redaction\" SET \"is_validated\"=? WHERE \"user_id\"=? AND \"story_id\"=? AND \"para_id\"=?";
-    private final static String SQL_FIND_INVALIDATED = "SELECT * FROM \"Redaction\" WHERE \"user_id\"=? AND \"is_validated\"=0";
+    private final static String SQL_FIND_INVALIDATED_USER = "SELECT * FROM \"Redaction\" WHERE \"user_id\"=? AND \"is_validated\"=0";
+    private final static String SQL_FIND_INVALIDATED_STORY = "SELECT * FROM \"Redaction\" WHERE \"story_id\"=? AND \"is_validated\"=0";
+    private final static String SQL_FIND_INVALIDATED_PARAGRAPHE = "SELECT * FROM \"Redaction\" WHERE \"story_id\"=? AND \"para_id\"=? AND \"is_validated\"=0";
     private final static String SQL_FIND_REDACTION = "SELECT * FROM \"Redaction\" WHERE \"user_id\"=? AND \"story_id\"=? AND \"para_id\"=?";
 
     private Connection connection = null;
@@ -54,9 +56,46 @@ public class RedactionDAOimpl implements RedactionDAO {
     }
 
     @Override
-    public List<Redaction> findAllInvalidated(long userId) throws SQLException {
+    public List<Redaction> findAllInvalidatedStory(long storyId) throws SQLException {
         List<Redaction> redactions = new ArrayList<Redaction>();
-        try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_FIND_INVALIDATED)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_FIND_INVALIDATED_STORY)) {
+            preparedStatement.setLong(1, storyId);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                Redaction redaction = null;
+                while (resultSet.next()) {
+                    redaction = getRedaction(resultSet);
+                    redactions.add(redaction);
+                }
+            }
+        }
+
+        return redactions;
+    }
+
+    @Override
+    public List<Redaction> findAllInvalidatedParagraphe(long storyId, long paragrapheId) throws SQLException {
+        List<Redaction> redactions = new ArrayList<Redaction>();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_FIND_INVALIDATED_PARAGRAPHE)) {
+            preparedStatement.setLong(1, storyId);
+            preparedStatement.setLong(2, paragrapheId);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                Redaction redaction = null;
+                while (resultSet.next()) {
+                    redaction = getRedaction(resultSet);
+                    redactions.add(redaction);
+                }
+            }
+        }
+
+        return redactions;
+    }
+
+    @Override
+    public List<Redaction> findAllInvalidatedUser(long userId) throws SQLException {
+        List<Redaction> redactions = new ArrayList<Redaction>();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_FIND_INVALIDATED_USER)) {
             preparedStatement.setLong(1, userId);
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {

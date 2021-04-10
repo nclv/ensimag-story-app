@@ -45,7 +45,8 @@ public final class ErrorMessage {
         errorMessages.put("password_invalid", "Password is invalid.");
         errorMessages.put("username_used", "This username is already used.");
         errorMessages.put("redaction_invalidated",
-                "You are writing another paragraphe. You can only write a paragraphe at a time");
+                "You are writing another paragraphe. You can only write a paragraphe at a time."
+                        + "\nOr someone is already editing this paragraphe.");
         errorMessages.put("story_not_published", "The story is not published and you are not it's author.");
         errorMessages.put("empty_content", "Enter a paragraphe content.");
         errorMessages.put("not_logged", "You are not logged in.");
