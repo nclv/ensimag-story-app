@@ -85,16 +85,12 @@ public class ShowParagrapheAction implements Action {
             List<Long> historyParagraphesIds = history.stream().map(Historic::getParagraphe_id)
                     .collect(Collectors.toList());
             int position = historyParagraphesIds.indexOf(previousParagrapheId);
-            // LOG.error(historyParagraphesIds);
-            // LOG.error(previousParagrapheId);
-            // LOG.error(position);
-            // LOG.error(!historyParagraphesIds.contains(paragrapheId));
             // l'historique contient le paragraphe précédent et ne contient pas le paragraphe demandé 
             if (position != -1 && !historyParagraphesIds.contains(paragrapheId)) {
                 history.subList(position + 1, history.size()).clear();
             }
-            // l'historique ne contient pas le paragraphe demandé
-            if (!historyParagraphesIds.contains(paragrapheId)) {
+            // l'historique est vide (initialisation)
+            if (history.isEmpty() || (position != -1 && !historyParagraphesIds.contains(paragrapheId))) {
                 history.add(historic);
             }
         }
