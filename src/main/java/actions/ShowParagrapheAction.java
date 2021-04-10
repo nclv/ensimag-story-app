@@ -8,6 +8,7 @@ package actions;
 import java.io.IOException;
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -26,6 +27,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import models.Historic;
 import models.Invited;
 import models.Paragraphe;
 import models.ParentSection;
@@ -61,6 +63,29 @@ public class ShowParagrapheAction implements Action {
 
         String paragrapheIdString = request.getParameter("paragraphe_id");
         long paragrapheId = Long.parseLong(paragrapheIdString);
+
+        String historyName = "history";
+        List<Historic> history = (LinkedList<Historic>) session.getAttribute(historyName);
+        LOG.error(history);
+        if (history != null) {
+            if (!history.isEmpty() && history.get(0).getStory_id() != storyId) {
+                history = new LinkedList<Historic>();
+            }
+
+            Historic historic = Historic.builder().story_id(storyId).paragraphe_id(paragrapheId).build();
+            if (connectedUser != null) {
+                historic.setUser_id(connectedUser.getId());
+            }
+            List<Long> historyParagraphesIds = history.stream().map(Historic::getParagraphe_id)
+                    .collect(Collectors.toList());
+            int position = historyParagraphesIds.indexOf(paragrapheId);
+            if (position != -1) {
+                history.subList(position, history.size()).clear();
+            }
+            history.add(historic);
+            session.setAttribute(historyName, history);
+        }
+        LOG.error(history);
 
         // Database operations
         Optional<Connection> connection = DatabaseManager.getConnection();

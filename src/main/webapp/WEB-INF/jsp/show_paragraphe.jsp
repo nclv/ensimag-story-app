@@ -8,6 +8,7 @@
 <%@ page import="utils.Path"%>
 
 <c:set var="context" value="${pageContext.request.contextPath}" />
+
 <!DOCTYPE html>
 <html>
     <head>
@@ -62,6 +63,17 @@
                     </tr>
                 </c:forEach>
             </table>
+        </section>
+        <section>
+            <c:if test="${not empty history}">
+                <c:forEach var="historic" items="${history}">
+                    <tr>
+                        <td>
+                            <a href="${context}${Path.REDIRECT_SHOW_PARAGRAPHE}&story_id=${historic.story_id}&paragraphe_id=${historic.paragraphe_id}"> <c:out value="${historic.paragraphe_id}" /></a> ${!loop.last ? ', ' : ''}
+                        </td>
+                    </tr>
+                </c:forEach>
+            </c:if>
         </section>
 
     </body>

@@ -32,7 +32,7 @@
                 </c:if>
             </ul>
         </nav>
-        <h1> show_story.jsp </h1>
+        <h1> read_story.jsp </h1>
     </header>
     <main>
         <hr>

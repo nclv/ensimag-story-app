@@ -19,6 +19,7 @@ public class InvitedDAOimpl implements InvitedDAO {
 
     private final static String SQL_INSERT_INVITED = "INSERT INTO \"Invited\" (\"user_id\", \"story_id\", \"date\") VALUES (?, ?, ?)";
     private final static String SQL_FIND_INVITED_STORY_ID = "SELECT * FROM \"Invited\" WHERE \"story_id\"=?";
+    private final static String SQL_FIND_INVITED_USER_ID = "SELECT * FROM \"Invited\" WHERE \"user_id\"=?";
     private final static String SQL_REMOVE_INVITED = "DELETE FROM \"Invited\" WHERE \"user_id\"=? AND \"story_id\"=?";
 
     private Connection connection = null;
@@ -43,6 +44,25 @@ public class InvitedDAOimpl implements InvitedDAO {
         List<Invited> invitedList = new ArrayList<Invited>();
         try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_FIND_INVITED_STORY_ID)) {
             preparedStatement.setLong(1, storyId);
+
+            try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                Invited story = null;
+                while (resultSet.next()) {
+                    story = getInvited(resultSet);
+                    invitedList.add(story);
+                }
+                LOG.error(invitedList);
+            }
+        }
+
+        return invitedList;
+    }
+
+    @Override
+    public List<Invited> findAllInvitedStories(long userId) throws SQLException {
+        List<Invited> invitedList = new ArrayList<Invited>();
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_FIND_INVITED_USER_ID)) {
+            preparedStatement.setLong(1, userId);
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 Invited story = null;

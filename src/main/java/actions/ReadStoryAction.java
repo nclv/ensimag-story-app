@@ -2,6 +2,8 @@ package actions;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -19,6 +21,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import models.Historic;
 import models.Invited;
 import models.Paragraphe;
 import models.Story;
@@ -45,6 +48,14 @@ public class ReadStoryAction implements Action {
         // Récupération de l'ID de la story
         String storyIdString = request.getParameter("story_id");
         long storyId = Long.parseLong(storyIdString);
+
+        // Initialisation de l'historique s'il n'existe pas déjà
+        // TODO: check data structure
+        String historyName = "history";
+        List<Historic> history = (LinkedList<Historic>) session.getAttribute(historyName);
+        if (history == null) {
+            session.setAttribute(historyName, new LinkedList<Historic>());
+        }
 
         // Database operations
         Optional<Connection> connection = DatabaseManager.getConnection();

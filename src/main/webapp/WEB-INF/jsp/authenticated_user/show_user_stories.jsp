@@ -44,7 +44,32 @@
                         <th>Published</th>
                     </tr>
                 </thead>
-                <c:forEach var="story" items="${stories}">
+                <c:forEach var="story" items="${myStories}">
+                    <tr>
+                        <td>
+                            <a href="${context}${Path.REDIRECT_SHOW_STORY}&story_id=${story.id}"> <c:out value="${story.id}" /></a>
+                        </td>
+                        <td><c:out value="${story.title}" /></td>
+                        <td><c:out value="${story.user_id}" /></td>
+                        <td><c:out value="${story.open}" /></td>
+                        <td><c:out value="${story.published}" /></td>
+                    </tr>
+                </c:forEach>
+            </table>
+        </section>
+        <section>
+            <table>
+                <caption><h2>List of invited stories</h2></caption>
+                <thead>
+                    <tr>
+                        <th>Story Id</th>
+                        <th>Title</th>
+                        <th>User Id</th>
+                        <th>Open</th>
+                        <th>Published</th>
+                    </tr>
+                </thead>
+                <c:forEach var="story" items="${invitedStories}">
                     <tr>
                         <td>
                             <a href="${context}${Path.REDIRECT_SHOW_STORY}&story_id=${story.id}"> <c:out value="${story.id}" /></a>
