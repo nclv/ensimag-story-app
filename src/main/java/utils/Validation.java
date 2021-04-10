@@ -2,7 +2,9 @@ package utils;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -457,6 +459,14 @@ public final class Validation {
 
     public static boolean finalChoice(HttpServletRequest req, HttpServletResponse resp, String forwardPage)
             throws ServletException, IOException {
+
+        // Récupération de l'ID de la story et du paragraphe
+        String storyIdString = req.getParameter("story_id");
+        long storyId = Long.parseLong(storyIdString);
+
+        String paragrapheIdString = req.getParameter("paragraphe_id");
+        long paragrapheId = Long.parseLong(paragrapheIdString);
+        
         List<String> choices = Collections.list(req.getParameterNames()).stream()
                 .filter(parameterName -> parameterName.startsWith("choice_")).map(req::getParameter)
                 .filter(item -> !item.isEmpty()).collect(Collectors.toList());
@@ -471,8 +481,50 @@ public final class Validation {
         LOG.error(choices);
         LOG.error(isFinal);
 
+        Optional<Connection> connection = DatabaseManager.getConnection();
+        if (connection.isEmpty()) {
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("connection_error"));
+            return false;
+        }
+
+        DAOManager daoManager = new DAOManager(connection.get());
+
+        Object result = daoManager.executeAndClose((daoFactory) -> {
+            ParentSectionDAO parentSectionDAO = daoFactory.getParentSectionDAO();
+            ParagrapheDAO paragrapheDAO = daoFactory.getParagrapheDAO();
+
+            List<String> oldChoices = parentSectionDAO.findChildrenParagraphe(storyId, paragrapheId).stream()
+                    .map(ParentSection::getChoice_text).filter(item -> !item.isEmpty()).collect(Collectors.toList());
+            LOG.error(oldChoices);
+            
+            Set<Long> storyParagraphesIds = paragrapheDAO.findAllStoryParagraphes(storyId).stream()
+                    .map(Paragraphe::getId).collect(Collectors.toSet());
+            Set<Long> childParagraphesIds = parentSectionDAO.findChildrenParagraphe(storyId, paragrapheId).stream()
+                    .map(ParentSection::getParagraphe_id).collect(Collectors.toSet());
+            LOG.error(childParagraphesIds);
+            // On ne garde que les paragraphes vers lesquels on ne converge pas déjà
+            Set<Long> nonChildConvergeParagraphesIds = new HashSet<>(storyParagraphesIds);
+            nonChildConvergeParagraphesIds.removeAll(childParagraphesIds);
+
+            List<Paragraphe> nonChildParagraphes = new ArrayList<Paragraphe>();
+            for (long nonChildParagrapheId : nonChildConvergeParagraphesIds) {
+                nonChildParagraphes.add(paragrapheDAO.findParagraphe(storyId, nonChildParagrapheId).get());
+            }
+
+            req.setAttribute("oldChoices", oldChoices);
+            req.setAttribute("existingParagraphes", nonChildParagraphes);
+
+            return !oldChoices.isEmpty();
+        });
+        if (result == null) {
+            LOG.error("Database query error.");
+
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("database_query_error"));
+            return false;
+        }
+
         boolean valid = true;
-        if (choices.isEmpty() && !isFinal) {
+        if (!(boolean) result && choices.isEmpty() && !isFinal) {
             LOG.error("You can't create a paragraphe non final without a choice.");
             valid = false;
 

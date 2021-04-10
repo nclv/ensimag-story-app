@@ -7,9 +7,12 @@ package actions;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
@@ -61,10 +64,20 @@ public class EditParagraphePostAction implements Action {
         String isFinalString = request.getParameter("is_final");
 
         boolean isFinal = false;
-        if (!choices.isEmpty() && isFinalString != null) {
+        if (isFinalString != null) {
             isFinal = isFinalString.equals("final") ? true : false;
         }
         LOG.error("Final paragraphe: " + isFinal);
+
+        // String conditionnalParagrapheIdString = request.getParameter("conditionnal");
+
+        // Récupération des paragraphes vers lesquels converger
+        String[] convergeParagraphesIdsString = request.getParameterValues("converge");
+        Set<Long> convergeParagraphesIds = Collections.emptySet();
+        if (convergeParagraphesIdsString != null) {
+            convergeParagraphesIds = Arrays.stream(convergeParagraphesIdsString).mapToLong(Long::valueOf).boxed()
+                    .collect(Collectors.toSet());
+        }
 
         Paragraphe paragraphe = Paragraphe.builder().story_id(storyId).id(paragrapheId).user_id(user.getId())
                 .content(content).last(isFinal).build();
@@ -74,11 +87,13 @@ public class EditParagraphePostAction implements Action {
         if (connection.isEmpty()) {
             request.setAttribute("error_message", ErrorMessage.get("connection_error"));
             request.setAttribute("choices", choices);
-            return Path.PAGE_EDIT_PARAGRAPHE;
+            return Path.REDIRECT_EDIT_PARAGRAPHE + "&story_id=" + storyIdString + "&paregraphe_id="
+                    + paragrapheIdString;
         }
 
         DAOManager daoManager = new DAOManager(connection.get());
 
+        final Set<Long> convergeParagraphesIdsFinal = convergeParagraphesIds;
         Object result = daoManager.transactionAndClose((daoFactory) -> {
             ParagrapheDAO paragrapheDAO = daoFactory.getParagrapheDAO();
             RedactionDAO redactionDAO = daoFactory.getRedactionDAO();
@@ -86,33 +101,36 @@ public class EditParagraphePostAction implements Action {
 
             paragrapheDAO.updateParagraphe(paragraphe);
 
-            // Récupération des choix des paragraphes enfants
-            // List<ParentSection> parentSections = parentSectionDAO.findChildrenParagraphe(storyId, paragrapheId);
-            // List<String> parentSectionChildrenChoices = null;
-            // if (parentSections != null) {
-            //     parentSectionChildrenChoices = parentSections.stream().map(ParentSection::getChoice_text)
-            //             .collect(Collectors.toList());
-            // }
-
-            // Ajout des choix supplémentaires
             ParentSection parentSection = ParentSection.builder().story_id(storyId).parent_story_id(storyId)
                     .parent_paragraphe_id(paragrapheId).paragraphe_conditionnel_story_id(storyId)
                     .paragraphe_conditionnel_id(paragrapheId).build();
+
+            Set<Long> childParagraphesIds = parentSectionDAO.findChildrenParagraphe(storyId, paragrapheId).stream()
+                    .map(ParentSection::getParagraphe_id).collect(Collectors.toSet());
+            LOG.error(childParagraphesIds);
+
+            // On ne garde que les paragraphes vers lesquels on ne converge pas déjà
+            Set<Long> nonChildConvergeParagraphesIds = new HashSet<>(convergeParagraphesIdsFinal);
+            nonChildConvergeParagraphesIds.removeAll(childParagraphesIds);
+
+            // Ajout des paragraphes vers lesquels converger
+            int index = 0;
+            for (long convergeParagrapheId : nonChildConvergeParagraphesIds) {
+                parentSection.setChoice_text("Converge to " + convergeParagrapheId);
+                parentSection.setChoice_number(index);
+                parentSection.setParagraphe_id(convergeParagrapheId);
+
+                parentSectionDAO.saveParentSection(parentSection);
+                index++;
+            }
+
+            // Ajout des choix supplémentaires
             long childParagrapheId;
             Paragraphe childParagraphe = Paragraphe.builder().story_id(storyId).user_id(user.getId())
                     .content("NO CONTENT YET").build();
 
-            int index = 0;
             for (String choice : choices) {
-                // if (parentSectionChildrenChoices != null && parentSectionChildrenChoices.contains(choice)) {
-                //     // choice est déjà choice_text d'une parentSection
-                //     // on récupère l'ID du paragraphe
-                // }
-
-                // save paragraphe et create parentSection si nouveau choix
                 childParagrapheId = paragrapheDAO.saveParagraphe(childParagraphe);
-
-                // update parentSection si paragraphe déjà existant
 
                 parentSection.setChoice_text(choice);
                 parentSection.setChoice_number(index);
@@ -132,7 +150,8 @@ public class EditParagraphePostAction implements Action {
         });
         if (result == null) {
             request.setAttribute("error_message", ErrorMessage.get("database_paragraphe_create_error"));
-            return Path.PAGE_EDIT_PARAGRAPHE;
+            return Path.REDIRECT_EDIT_PARAGRAPHE + "&story_id=" + storyIdString + "&paregraphe_id="
+                    + paragrapheIdString;
         }
 
         LOG.error("EditParagraphePost Action finished");

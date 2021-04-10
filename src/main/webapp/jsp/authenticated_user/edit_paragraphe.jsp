@@ -59,9 +59,36 @@
                     <label for="non-final">No</label>
                 </c:if>
 
+                <c:if test="${not empty oldChoices}">
+                    <p> <strong>Choix actuels possibles</strong> à la fin de ce paragraphe: 
+                    <c:forEach var="oldChoice" items="${oldChoices}">
+                        <c:out value="${oldChoice}" />, 
+                    </c:forEach>
+                    </p>
+                </c:if>
+
+                <c:if test="${not empty existingParagraphes}">
+                    <p> <strong>Converger</strong> sur un ou plusieurs paragraphe déjà existant:</p>
+                    <c:forEach var="existingParagraphe" items="${existingParagraphes}">
+                        <div>
+                            <input type="checkbox" id="${existingParagraphe.id}" name="converge" value="${existingParagraphe.id}">
+                            <label for="${existingParagraphe.id}" ><c:out value="${existingParagraphe}" /></label>
+                        </div>
+                    </c:forEach>
+                </c:if>
+
+                <label for="conditionnal">Sélectionner un paragraphe conditionnel:</label>
+                <select name="conditionnal" id="conditionnal">
+                    <option value=""> NO CONDITIONNAL PARAGRAPHE </option>
+                    <c:forEach var="existingParagraphe" items="${existingParagraphes}">
+                        <option value="${existingParagraphe}"><c:out value="${existingParagraphe}" /></option>
+                    </c:forEach>
+                </select>
+
+                
                 <%-- Invisible choice text input --%>
                 <div id="readroot" style="display: none">
-                    <label for="choice">Enter choice text:</label>
+                    <label for="choice">Enter new choice text:</label>
                     <input type="text" id="name" name="choice" size="28">
                     <input type="button" value="Remove choice" onclick="this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode);" />
                 </div>
@@ -71,7 +98,7 @@
                     <c:if test="${not empty choices}">
                         <c:forEach var="choice" items="${choices}" varStatus="loop">
                             <aside>
-                                <label for="choice">Enter choice text:</label>
+                                <label for="choice">Enter new choice text:</label>
                                 <input type="text" id="name" name="choice_${loop.index}" size="28" value="${choice}">
                                 <input type="button" value="Remove choice" onclick="this.parentNode.parentNode.removeChild(this.parentNode);" />
                             </aside>

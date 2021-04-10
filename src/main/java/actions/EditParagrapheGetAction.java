@@ -2,8 +2,11 @@ package actions;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.apache.logging.log4j.LogManager;
@@ -75,11 +78,29 @@ public class EditParagrapheGetAction implements Action {
 
             // l'existence du paragraphe est vérifiée dans les filtres
             Paragraphe paragraphe = paragrapheDAO.findParagraphe(storyId, paragrapheId).get();
-            // construction des choix à partir des paragraphes enfants
-            List<String> choices = parentSectionDAO.findChildrenParagraphe(storyId, paragrapheId).stream()
+            // affichage des paragraphes enfants
+            List<String> oldChoices = parentSectionDAO.findChildrenParagraphe(storyId, paragrapheId).stream()
                     .map(ParentSection::getChoice_text).filter(item -> !item.isEmpty()).collect(Collectors.toList());
 
-            setAttributes(request, paragraphe, choices);
+            // TODO: faire une requête SQL
+            // on ne veut que les paragraphes de la story qui ne sont pas enfants du
+            // paragraphe actuel
+            Set<Long> storyParagraphesIds = paragrapheDAO.findAllStoryParagraphes(storyId).stream()
+                    .map(Paragraphe::getId).collect(Collectors.toSet());
+            Set<Long> childParagraphesIds = parentSectionDAO.findChildrenParagraphe(storyId, paragrapheId).stream()
+                    .map(ParentSection::getParagraphe_id).collect(Collectors.toSet());
+            LOG.error(childParagraphesIds);
+
+            // On ne garde que les paragraphes vers lesquels on ne converge pas déjà
+            Set<Long> nonChildConvergeParagraphesIds = new HashSet<>(storyParagraphesIds);
+            nonChildConvergeParagraphesIds.removeAll(childParagraphesIds);
+
+            List<Paragraphe> nonChildParagraphes = new ArrayList<Paragraphe>();
+            for (long nonChildParagrapheId : nonChildConvergeParagraphesIds) {
+                nonChildParagraphes.add(paragrapheDAO.findParagraphe(storyId, nonChildParagrapheId).get());
+            }
+
+            setAttributes(request, paragraphe, oldChoices, nonChildParagraphes);
 
             return true;
         });
@@ -93,9 +114,11 @@ public class EditParagrapheGetAction implements Action {
         return Path.PAGE_EDIT_PARAGRAPHE;
     }
 
-    private void setAttributes(HttpServletRequest request, Paragraphe paragraphe, List<String> choices) {
+    private void setAttributes(HttpServletRequest request, Paragraphe paragraphe, List<String> oldChoices,
+            List<Paragraphe> nonChildParagraphes) {
         request.setAttribute("paragraphe_content", paragraphe.getContent());
         request.setAttribute("is_final", paragraphe.isLast() ? "final" : "non-final");
-        request.setAttribute("choices", choices);
+        request.setAttribute("oldChoices", oldChoices);
+        request.setAttribute("existingParagraphes", nonChildParagraphes);
     }
 }

@@ -2,6 +2,7 @@ package actions;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.util.List;
 import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
@@ -9,6 +10,7 @@ import org.apache.logging.log4j.Logger;
 
 import dao.DAOManager;
 import dao.ParagrapheDAO;
+import dao.StoryDAO;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -46,8 +48,14 @@ public class RemoveParagrapheAction implements Action {
 
         Object result = daoManager.executeAndClose((daoFactory) -> {
             ParagrapheDAO paragrapheDAO = daoFactory.getParagrapheDAO();
+            StoryDAO storyDAO = daoFactory.getStoryDAO();
 
             paragrapheDAO.removeParagraphe(paragraphe);
+
+            List<Paragraphe> paragraphes = paragrapheDAO.findAllStoryParagraphes(storyId);
+            if (paragraphes.isEmpty()) {
+                // remove the story
+            }
 
             return true;
         });
