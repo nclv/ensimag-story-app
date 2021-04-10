@@ -53,6 +53,7 @@ public class ReadStoryAction implements Action {
         String historyName = "history";
         List<Historic> history = (LinkedList<Historic>) session.getAttribute(historyName);
         if (history == null) {
+            // on conserve l'historique d'une story.
             session.setAttribute(historyName, new LinkedList<Historic>());
         }
 

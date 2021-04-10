@@ -64,10 +64,16 @@ public class ShowParagrapheAction implements Action {
         String paragrapheIdString = request.getParameter("paragraphe_id");
         long paragrapheId = Long.parseLong(paragrapheIdString);
 
+        String previousParagrapheIdString = request.getParameter("previous_paragraphe_id");
+        long previousParagrapheId = -1;
+        if (previousParagrapheIdString != null)
+            previousParagrapheId = Long.parseLong(previousParagrapheIdString);
+
         String historyName = "history";
         List<Historic> history = (LinkedList<Historic>) session.getAttribute(historyName);
-        LOG.error(history);
+        // LOG.error(history);
         if (history != null) {
+            // On reset l'historique si on commence une nouvelle story
             if (!history.isEmpty() && history.get(0).getStory_id() != storyId) {
                 history = new LinkedList<Historic>();
             }
@@ -78,14 +84,22 @@ public class ShowParagrapheAction implements Action {
             }
             List<Long> historyParagraphesIds = history.stream().map(Historic::getParagraphe_id)
                     .collect(Collectors.toList());
-            int position = historyParagraphesIds.indexOf(paragrapheId);
-            if (position != -1) {
-                history.subList(position, history.size()).clear();
+            int position = historyParagraphesIds.indexOf(previousParagrapheId);
+            // LOG.error(historyParagraphesIds);
+            // LOG.error(previousParagrapheId);
+            // LOG.error(position);
+            // LOG.error(!historyParagraphesIds.contains(paragrapheId));
+            // l'historique contient le paragraphe précédent et ne contient pas le paragraphe demandé 
+            if (position != -1 && !historyParagraphesIds.contains(paragrapheId)) {
+                history.subList(position + 1, history.size()).clear();
             }
-            history.add(historic);
-            session.setAttribute(historyName, history);
+            // l'historique ne contient pas le paragraphe demandé
+            if (!historyParagraphesIds.contains(paragrapheId)) {
+                history.add(historic);
+            }
         }
-        LOG.error(history);
+
+        session.setAttribute(historyName, history);
 
         // Database operations
         Optional<Connection> connection = DatabaseManager.getConnection();

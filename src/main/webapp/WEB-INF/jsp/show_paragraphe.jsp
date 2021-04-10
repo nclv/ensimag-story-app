@@ -56,7 +56,7 @@
                 <c:forEach var="child" items="${children}">
                     <tr>
                         <td>
-                            <a href="${context}${Path.REDIRECT_SHOW_PARAGRAPHE}&story_id=${child.story_id}&paragraphe_id=${child.id}"> <c:out value="${child.id}" /></a>
+                            <a href="${context}${Path.REDIRECT_SHOW_PARAGRAPHE}&story_id=${child.story_id}&paragraphe_id=${child.id}&previous_paragraphe_id=${paragraphe.id}"> <c:out value="${child.id}" /></a>
                         </td>
                         <td><c:out value="${child.user_id}" /></td>
                         <td><c:out value="${child.content}" /></td>
@@ -69,7 +69,7 @@
                 <c:forEach var="historic" items="${history}">
                     <tr>
                         <td>
-                            <a href="${context}${Path.REDIRECT_SHOW_PARAGRAPHE}&story_id=${historic.story_id}&paragraphe_id=${historic.paragraphe_id}"> <c:out value="${historic.paragraphe_id}" /></a> ${!loop.last ? ', ' : ''}
+                            <a href="${context}${Path.REDIRECT_SHOW_PARAGRAPHE}&story_id=${historic.story_id}&paragraphe_id=${historic.paragraphe_id}&previous_paragraphe_id=${paragraphe.id}"> <c:out value="${historic.paragraphe_id}" /></a> ${!loop.last ? ', ' : ''}
                         </td>
                     </tr>
                 </c:forEach>
