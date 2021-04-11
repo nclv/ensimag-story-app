@@ -53,28 +53,28 @@
                         <th>Title</th>
                     </tr>
                 </thead>
-                <%-- Test que l'historique contient le paragraphe précédent --%>
-                <c:set var="contain_previous" value="false" />
+                <%-- Test que l'historique contient le paragraphe actuel --%>
+                <c:set var="contain_current" value="false" />
                 <c:forEach var="paragraphe_id" items="${historic_paragraphes_ids}">
                     <c:if test="${paragraphe_id eq paragraphe.id}">
-                        <c:set var="contain_previous" value="true" />
+                        <c:set var="contain_current" value="true" />
                     </c:if>
                 </c:forEach>
 
                 <c:forEach var="child" items="${children}">
                     <%-- Test que l'historique contient le paragraphe child. On est intéressé par sa négation. --%>
-                    <c:set var="contain_current" value="false" />
+                    <c:set var="contain_child" value="false" />
                     <c:forEach var="paragraphe_id" items="${historic_paragraphes_ids}">
                         <c:if test="${paragraphe_id eq child.id}">
-                            <c:set var="contain_current" value="true" />
+                            <c:set var="contain_child" value="true" />
                         </c:if>
                     </c:forEach>
                     <tr>
                         <td>
-                            <%--  --%>
+                            <%-- Choix de l'affichage de la popup --%>
                             <c:set var="child_url" value="${context}${Path.REDIRECT_SHOW_PARAGRAPHE}&story_id=${child.story_id}&paragraphe_id=${child.id}&previous_paragraphe_id=${paragraphe.id}" />
                             <c:choose>
-                                <c:when test="${contain_previous eq 'true' && contain_current eq 'false'}">
+                                <c:when test="${contain_current eq 'true' && contain_child eq 'false'}">
                                     <a href="${child_url}" onclick="return confirm('You will modify your history.')"> <c:out value="${child.id}" /></a>
                                 </c:when>
                                 <c:otherwise>

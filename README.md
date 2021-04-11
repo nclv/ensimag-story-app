@@ -22,6 +22,20 @@ Nous utilisons le pattern *Data Access Object* (DAO). Nous avons donc des interf
 
 Les *filtres* font usage du patron de conception *Chain of Responsability* lors de l'appel à la fonction *doFilter()*. Nous utilisons deux filtres spécifiques: un pour l'encodage des pages en UTF-8 et un pour filtrer l'accès aux pages réservées aux utilisateurs identifiés. Les autres filtres sont des filtres de validation. Ils vérifient que les paramètres de la requêtes sont corrects avant de réaliser les actions.
 
+# TODO.
+
+- [ ] Remplacer `SELECT *` par les *fields* de la table. Utiliser `DatabaseFields` dans les requêtes SQL.
+- [ ] Ajouter des DAOs pour les jointures et remplacer le code Java.
+- [ ] Créer des *views* (objets envoyés au client pour l'affichage).
+- [ ] Revoir les filtres: redirections login, fonctions pre/post validation dans `Validation`.
+- [ ] Tester le rechargement des pages (pattern PRG).
+
+- [ ] Finir la page d'affichage d'une story.
+- [ ] Faire la sauvegarde de l'historique.
+- [ ] Publier/dépublier un story.
+- [ ] Choix conditionnels.
+- [ ] Vérifier que seul l'auteur d'un paragraphe peut le modifier/supprimer.
+
 # Resources
 - [web.xml init-param/context-param](https://stackoverflow.com/a/28393315)
 - [login servlet](https://stackoverflow.com/a/13276996)
