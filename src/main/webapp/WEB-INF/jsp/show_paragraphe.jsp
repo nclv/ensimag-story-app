@@ -53,10 +53,34 @@
                         <th>Title</th>
                     </tr>
                 </thead>
+                <%-- Test que l'historique contient le paragraphe précédent --%>
+                <c:set var="contain_previous" value="false" />
+                <c:forEach var="paragraphe_id" items="${historic_paragraphes_ids}">
+                    <c:if test="${paragraphe_id eq paragraphe.id}">
+                        <c:set var="contain_previous" value="true" />
+                    </c:if>
+                </c:forEach>
+
                 <c:forEach var="child" items="${children}">
+                    <%-- Test que l'historique contient le paragraphe child. On est intéressé par sa négation. --%>
+                    <c:set var="contain_current" value="false" />
+                    <c:forEach var="paragraphe_id" items="${historic_paragraphes_ids}">
+                        <c:if test="${paragraphe_id eq child.id}">
+                            <c:set var="contain_current" value="true" />
+                        </c:if>
+                    </c:forEach>
                     <tr>
                         <td>
-                            <a href="${context}${Path.REDIRECT_SHOW_PARAGRAPHE}&story_id=${child.story_id}&paragraphe_id=${child.id}&previous_paragraphe_id=${paragraphe.id}"> <c:out value="${child.id}" /></a>
+                            <%--  --%>
+                            <c:set var="child_url" value="${context}${Path.REDIRECT_SHOW_PARAGRAPHE}&story_id=${child.story_id}&paragraphe_id=${child.id}&previous_paragraphe_id=${paragraphe.id}" />
+                            <c:choose>
+                                <c:when test="${contain_previous eq 'true' && contain_current eq 'false'}">
+                                    <a href="${child_url}" onclick="return confirm('You will modify your history.')"> <c:out value="${child.id}" /></a>
+                                </c:when>
+                                <c:otherwise>
+                                    <a href="${child_url}"> <c:out value="${child.id}" /></a>
+                                </c:otherwise>
+                            </c:choose>
                         </td>
                         <td><c:out value="${child.user_id}" /></td>
                         <td><c:out value="${child.content}" /></td>

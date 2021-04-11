@@ -66,12 +66,14 @@ public class ShowParagrapheAction implements Action {
 
         String previousParagrapheIdString = request.getParameter("previous_paragraphe_id");
         long previousParagrapheId = -1;
-        if (previousParagrapheIdString != null)
+        try {
             previousParagrapheId = Long.parseLong(previousParagrapheIdString);
+        } catch (NumberFormatException e) {
+            LOG.error("Number Format exception");
+        }
 
         String historyName = "history";
         List<Historic> history = (LinkedList<Historic>) session.getAttribute(historyName);
-        // LOG.error(history);
         if (history != null) {
             // On reset l'historique si on commence une nouvelle story
             if (!history.isEmpty() && history.get(0).getStory_id() != storyId) {
@@ -84,8 +86,11 @@ public class ShowParagrapheAction implements Action {
             }
             List<Long> historyParagraphesIds = history.stream().map(Historic::getParagraphe_id)
                     .collect(Collectors.toList());
+            request.setAttribute("historic_paragraphes_ids", historyParagraphesIds);
+
             int position = historyParagraphesIds.indexOf(previousParagrapheId);
-            // l'historique contient le paragraphe précédent et ne contient pas le paragraphe demandé 
+            // l'historique contient le paragraphe précédent et ne contient pas le
+            // paragraphe demandé
             if (position != -1 && !historyParagraphesIds.contains(paragrapheId)) {
                 history.subList(position + 1, history.size()).clear();
             }
