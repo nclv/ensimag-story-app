@@ -8,8 +8,9 @@ import models.Paragraphe;
 
 public interface ParagrapheDAO {
     long saveParagraphe(Paragraphe paragraphe) throws SQLException;
-    Optional<Paragraphe> findParagraphe(long story_id, long paragraphe_id) throws SQLException;
+    Optional<Paragraphe> findParagraphe(long storyId, long paragrapheId) throws SQLException;
     void updateParagraphe(Paragraphe paragraphe) throws SQLException;
-    List<Paragraphe> findAllStoryParagraphes(long story_id) throws SQLException;
+    List<Paragraphe> findAllStoryParagraphes(long storyId) throws SQLException;
     void removeParagraphe(Paragraphe paragraphe) throws SQLException;
+    List<Paragraphe> findAllParentsFromFinalChild(long storyId) throws SQLException;
 }

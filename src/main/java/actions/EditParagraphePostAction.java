@@ -102,8 +102,8 @@ public class EditParagraphePostAction implements Action {
             paragrapheDAO.updateParagraphe(paragraphe);
 
             ParentSection parentSection = ParentSection.builder().story_id(storyId).parent_story_id(storyId)
-                    .parent_paragraphe_id(paragrapheId).paragraphe_conditionnel_story_id(storyId)
-                    .paragraphe_conditionnel_id(paragrapheId).build();
+                    .parent_paragraphe_id((int) paragrapheId).paragraphe_conditionnel_story_id(storyId)
+                    .paragraphe_conditionnel_id((int) paragrapheId).build();
 
             Set<Long> childParagraphesIds = parentSectionDAO.findChildrenParagraphe(storyId, paragrapheId).stream()
                     .map(ParentSection::getParagraphe_id).collect(Collectors.toSet());
@@ -114,7 +114,7 @@ public class EditParagraphePostAction implements Action {
             nonChildConvergeParagraphesIds.removeAll(childParagraphesIds);
 
             // Ajout des paragraphes vers lesquels converger
-            int index = 0;
+            int index = 1;
             for (long convergeParagrapheId : nonChildConvergeParagraphesIds) {
                 parentSection.setChoice_text("Converge to " + convergeParagrapheId);
                 parentSection.setChoice_number(index);

@@ -74,7 +74,7 @@ public class ReadStoryAction implements Action {
 
             // get() car existence déjà vérifiée dans les filtres
             Story story = storyDAO.findStory(storyId).get();
-            List<Paragraphe> paragraphes = paragrapheDAO.findAllStoryParagraphes(storyId);
+            List<Paragraphe> paragraphes = paragrapheDAO.findAllParentsFromFinalChild(storyId);
 
             // get() car la story existe donc son auteur existe (intégrité BDD)
             User author = userDAO.findUser(story.getUser_id()).get();

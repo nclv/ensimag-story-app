@@ -87,19 +87,25 @@ public class CreateStoryAction implements Action {
             long parentParagrapheId = paragrapheDAO.saveParagraphe(paragraphe);
             LOG.error(parentParagrapheId + " " + paragraphe);
 
+            // on sauvegarde la racine dans ParentSection
             ParentSection parentSection = ParentSection.builder().story_id(storyId).parent_story_id(storyId)
-                    .parent_paragraphe_id(parentParagrapheId).paragraphe_conditionnel_story_id(storyId)
-                    .paragraphe_conditionnel_id(parentParagrapheId).build();
+                    .parent_paragraphe_id(-1).paragraphe_id(parentParagrapheId)
+                    .paragraphe_conditionnel_story_id(storyId).paragraphe_conditionnel_id(-1).choice_text("ROOT")
+                    .choice_number(0).build();
+            parentSectionDAO.saveParentSection(parentSection);
+
             long paragrapheId;
             paragraphe = Paragraphe.builder().story_id(storyId).user_id(user.getId()).content("NO CONTENT YET").build();
 
-            int index = 0;
+            int index = 1;
             for (String choice : choices) {
                 paragrapheId = paragrapheDAO.saveParagraphe(paragraphe);
 
                 parentSection.setChoice_text(choice);
                 parentSection.setChoice_number(index);
                 parentSection.setParagraphe_id(paragrapheId);
+                parentSection.setParent_paragraphe_id((int) parentParagrapheId);
+                // parentSection.setParagraphe_conditionnel_id((int) ...);
 
                 parentSectionDAO.saveParentSection(parentSection);
 

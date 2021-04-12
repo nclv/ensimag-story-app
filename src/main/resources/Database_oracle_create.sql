@@ -56,7 +56,7 @@ CREATE TABLE "Parent Section" (
 	"parent_story_id" NUMBER(10) NOT NULL,
 	"parent_para_id" NUMBER(10) NOT NULL,
 	"parag_condition_story_id" NUMBER(10) NOT NULL,
-	"parag_condition_para_id" NUMBER(10) NOT NULL,
+	"parag_condition_para_id" NUMBER(10),
 	"choice_text" CLOB NOT NULL,
 	"choice_num" NUMBER(10) NOT NULL,
 	constraint PARENT_SECTION_PK PRIMARY KEY ("story_id","para_id","parent_story_id","parent_para_id"));
@@ -103,20 +103,17 @@ ALTER TABLE "Story" ADD CONSTRAINT "Story_fk0" FOREIGN KEY ("user_id") REFERENCE
 ALTER TABLE "Paragraphe" ADD CONSTRAINT "Paragraphe_fk0" FOREIGN KEY ("story_id") REFERENCES "Story"("story_id");
 
 ALTER TABLE "Parent Section" ADD CONSTRAINT "Parent Section_fk0" FOREIGN KEY ("story_id", "para_id") REFERENCES "Paragraphe"("story_id", "para_id") ON DELETE CASCADE;
--- ALTER TABLE "Parent Section" ADD CONSTRAINT "Parent Section_fk1" FOREIGN KEY ("para_id") REFERENCES "Paragraphe"("para_id");
-ALTER TABLE "Parent Section" ADD CONSTRAINT "Parent Section_fk2" FOREIGN KEY ("parent_story_id", "parent_para_id") REFERENCES "Paragraphe"("story_id", "para_id");
--- ALTER TABLE "Parent Section" ADD CONSTRAINT "Parent Section_fk3" FOREIGN KEY ("parent_para_id") REFERENCES "Paragraphe"("para_id");
-ALTER TABLE "Parent Section" ADD CONSTRAINT "Parent Section_fk4" FOREIGN KEY ("parag_condition_story_id", "parag_condition_para_id") REFERENCES "Paragraphe"("story_id", "para_id");
--- ALTER TABLE "Parent Section" ADD CONSTRAINT "Parent Section_fk5" FOREIGN KEY ("parag_condition_para_id") REFERENCES "Paragraphe"("para_id");
+-- Impossible de référencer le paragraphe initial car il n'a pas de parent.
+-- ALTER TABLE "Parent Section" ADD CONSTRAINT "Parent Section_fk2" FOREIGN KEY ("parent_story_id", "parent_para_id") REFERENCES "Paragraphe"("story_id", "para_id");
+-- ALTER TABLE "Parent Section" ADD CONSTRAINT "Parent Section_fk4" FOREIGN KEY ("parag_condition_story_id", "parag_condition_para_id") REFERENCES "Paragraphe"("story_id", "para_id");
+
 
 ALTER TABLE "Historique" ADD CONSTRAINT "Historique_fk0" FOREIGN KEY ("user_id") REFERENCES "User"("user_id");
 ALTER TABLE "Historique" ADD CONSTRAINT "Historique_fk1" FOREIGN KEY ("story_id", "para_id") REFERENCES "Paragraphe"("story_id", "para_id") ON DELETE CASCADE;
--- ALTER TABLE "Historique" ADD CONSTRAINT "Historique_fk2" FOREIGN KEY ("para_id") REFERENCES "Paragraphe"("para_id");
 
 ALTER TABLE "Invited" ADD CONSTRAINT "Invited_fk0" FOREIGN KEY ("user_id") REFERENCES "User"("user_id");
 ALTER TABLE "Invited" ADD CONSTRAINT "Invited_fk1" FOREIGN KEY ("story_id") REFERENCES "Story"("story_id");
 
 ALTER TABLE "Redaction" ADD CONSTRAINT "Redaction_fk0" FOREIGN KEY ("user_id") REFERENCES "User"("user_id");
 ALTER TABLE "Redaction" ADD CONSTRAINT "Redaction_fk1" FOREIGN KEY ("story_id", "para_id") REFERENCES "Paragraphe"("story_id", "para_id") ON DELETE CASCADE;
--- ALTER TABLE "Redaction" ADD CONSTRAINT "Redaction_fk2" FOREIGN KEY ("para_id") REFERENCES "Paragraphe"("para_id");
 

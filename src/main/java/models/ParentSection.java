@@ -19,9 +19,9 @@ public class ParentSection implements Serializable {
     private long story_id;
     private long paragraphe_id;
     private long parent_story_id;
-    private long parent_paragraphe_id;
+    private int parent_paragraphe_id;
     private long paragraphe_conditionnel_story_id;
-    private long paragraphe_conditionnel_id;
+    private int paragraphe_conditionnel_id;
     private String choice_text;
     private long choice_number;
 }
