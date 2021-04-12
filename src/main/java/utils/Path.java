@@ -39,5 +39,6 @@ public final class Path {
     public static final String REDIRECT_READ_STORY = "/controller?action=read_story";
     public static final String REDIRECT_REMOVE_INVITED = "/controller?action=remove_invited";
     public static final String REDIRECT_REMOVE_PARAGRAPHE = "/controller?action=remove_paragraphe";
+    public static final String REDIRECT_UNLOCK_PARAGRAPHE = "/controller?action=unlock_paragraphe";
     public static final String REDIRECT_SHOW_PARAGRAPHE = "/controller?action=show_paragraphe";
 }

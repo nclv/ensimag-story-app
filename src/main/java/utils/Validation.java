@@ -338,6 +338,59 @@ public final class Validation {
         return true;
     }
 
+    public static boolean noAuthor(HttpServletRequest req, HttpServletResponse resp, String forwardPage)
+            throws ServletException, IOException {
+
+        String storyIdString = req.getParameter("story_id");
+        long storyId = Long.parseLong(storyIdString);
+
+        String paragrapheIdString = req.getParameter("paragraphe_id");
+        long paragrapheId = Long.parseLong(paragrapheIdString);
+
+        // Database operations
+        Optional<Connection> connection = DatabaseManager.getConnection();
+        if (connection.isEmpty()) {
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("connection_error"));
+            return false;
+        }
+
+        DAOManager daoManager = new DAOManager(connection.get());
+
+        Object result = daoManager.executeAndClose((daoFactory) -> {
+            ParagrapheDAO paragrapheDAO = daoFactory.getParagrapheDAO();
+
+            Paragraphe paragraphe = paragrapheDAO.findParagraphe(storyId, paragrapheId).get();
+
+            return (paragraphe.getUser_id() == 0);
+        });
+        if (result == null) {
+            LOG.error("Database query error.");
+
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("database_query_error"));
+            return false;
+        }
+        if (!(boolean) result) {
+            LOG.error("The paragraphe has an author.");
+
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("paragraphe_has_author"));
+            return false;
+        }
+
+        return true;
+    }
+
+    public static boolean edit(HttpServletRequest req, HttpServletResponse resp, String forwardPage) throws ServletException, IOException {
+        boolean valid = true;
+
+        valid = Validation.isAuthor(req, resp, Path.PAGE_ERROR);
+        if (!valid) {
+            req.setAttribute("error_message", null);
+            valid = Validation.noAuthor(req, resp, Path.PAGE_ERROR);
+        }
+
+        return valid;
+    }
+
     public static boolean children(HttpServletRequest req, HttpServletResponse resp, String forwardPage)
             throws ServletException, IOException {
 

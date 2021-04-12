@@ -25,7 +25,8 @@ public final class ErrorMessage {
         errorMessages.put("database_invite_users_error", "Error when inviting users.");
         errorMessages.put("database_remove_invited_user_error", "Couldn't remove invited user.");
         errorMessages.put("database_remove_paragraphe_error", "Couldn't remove paragraphe.");
-        errorMessages.put("database_update_password_error", "Database error. Please retry.");
+        errorMessages.put("database_unlock_paragraphe_error", "Couldn't unlock paragraphe.");
+        errorMessages.put("database_update_password_error", "Couldn't update password.");
 
         errorMessages.put("username_empty", "Enter an user name.");
         errorMessages.put("password_empty", "Enter a password.");
@@ -56,6 +57,7 @@ public final class ErrorMessage {
         errorMessages.put("create_publish_no_final", "You need to have a final paragraphe to publish your story.");
         errorMessages.put("closed_not_invited", "You are not invited to the story.");
         errorMessages.put("not_paragraphe_author", "You are not the author of this paragraphe.");
+        errorMessages.put("paragraphe_has_author", "The paragraphe has an author.");
         errorMessages.put("paragraphe_has_children", "This paragraphe has children.");
         errorMessages.put("not_story_author", "You are not the author of the story.");
 

@@ -100,6 +100,7 @@
                         <th>Content</th>
                         <th>Is final</th>
                         <th></th>
+                        <th></th>
                     </tr>
                 </thead>
                 <c:forEach var="paragraphe" items="${paragraphes}">
@@ -125,6 +126,7 @@
                         <td><c:out value="${paragraphe.last}" /></td>
                         <c:if test="${paragraphe.user_id == user.id}">
                             <td><a href="${context}${Path.REDIRECT_REMOVE_PARAGRAPHE}&story_id=${story.id}&paragraphe_id=${paragraphe.id}"> Remove </a></td>
+                            <td><a href="${context}${Path.REDIRECT_UNLOCK_PARAGRAPHE}&story_id=${story.id}&paragraphe_id=${paragraphe.id}"> Unlock </a></td>
                         </c:if>
                     </tr>
                 </c:forEach>
