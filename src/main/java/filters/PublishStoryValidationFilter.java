@@ -17,7 +17,7 @@ import utils.Path;
 import utils.Validation;
 
 @WebFilter("/controller")
-public class UnlockParagrapheValidationFilter implements Filter {
+public class PublishStoryValidationFilter implements Filter {
     private static final Logger LOG = LogManager.getLogger();
 
     @Override
@@ -27,14 +27,14 @@ public class UnlockParagrapheValidationFilter implements Filter {
         HttpServletResponse resp = (HttpServletResponse) response;
 
         String actionName = req.getMethod() + "/" + req.getParameter("action");
-        boolean canFilter = actionName.equals("GET/unlock_paragraphe");
+        boolean canFilter = actionName.equals("GET/publish_story");
         LOG.error(actionName);
         LOG.error(canFilter);
 
         if (!canFilter || (canFilter && Validation.loggedIn(req, resp, Path.PAGE_LOGIN)
                 && Validation.storyId(req, resp, Path.PAGE_ERROR)
-                && Validation.paragrapheId(req, resp, Path.PAGE_ERROR)
-                && Validation.isParagrapheAuthor(req, resp, Path.PAGE_ERROR))) {
+                && Validation.isStoryAuthor(req, resp, Path.PAGE_ERROR)
+                && Validation.hasFinalParagraphe(req, resp, Path.PAGE_ERROR))) {
             chain.doFilter(req, resp);
         }
     }

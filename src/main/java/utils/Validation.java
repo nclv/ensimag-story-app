@@ -295,7 +295,7 @@ public final class Validation {
         return true;
     }
 
-    public static boolean isAuthor(HttpServletRequest req, HttpServletResponse resp, String forwardPage)
+    public static boolean isParagrapheAuthor(HttpServletRequest req, HttpServletResponse resp, String forwardPage)
             throws ServletException, IOException {
         HttpSession session = req.getSession();
         User connectedUser = (User) session.getAttribute("user");
@@ -332,6 +332,46 @@ public final class Validation {
             LOG.error("You are not the author of this paragraphe.");
 
             setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("not_paragraphe_author"));
+            return false;
+        }
+
+        return true;
+    }
+
+    public static boolean isStoryAuthor(HttpServletRequest req, HttpServletResponse resp, String forwardPage)
+            throws ServletException, IOException {
+        HttpSession session = req.getSession();
+        User connectedUser = (User) session.getAttribute("user");
+
+        String storyIdString = req.getParameter("story_id");
+        long storyId = Long.parseLong(storyIdString);
+
+        // Database operations
+        Optional<Connection> connection = DatabaseManager.getConnection();
+        if (connection.isEmpty()) {
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("connection_error"));
+            return false;
+        }
+
+        DAOManager daoManager = new DAOManager(connection.get());
+
+        Object result = daoManager.executeAndClose((daoFactory) -> {
+            StoryDAO storyDAO = daoFactory.getStoryDAO();
+
+            Story story = storyDAO.findStory(storyId).get();
+
+            return (story.getUser_id() == connectedUser.getId());
+        });
+        if (result == null) {
+            LOG.error("Database query error.");
+
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("database_query_error"));
+            return false;
+        }
+        if (!(boolean) result) {
+            LOG.error("You are not the author of this story.");
+
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("not_story_author"));
             return false;
         }
 
@@ -379,16 +419,54 @@ public final class Validation {
         return true;
     }
 
-    public static boolean edit(HttpServletRequest req, HttpServletResponse resp, String forwardPage) throws ServletException, IOException {
+    public static boolean edit(HttpServletRequest req, HttpServletResponse resp, String forwardPage)
+            throws ServletException, IOException {
         boolean valid = true;
 
-        valid = Validation.isAuthor(req, resp, Path.PAGE_ERROR);
+        valid = Validation.isParagrapheAuthor(req, resp, Path.PAGE_ERROR);
         if (!valid) {
             req.setAttribute("error_message", null);
             valid = Validation.noAuthor(req, resp, Path.PAGE_ERROR);
         }
 
         return valid;
+    }
+
+    public static boolean hasFinalParagraphe(HttpServletRequest req, HttpServletResponse resp, String forwardPage)
+            throws ServletException, IOException {
+
+        String storyIdString = req.getParameter("story_id");
+        long storyId = Long.parseLong(storyIdString);
+
+        // Database operations
+        Optional<Connection> connection = DatabaseManager.getConnection();
+        if (connection.isEmpty()) {
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("connection_error"));
+            return false;
+        }
+
+        DAOManager daoManager = new DAOManager(connection.get());
+
+        Object result = daoManager.executeAndClose((daoFactory) -> {
+            ParagrapheDAO paragrapheDAO = daoFactory.getParagrapheDAO();
+
+            return paragrapheDAO.findAllStoryParagraphes(storyId).stream().map(Paragraphe::isLast)
+                    .anyMatch(isLast -> true);
+        });
+        if (result == null) {
+            LOG.error("Database query error.");
+
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("database_query_error"));
+            return false;
+        }
+        if (!(boolean) result) {
+            LOG.error("This story has no final paragraphe.");
+
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("no_final_paragraphe"));
+            return false;
+        }
+
+        return true;
     }
 
     public static boolean children(HttpServletRequest req, HttpServletResponse resp, String forwardPage)

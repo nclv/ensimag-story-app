@@ -27,7 +27,8 @@ public final class ErrorMessage {
         errorMessages.put("database_remove_paragraphe_error", "Couldn't remove paragraphe.");
         errorMessages.put("database_unlock_paragraphe_error", "Couldn't unlock paragraphe.");
         errorMessages.put("database_update_password_error", "Couldn't update password.");
-
+        errorMessages.put("database_publish_story_error", "Couldn't publish story.");
+    
         errorMessages.put("username_empty", "Enter an user name.");
         errorMessages.put("password_empty", "Enter a password.");
         errorMessages.put("new_password_empty", "Enter a new password.");
@@ -60,6 +61,7 @@ public final class ErrorMessage {
         errorMessages.put("paragraphe_has_author", "The paragraphe has an author.");
         errorMessages.put("paragraphe_has_children", "This paragraphe has children.");
         errorMessages.put("not_story_author", "You are not the author of the story.");
+        errorMessages.put("no_final_paragraphe", "This story has no final paragraphe.");
 
         LOG.debug("Command container was successfully initialized");
         LOG.trace("Number of errors --> " + errorMessages.size());
