@@ -43,6 +43,7 @@
         </nav>
         <h1>show_paragraphe.jsp</h1>
         <c:out value="${paragraphe.title}" />
+        <c:out value="${paragraphe.content}" />
         <section>
             <table>
                 <caption><h2>Choices</h2></caption>
@@ -72,7 +73,7 @@
                     <tr>
                         <td>
                             <%-- Choix de l'affichage de la popup --%>
-                            <c:set var="child_url" value="${context}${Path.REDIRECT_SHOW_PARAGRAPHE}&story_id=${child.story_id}&paragraphe_id=${child.id}&previous_paragraphe_id=${paragraphe.id}" />
+                            <c:set var="child_url" value="${context}${Path.REDIRECT_SHOW_PARAGRAPHE}&story_id=${child.story_id}&paragraphe_id=${child.id}&previous_paragraphe_id=${paragraphe.id}&read=${read}" />
                             <c:choose>
                                 <c:when test="${contain_current eq 'true' && contain_child eq 'false'}">
                                     <a href="${child_url}" onclick="return confirm('You will modify your history.')"> <c:out value="${child.id}" /></a>
@@ -83,7 +84,7 @@
                             </c:choose>
                         </td>
                         <td><c:out value="${child.user_id}" /></td>
-                        <td><c:out value="${child.content}" /></td>
+                        <td><c:out value="${child.title}" /></td>
                     </tr>
                 </c:forEach>
             </table>
@@ -93,7 +94,7 @@
                 <c:forEach var="historic" items="${history}">
                     <tr>
                         <td>
-                            <a href="${context}${Path.REDIRECT_SHOW_PARAGRAPHE}&story_id=${historic.story_id}&paragraphe_id=${historic.paragraphe_id}&previous_paragraphe_id=${paragraphe.id}"> <c:out value="${historic.paragraphe_id}" /></a> ${!loop.last ? ', ' : ''}
+                            <a href="${context}${Path.REDIRECT_SHOW_PARAGRAPHE}&story_id=${historic.story_id}&paragraphe_id=${historic.paragraphe_id}&previous_paragraphe_id=${paragraphe.id}&read=${read}"> <c:out value="${historic.paragraphe_id}" /></a> ${!loop.last ? ', ' : ''}
                         </td>
                     </tr>
                 </c:forEach>

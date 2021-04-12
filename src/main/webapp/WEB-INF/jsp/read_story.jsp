@@ -79,7 +79,7 @@
                 </thead>
                 <c:forEach var="paragraphe" items="${paragraphes}">
                     <tr>
-                        <td> <a href="${context}${Path.REDIRECT_SHOW_PARAGRAPHE}&story_id=${story.id}&paragraphe_id=${paragraphe.id}"> <c:out value="${paragraphe.id}" /></td>
+                        <td> <a href="${context}${Path.REDIRECT_SHOW_PARAGRAPHE}&story_id=${story.id}&paragraphe_id=${paragraphe.id}&read=true"> <c:out value="${paragraphe.id}" /></td>
                         <td><c:out value="${paragraphe.content}" /></td>
                         <td><c:out value="${paragraphe.last}" /></td>
                     </tr>

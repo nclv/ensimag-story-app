@@ -8,6 +8,7 @@ package actions;
 import java.io.IOException;
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -71,6 +72,9 @@ public class ShowParagrapheAction implements Action {
         } catch (NumberFormatException e) {
             LOG.error("Number Format exception");
         }
+
+        String read = request.getParameter("read");
+        boolean canRead = read != null && read.equals("true");
 
         String historyName = "history";
         List<Historic> history = (LinkedList<Historic>) session.getAttribute(historyName);
@@ -139,18 +143,28 @@ public class ShowParagrapheAction implements Action {
                 invitedUsers = userDAO.findUsers(invitedUsersIds);
             }
 
+            Set<Long> readableParagraphesIds = Collections.emptySet();
+            if (canRead) {
+                readableParagraphesIds = paragrapheDAO.findAllParentsFromFinalChild(storyId).stream()
+                        .map(Paragraphe::getId).collect(Collectors.toSet());
+            }
+
+            // TODO: remplacer par une requête SQL
             // Pas possible d'utiliser les streams car on doit handle une SQLException
             List<ParentSection> parentSectionChildren = parentSectionDAO.findChildrenParagraphe(storyId, paragrapheId);
             List<Paragraphe> paragrapheChildren = new ArrayList<Paragraphe>(parentSectionChildren.size());
             Paragraphe paragrapheChild;
             for (ParentSection parentSection : parentSectionChildren) {
-                paragrapheChild = paragrapheDAO
-                        .findParagraphe(parentSection.getStory_id(), parentSection.getParagraphe_id()).get();
-                paragrapheChildren.add(paragrapheChild);
+                if (!canRead || (canRead && readableParagraphesIds.contains(parentSection.getParagraphe_id()))) {
+                    paragrapheChild = paragrapheDAO
+                            .findParagraphe(parentSection.getStory_id(), parentSection.getParagraphe_id()).get();
+                    paragrapheChild.setTitle(parentSection.getChoice_text());
+                    paragrapheChildren.add(paragrapheChild);
+                }
             }
 
             setAttributes(request, story, paragraphe, connectedUser, author, invitedUsersIds, invitedUsers,
-                    paragrapheChildren);
+                    paragrapheChildren, read);
 
             return true;
         });
@@ -175,12 +189,13 @@ public class ShowParagrapheAction implements Action {
     }
 
     private void setAttributes(HttpServletRequest request, Story story, Paragraphe paragraphe, User connectedUser,
-            User author, Set<Long> invitedUsersIds, List<User> invitedUsers, List<Paragraphe> children) {
+            User author, Set<Long> invitedUsersIds, List<User> invitedUsers, List<Paragraphe> children, String read) {
         request.setAttribute("story", story);
         request.setAttribute("paragraphe", paragraphe);
         request.setAttribute("author", author);
         request.setAttribute("invitedUsers", invitedUsers);
         request.setAttribute("children", children);
+        request.setAttribute("read", read);
 
         // On peut lire le paragraphe si:
         // - on en est l'auteur
