@@ -573,18 +573,51 @@ public final class Validation {
         return true;
     }
 
-    public static boolean published(HttpServletRequest request, Story story) {
+    public static boolean published(HttpServletRequest req, Story story) {
         boolean valid = true;
-        // Si la story n'est pas publiée et que je n'en suis pas l'auteur.
-        // ou la story n'est pas publiée et aucun utilisateur n'est connecté
-        // j'y ai accès si je suis invité
         if (!story.isPublished()) {
-            LOG.error("The story is not published : " + story);
-
-            request.setAttribute("error_message", ErrorMessage.get("story_not_published"));
+            LOG.error("The story is not published.");
             valid = false;
+
+            req.setAttribute("error_message", ErrorMessage.get("story_not_published"));
         }
         return valid;
+    }
+
+    public static boolean published(HttpServletRequest req, HttpServletResponse resp, String forwardPage)
+            throws ServletException, IOException {
+        String storyIdString = req.getParameter("story_id");
+        long storyId = Long.parseLong(storyIdString);
+
+        // Database operations
+        Optional<Connection> connection = DatabaseManager.getConnection();
+        if (connection.isEmpty()) {
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("connection_error"));
+            return false;
+        }
+
+        DAOManager daoManager = new DAOManager(connection.get());
+
+        Object result = daoManager.executeAndClose((daoFactory) -> {
+            StoryDAO storyDAO = daoFactory.getStoryDAO();
+
+            Story story = storyDAO.findStory(storyId).get();
+
+            return story.isPublished();
+        });
+        if (result == null) {
+            LOG.error("Database query error.");
+
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("database_query_error"));
+            return false;
+        }
+        if (!(boolean) result) {
+            LOG.error("The story is not published.");
+
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("story_not_published"));
+            return false;
+        }
+        return true;
     }
 
     public static boolean author(HttpServletRequest request, User connectedUser, User author) {

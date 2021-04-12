@@ -116,8 +116,7 @@ public class ReadStoryAction implements Action {
 
     private boolean validation(HttpServletRequest request, User connectedUser, User author, Story story,
             Set<Long> invitedUsersIds) {
-        return Validation.published(request, story) || Validation.author(request, connectedUser, author)
-                || (connectedUser != null && invitedUsersIds.contains(connectedUser.getId()));
+        return Validation.published(request, story);
     }
 
     private void setAttributes(HttpServletRequest request, Story story, List<Paragraphe> paragraphes,

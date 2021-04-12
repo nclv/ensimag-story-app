@@ -66,6 +66,7 @@
                 </tr>
             </table>
         </section>
+        <p> Sélectionner un paragraphe de départ: </p>
         <section>
             <table>
                 <caption><h2>List of paragraphes</h2></caption>
