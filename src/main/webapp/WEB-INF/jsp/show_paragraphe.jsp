@@ -42,62 +42,58 @@
             </ul>
         </nav>
         <h1>show_paragraphe.jsp</h1>
-        <c:out value="${paragraphe.title}" />
-        <c:out value="${paragraphe.content}" />
+        <p>
+            <strong><c:out value="${paragraphe.title}" /></strong> <br>
+            <c:out value="${paragraphe.content}" /> <br>
+        </p>
         <section>
-            <table>
-                <caption><h2>Choices</h2></caption>
-                <thead>
-                    <tr>
-                        <th>Paragraphe Id</th>
-                        <th>User Id</th>
-                        <th>Title</th>
-                    </tr>
-                </thead>
-                <%-- Test que l'historique contient le paragraphe actuel --%>
-                <c:set var="contain_current" value="false" />
-                <c:forEach var="paragraphe_id" items="${historic_paragraphes_ids}">
-                    <c:if test="${paragraphe_id eq paragraphe.id}">
-                        <c:set var="contain_current" value="true" />
-                    </c:if>
-                </c:forEach>
+            <p>
+            <%-- Test que l'historique contient le paragraphe actuel --%>
+            <c:set var="contain_current" value="false" />
+            <c:forEach var="paragraphe_id" items="${historic_paragraphes_ids}">
+                <c:if test="${paragraphe_id eq paragraphe.id}">
+                    <c:set var="contain_current" value="true" />
+                </c:if>
+            </c:forEach>
 
-                <c:forEach var="child" items="${children}">
-                    <%-- Test que l'historique contient le paragraphe child. On est intéressé par sa négation. --%>
-                    <c:set var="contain_child" value="false" />
-                    <c:forEach var="paragraphe_id" items="${historic_paragraphes_ids}">
-                        <c:if test="${paragraphe_id eq child.id}">
-                            <c:set var="contain_child" value="true" />
-                        </c:if>
-                    </c:forEach>
-                    <tr>
-                        <td>
-                            <%-- Choix de l'affichage de la popup --%>
-                            <c:set var="child_url" value="${context}${Path.REDIRECT_SHOW_PARAGRAPHE}&story_id=${child.story_id}&paragraphe_id=${child.id}&previous_paragraphe_id=${paragraphe.id}&read=${read}" />
-                            <c:choose>
-                                <c:when test="${contain_current eq 'true' && contain_child eq 'false'}">
-                                    <a href="${child_url}" onclick="return confirm('You will modify your history.')"> <c:out value="${child.id}" /></a>
-                                </c:when>
-                                <c:otherwise>
-                                    <a href="${child_url}"> <c:out value="${child.id}" /></a>
-                                </c:otherwise>
-                            </c:choose>
-                        </td>
-                        <td><c:out value="${child.user_id}" /></td>
-                        <td><c:out value="${child.title}" /></td>
-                    </tr>
-                </c:forEach>
-            </table>
+            <c:forEach var="child" items="${children}" varStatus="loop">
+                <c:choose>
+                    <c:when test="${read eq 'true' && loop.index < lastParagrapheChildrenSize}">
+                        <strong><c:out value="${child.title}" /></strong> <br>
+                        <c:out value="${child.content}" /> <br>
+                    </c:when>
+                    <c:otherwise>
+                         <%-- Test que l'historique contient le paragraphe child. On est intéressé par sa négation. --%>
+                        <c:set var="contain_child" value="false" />
+                        <c:forEach var="paragraphe_id" items="${historic_paragraphes_ids}">
+                            <c:if test="${paragraphe_id eq child.id}">
+                                <c:set var="contain_child" value="true" />
+                            </c:if>
+                        </c:forEach>
+                        <%-- Choix de l'affichage de la popup --%>
+                        <c:set var="child_url" value="${context}${Path.REDIRECT_SHOW_PARAGRAPHE}&story_id=${child.story_id}&paragraphe_id=${child.id}&previous_paragraphe_id=${paragraphe.id}&read=${read}" />
+                        <c:choose>
+                            <c:when test="${contain_current eq 'true' && contain_child eq 'false'}">
+                                <strong><a href="${child_url}" onclick="return confirm('You will modify your history.')"> <c:out value="${child.title}" /></a></strong> <br>
+                            </c:when>
+                            <c:otherwise>
+                                <strong><a href="${child_url}"> <c:out value="${child.title}" /></a></strong> <br>
+                            </c:otherwise>
+                        </c:choose>
+                    </c:otherwise>
+                </c:choose>
+            </c:forEach>
+            <p>
         </section>
+        <hr>
         <section>
             <c:if test="${not empty history}">
+                <p> 
+                History: <br>
                 <c:forEach var="historic" items="${history}">
-                    <tr>
-                        <td>
-                            <a href="${context}${Path.REDIRECT_SHOW_PARAGRAPHE}&story_id=${historic.story_id}&paragraphe_id=${historic.paragraphe_id}&previous_paragraphe_id=${paragraphe.id}&read=${read}"> <c:out value="${historic.paragraphe_id}" /></a> ${!loop.last ? ', ' : ''}
-                        </td>
-                    </tr>
+                    <a href="${context}${Path.REDIRECT_SHOW_PARAGRAPHE}&story_id=${historic.story_id}&paragraphe_id=${historic.paragraphe_id}&previous_paragraphe_id=${paragraphe.id}&read=${read}"> <c:out value="${historic.paragraphe_id}" /></a> ${!loop.last ? ', ' : ''}
                 </c:forEach>
+                </p>
             </c:if>
         </section>
 

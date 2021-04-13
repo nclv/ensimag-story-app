@@ -13,4 +13,5 @@ public interface ParagrapheDAO {
     List<Paragraphe> findAllStoryParagraphes(long storyId) throws SQLException;
     void removeParagraphe(Paragraphe paragraphe) throws SQLException;
     List<Paragraphe> findAllParentsFromFinalChild(long storyId) throws SQLException;
+    List<Paragraphe> findAllChildren(long storyId, long paragrapheId) throws SQLException;
 }

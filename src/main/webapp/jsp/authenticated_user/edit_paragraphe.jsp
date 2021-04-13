@@ -51,13 +51,13 @@
                 <textarea rows="10" cols="60" name="paragraphe_content" placeholder="Enter your first paragraphe content..." required>${paragraphe_content}</textarea>
                 
                 <%-- S'il y a des paragraphes enfants on ne peut pas éditer en non final --%>
-                <c:if test="${empty choices}">
+                <%-- <c:if test="${empty choices}"> --%>
                     <p> Is your paragraphe <strong>final</strong>? </p>
                     <input type="radio" id="final" name="is_final" value="final" required ${is_final eq "final" ? "checked": ""}>
                     <label for="final">Yes</label>
                     <input type="radio" id="non-final" name="is_final" value="non-final" ${is_final eq "non-final" ? "checked": ""}>
                     <label for="non-final">No</label>
-                </c:if>
+                <%-- </c:if> --%>
 
                 <c:if test="${not empty oldChoices}">
                     <p> <strong>Choix actuels possibles</strong> à la fin de ce paragraphe: 

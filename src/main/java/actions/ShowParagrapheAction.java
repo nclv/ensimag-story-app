@@ -149,10 +149,13 @@ public class ShowParagrapheAction implements Action {
                         .map(Paragraphe::getId).collect(Collectors.toSet());
             }
 
-            // TODO: remplacer par une requête SQL
+            // TODO: remplacer par une requête SQL (NON: problème de récupération de
+            // choice_text)
             // Pas possible d'utiliser les streams car on doit handle une SQLException
+            // On récupère les paragraphes enfants, on filtre les paragraphes qu'on peut
+            // lire si nécessaire
             List<ParentSection> parentSectionChildren = parentSectionDAO.findChildrenParagraphe(storyId, paragrapheId);
-            List<Paragraphe> paragrapheChildren = new ArrayList<Paragraphe>(parentSectionChildren.size());
+            LinkedList<Paragraphe> paragrapheChildren = new LinkedList<Paragraphe>();
             Paragraphe paragrapheChild;
             for (ParentSection parentSection : parentSectionChildren) {
                 if (!canRead || (canRead && readableParagraphesIds.contains(parentSection.getParagraphe_id()))) {
@@ -162,9 +165,34 @@ public class ShowParagrapheAction implements Action {
                     paragrapheChildren.add(paragrapheChild);
                 }
             }
+            
+            // en mode lecture on a un ou plusieurs paragraphes enfants qu'on peut lire
+            // si on en a plusieurs, on ne fait rien
+            // si on n'en a qu'un, on réitère l'opération tant qu'il n'y en a pas plusieurs
+            int lastParagrapheChildrenSize = paragrapheChildren.size();
+            if (canRead) {
+                while (lastParagrapheChildrenSize == 1 && !parentSectionChildren.isEmpty()) {
+                    parentSectionChildren = parentSectionDAO.findChildrenParagraphe(storyId,
+                            paragrapheChildren.getLast().getId());
+
+                    lastParagrapheChildrenSize = 0;
+                    for (ParentSection parentSection : parentSectionChildren) {
+                        if (readableParagraphesIds.contains(parentSection.getParagraphe_id())) {
+                            paragrapheChild = paragrapheDAO
+                                    .findParagraphe(parentSection.getStory_id(), parentSection.getParagraphe_id())
+                                    .get();
+                            paragrapheChild.setTitle(parentSection.getChoice_text());
+                            paragrapheChildren.add(paragrapheChild);
+                            lastParagrapheChildrenSize += 1;
+                        }
+                    }
+                    LOG.error(lastParagrapheChildrenSize);
+                    LOG.error(paragrapheChildren);
+                }
+            }
 
             setAttributes(request, story, paragraphe, connectedUser, author, invitedUsersIds, invitedUsers,
-                    paragrapheChildren, read);
+                    paragrapheChildren, lastParagrapheChildrenSize, read);
 
             return true;
         });
@@ -189,12 +217,14 @@ public class ShowParagrapheAction implements Action {
     }
 
     private void setAttributes(HttpServletRequest request, Story story, Paragraphe paragraphe, User connectedUser,
-            User author, Set<Long> invitedUsersIds, List<User> invitedUsers, List<Paragraphe> children, String read) {
+            User author, Set<Long> invitedUsersIds, List<User> invitedUsers, List<Paragraphe> children,
+            int lastParagrapheChildrenSize, String read) {
         request.setAttribute("story", story);
         request.setAttribute("paragraphe", paragraphe);
         request.setAttribute("author", author);
         request.setAttribute("invitedUsers", invitedUsers);
         request.setAttribute("children", children);
+        request.setAttribute("lastParagrapheChildrenSize", lastParagrapheChildrenSize);
         request.setAttribute("read", read);
 
         // On peut lire le paragraphe si:

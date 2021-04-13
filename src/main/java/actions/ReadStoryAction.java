@@ -2,6 +2,7 @@ package actions;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
@@ -74,7 +75,11 @@ public class ReadStoryAction implements Action {
 
             // get() car existence déjà vérifiée dans les filtres
             Story story = storyDAO.findStory(storyId).get();
+
+            // on filtre les paragraphes dupliqués
+            HashSet<Long> seenParagraphesIds = new HashSet<Long>();
             List<Paragraphe> paragraphes = paragrapheDAO.findAllParentsFromFinalChild(storyId);
+            paragraphes.removeIf(p -> !seenParagraphesIds.add(p.getId()));
 
             // get() car la story existe donc son auteur existe (intégrité BDD)
             User author = userDAO.findUser(story.getUser_id()).get();

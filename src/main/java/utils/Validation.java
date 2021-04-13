@@ -714,6 +714,12 @@ public final class Validation {
 
             req.setAttribute("choices", choices);
             setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("no_final_no_choices"));
+        } else if (isFinal && !choices.isEmpty()) {
+            LOG.error("You can't update a final paragraphe with choices.");
+            valid = false;
+
+            req.setAttribute("choices", choices);
+            setErrorMessageAndDispatch(req, resp, forwardPage, ErrorMessage.get("final_choices"));
         }
         return valid;
     }
