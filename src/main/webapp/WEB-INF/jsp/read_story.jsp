@@ -30,6 +30,8 @@
                     <li><a href="${context}${Path.REDIRECT_LOGOUT}"> Logout </a></li>
                     <li> ${user.name} </li>
                 </c:if>
+                <%-- On peut lire le paragraphe donc on peut lire la story --%>
+                <li><a href="${context}${Path.REDIRECT_SHOW_STORY}&story_id=${story.id}"> Show Story </a><li>
             </ul>
         </nav>
         <h1> read_story.jsp </h1>

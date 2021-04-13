@@ -58,7 +58,7 @@
 
             <c:forEach var="child" items="${children}" varStatus="loop">
                 <c:choose>
-                    <c:when test="${read eq 'true' && loop.index < lastParagrapheChildrenSize}">
+                    <c:when test="${read eq 'true' && loop.index < oneChoiceChildrenCount}">
                         <strong><c:out value="${child.title}" /></strong> <br>
                         <c:out value="${child.content}" /> <br>
                     </c:when>

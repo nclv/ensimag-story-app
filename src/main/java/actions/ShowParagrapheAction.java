@@ -165,7 +165,7 @@ public class ShowParagrapheAction implements Action {
                     paragrapheChildren.add(paragrapheChild);
                 }
             }
-            
+
             // en mode lecture on a un ou plusieurs paragraphes enfants qu'on peut lire
             // si on en a plusieurs, on ne fait rien
             // si on n'en a qu'un, on réitère l'opération tant qu'il n'y en a pas plusieurs
@@ -192,7 +192,7 @@ public class ShowParagrapheAction implements Action {
             }
 
             setAttributes(request, story, paragraphe, connectedUser, author, invitedUsersIds, invitedUsers,
-                    paragrapheChildren, lastParagrapheChildrenSize, read);
+                    paragrapheChildren, paragrapheChildren.size() - lastParagrapheChildrenSize, read);
 
             return true;
         });
@@ -218,13 +218,13 @@ public class ShowParagrapheAction implements Action {
 
     private void setAttributes(HttpServletRequest request, Story story, Paragraphe paragraphe, User connectedUser,
             User author, Set<Long> invitedUsersIds, List<User> invitedUsers, List<Paragraphe> children,
-            int lastParagrapheChildrenSize, String read) {
+            int oneChoiceChildrenCount, String read) {
         request.setAttribute("story", story);
         request.setAttribute("paragraphe", paragraphe);
         request.setAttribute("author", author);
         request.setAttribute("invitedUsers", invitedUsers);
         request.setAttribute("children", children);
-        request.setAttribute("lastParagrapheChildrenSize", lastParagrapheChildrenSize);
+        request.setAttribute("oneChoiceChildrenCount", oneChoiceChildrenCount);
         request.setAttribute("read", read);
 
         // On peut lire le paragraphe si:
