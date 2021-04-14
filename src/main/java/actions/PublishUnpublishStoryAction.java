@@ -17,7 +17,7 @@ import utils.DatabaseManager;
 import utils.ErrorMessage;
 import utils.Path;
 
-public class PublishStoryAction implements Action {
+public class PublishUnpublishStoryAction implements Action {
 
     private static final long serialVersionUID = 4186827675025942441L;
     private static final Logger LOG = LogManager.getLogger();
@@ -25,7 +25,7 @@ public class PublishStoryAction implements Action {
     @Override
     public String execute(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        LOG.debug("PublishSTory Action start");
+        LOG.debug("PublishUnpublishStory Action start");
 
         String storyIdString = request.getParameter("story_id");
         long storyId = Long.parseLong(storyIdString);
@@ -44,7 +44,7 @@ public class PublishStoryAction implements Action {
 
             // on peut get()
             Story story = storyDAO.findStory(storyId).get();
-            story.setPublished(true);
+            story.setPublished(!story.isPublished());
             storyDAO.updateStory(story);
 
             return true;
@@ -54,7 +54,7 @@ public class PublishStoryAction implements Action {
             return Path.PAGE_ERROR;
         }
 
-        LOG.debug("PublishSTory Action finished");
+        LOG.debug("PublishUnpublishStory Action finished");
 
         return Path.REDIRECT_SHOW_STORY + "&story_id=" + storyIdString;
     }

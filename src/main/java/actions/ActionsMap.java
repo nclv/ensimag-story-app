@@ -31,7 +31,7 @@ public final class ActionsMap {
         actions.put("GET/remove_invited", new RemoveInvitedAction());
         actions.put("GET/remove_paragraphe", new RemoveParagrapheAction());
         actions.put("GET/unlock_paragraphe", new UnlockParagrapheAction());
-        actions.put("GET/publish_story", new PublishStoryAction());
+        actions.put("GET/publish_story", new PublishUnpublishStoryAction());
         actions.put("GET/clear_history", new ClearHistoryAction());
         actions.put("GET/save_history", new SaveHistoryAction());
 

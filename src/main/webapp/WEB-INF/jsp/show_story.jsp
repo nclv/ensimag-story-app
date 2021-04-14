@@ -31,7 +31,7 @@
                     </c:if>
                     <%-- Si on est l'auteur de la story on peut la publier --%>
                     <c:if test="${story.user_id == user.id}">
-                        <li><a href="${context}${Path.REDIRECT_PUBLISH_STORY}&story_id=${story.id}"> Publish story </a><li>
+                        <li><a href="${context}${Path.REDIRECT_PUBLISH_STORY}&story_id=${story.id}"> Publish/Unpublish story </a><li>
                     </c:if>
                     <li><a href="${context}${Path.REDIRECT_LOGOUT}"> Logout </a></li>
                     <li> ${user.name} </li>
