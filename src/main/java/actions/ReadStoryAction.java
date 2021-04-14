@@ -13,6 +13,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import dao.DAOManager;
+import dao.HistoricDAO;
 import dao.InvitedDAO;
 import dao.ParagrapheDAO;
 import dao.StoryDAO;
@@ -72,6 +73,7 @@ public class ReadStoryAction implements Action {
             ParagrapheDAO paragrapheDAO = daoFactory.getParagrapheDAO();
             UserDAO userDAO = daoFactory.getUserDAO();
             InvitedDAO invitedDAO = daoFactory.getInvitedDAO();
+            HistoricDAO historicDAO = daoFactory.getHistoricDAO();
 
             // get() car existence déjà vérifiée dans les filtres
             Story story = storyDAO.findStory(storyId).get();
@@ -80,6 +82,11 @@ public class ReadStoryAction implements Action {
             HashSet<Long> seenParagraphesIds = new HashSet<Long>();
             List<Paragraphe> paragraphes = paragrapheDAO.findAllParentsFromFinalChild(storyId);
             paragraphes.removeIf(p -> !seenParagraphesIds.add(p.getId()));
+            paragraphes.stream().forEach(p -> {
+                String content = p.getContent();
+                if (content.length() > 15)
+                    p.setContent(content.substring(0, 15) + "...");
+            });
 
             // get() car la story existe donc son auteur existe (intégrité BDD)
             User author = userDAO.findUser(story.getUser_id()).get();
@@ -99,6 +106,13 @@ public class ReadStoryAction implements Action {
             List<User> redactors = null;
             if (!redactorsIds.isEmpty()) {
                 redactors = userDAO.findUsers(redactorsIds);
+            }
+
+            if (connectedUser != null && history.isEmpty()) {
+                List<Historic> loadedHistory = historicDAO.findAllHistoric(connectedUser.getId(), storyId);
+                if (loadedHistory != null) {
+                    session.setAttribute(historyName, loadedHistory);
+                }
             }
 
             setAttributes(request, story, paragraphes, connectedUser, author, invitedUsersIds, redactors);

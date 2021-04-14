@@ -69,6 +69,11 @@ public class ShowStoryAction implements Action {
             // get() car existence déjà vérifiée dans les filtres
             Story story = storyDAO.findStory(storyId).get();
             List<Paragraphe> paragraphes = paragrapheDAO.findAllStoryParagraphes(storyId);
+            paragraphes.stream().forEach(p -> {
+                String content = p.getContent();
+                if (content.length() > 15)
+                    p.setContent(content.substring(0, 15) + "...");
+            });
 
             // get() car la story existe donc son auteur existe (intégrité BDD)
             User author = userDAO.findUser(story.getUser_id()).get();

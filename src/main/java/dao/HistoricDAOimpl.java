@@ -5,6 +5,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
@@ -68,7 +69,7 @@ public class HistoricDAOimpl implements HistoricDAO {
 
     @Override
     public List<Historic> findAllHistoric(long userId, long storyId) throws SQLException {
-        List<Historic> history = new ArrayList<Historic>();
+        List<Historic> history = new LinkedList<Historic>();
         try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_FIND_ALL_HISTORIC)) {
             preparedStatement.setLong(1, userId);
             preparedStatement.setLong(2, storyId);
