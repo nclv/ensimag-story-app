@@ -99,6 +99,12 @@ public class EditParagrapheGetAction implements Action {
             for (long nonChildParagrapheId : nonChildConvergeParagraphesIds) {
                 nonChildParagraphes.add(paragrapheDAO.findParagraphe(storyId, nonChildParagrapheId).get());
             }
+            nonChildParagraphes.stream().forEach(p -> {
+                String content = p.getContent();
+                int length = 30;
+                if (content.length() > length)
+                    p.setContent(content.substring(0, length) + "...");
+            });
 
             setAttributes(request, paragraphe, oldChoices, nonChildParagraphes);
 

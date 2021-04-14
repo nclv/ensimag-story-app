@@ -84,8 +84,9 @@ public class ReadStoryAction implements Action {
             paragraphes.removeIf(p -> !seenParagraphesIds.add(p.getId()));
             paragraphes.stream().forEach(p -> {
                 String content = p.getContent();
-                if (content.length() > 15)
-                    p.setContent(content.substring(0, 15) + "...");
+                int length = 30;
+                if (content.length() > length)
+                    p.setContent(content.substring(0, length) + "...");
             });
 
             // get() car la story existe donc son auteur existe (intégrité BDD)

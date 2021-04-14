@@ -52,11 +52,11 @@
                 
                 <%-- S'il y a des paragraphes enfants on ne peut pas éditer en non final --%>
                 <%-- <c:if test="${empty choices}"> --%>
-                    <p> Is your paragraphe <strong>final</strong>? </p>
-                    <input type="radio" id="final" name="is_final" value="final" required ${is_final eq "final" ? "checked": ""}>
-                    <label for="final">Yes</label>
-                    <input type="radio" id="non-final" name="is_final" value="non-final" ${is_final eq "non-final" ? "checked": ""}>
-                    <label for="non-final">No</label>
+                <p> Is your paragraphe <strong>final</strong>? </p>
+                <input type="radio" id="final" name="is_final" value="final" required ${is_final eq "final" ? "checked": ""}>
+                <label for="final">Yes</label>
+                <input type="radio" id="non-final" name="is_final" value="non-final" ${is_final eq "non-final" ? "checked": ""}>
+                <label for="non-final">No</label>
                 <%-- </c:if> --%>
 
                 <c:if test="${not empty oldChoices}">
@@ -72,7 +72,7 @@
                     <c:forEach var="existingParagraphe" items="${existingParagraphes}">
                         <div>
                             <input type="checkbox" id="${existingParagraphe.id}" name="converge" value="${existingParagraphe.id}">
-                            <label for="${existingParagraphe.id}" ><c:out value="${existingParagraphe}" /></label>
+                            <label for="${existingParagraphe.id}" ><c:out value="${existingParagraphe.content}" /></label>
                         </div>
                     </c:forEach>
                 </c:if>
