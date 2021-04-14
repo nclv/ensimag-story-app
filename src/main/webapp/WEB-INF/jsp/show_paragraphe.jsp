@@ -10,18 +10,20 @@
 <c:set var="context" value="${pageContext.request.contextPath}" />
 
 <!DOCTYPE html>
-<html>
-    <head>
-         <link rel="stylesheet" href="${context}/style.css">
-    
-        <meta charset="utf-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Show Paragraphe</title>
-    </head>
-    <body>
-        <header>
+<html lang="fr">
+
+<head>
+        <link rel="stylesheet" href="${context}/style.css">
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Show Paragraphe</title>
+</head>
+
+<body>
+    <header>
         <nav>
-            <a href="${context}${Path.REDIRECT_HOME}"><img alt="Logo" src="https://via.placeholder.com/200x70?text=Logo" height="70"></a>
+            <a href="${context}${Path.REDIRECT_HOME}"><img alt="Logo" src="${context}/logo.png" height="70"></a>
             <ul>
                 <%-- Un utilisateur connecté --%>
                 <c:if test="${not empty user}">
@@ -42,10 +44,14 @@
             </ul>
         </nav>
         <h1>show_paragraphe.jsp</h1>
-        <p>
-            <strong><c:out value="${paragraphe.title}" /></strong> <br>
-            <c:out value="${paragraphe.content}" /> <br>
-        </p>
+    </header>
+    <main>
+        <section>
+            <p>
+                <strong><c:out value="${paragraphe.title}" /></strong> <br>
+                <c:out value="${paragraphe.content}" /> <br>
+            </p>
+        </section>
         <section>
             <p>
             <%-- Test que l'historique contient le paragraphe actuel --%>
@@ -63,7 +69,7 @@
                         <c:out value="${child.content}" /> <br>
                     </c:when>
                     <c:otherwise>
-                         <%-- Test que l'historique contient le paragraphe child. On est intéressé par sa négation. --%>
+                            <%-- Test que l'historique contient le paragraphe child. On est intéressé par sa négation. --%>
                         <c:set var="contain_child" value="false" />
                         <c:forEach var="paragraphe_id" items="${historic_paragraphes_ids}">
                             <c:if test="${paragraphe_id eq child.id}">
@@ -96,8 +102,14 @@
                 </p>
             </c:if>
         </section>
-
-    </body>
+    </main>
+    <footer>
+        <hr>
+        <p>
+            <small>@story-app</small>
+        </p>
+    </footer>
+</body>
     
     
 </html>

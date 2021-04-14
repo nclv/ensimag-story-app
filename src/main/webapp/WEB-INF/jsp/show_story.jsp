@@ -18,16 +18,12 @@
 <body>
     <header>
         <nav>
-            <a href="${context}${Path.REDIRECT_HOME}"><img alt="Logo" src="https://via.placeholder.com/200x70?text=Logo" height="70"></a>
+            <a href="${context}${Path.REDIRECT_HOME}"><img alt="Logo" src="${context}/logo.png" height="70"></a>
             <ul>
                 <%-- Un utilisateur connecté --%>
                 <c:if test="${not empty user}">
                     <li><a href="${context}${Path.REDIRECT_CREATE_STORY}"> Create a Story </a></li>
                     <li><a href="${context}${Path.REDIRECT_SHOW_USER_STORIES}"> My stories </a></li>
-                    <%-- Story éditable (voir conditions dans l'action) --%>
-                    <%-- <c:if test="${not empty canEditStory}">
-                        <li><a href="${context}${Path.REDIRECT_EDIT_PARAGRAPHE}&story_id=${story.id}"> Edit Paragraphe </a><li>
-                    </c:if> --%>
                     <%-- Si on est l'auteur de l'histoire (not open) on peut inviter d'autres utilisateurs --%>
                     <c:if test="${not empty canInvite}">
                         <li><a href="${context}${Path.REDIRECT_INVITE_USERS}&story_id=${story.id}"> Invite Users </a><li>
@@ -51,53 +47,50 @@
         <section>
         <p> L'auteur de cette histoire est <c:out value="${author.name}" />. </p>
         </section>
+        <hr>
         <section>
             <table>
                 <caption><h2>Story</h2></caption>
                 <thead>
                     <tr>
-                        <th>Story Id</th>
                         <th>Title</th>
-                        <th>User Id</th>
                         <th>Open</th>
                         <th>Published</th>
                     </tr>
                 </thead>
                 <tr>
-                    <td><c:out value="${story.id}" /></td>
                     <td><c:out value="${story.title}" /></td>
-                    <td><c:out value="${story.user_id}" /></td>
                     <td><c:out value="${story.open}" /></td>
                     <td><c:out value="${story.published}" /></td>
                 </tr>
             </table>
         </section>
+        <c:if test="${not empty invitedUsers}">
+            <hr>
+            <h2>Invited users</h2>
+            <section>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <c:forEach var="invitedUser" items="${invitedUsers}">
+                        <tr>
+                            <td><c:out value="${invitedUser.name}" /></td>
+                            <c:if test="${not empty canInvite}">
+                                <td><a href="${context}${Path.REDIRECT_REMOVE_INVITED}&user_id=${invitedUser.id}&story_id=${story.id}"> Remove </a></td>
+                            </c:if>
+                        </tr>
+                    </c:forEach>
+                </table>
+            </section>
+        </c:if>
+        <hr>
+        <h2>Paragraphes: </h2>
         <section>
             <table>
-                <caption><h2>List of invited users</h2></caption>
-                <thead>
-                    <tr>
-                        <th>Id</th>
-                        <th>Name</th>
-                        <th>Password</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <c:forEach var="invitedUser" items="${invitedUsers}">
-                    <tr>
-                        <td><c:out value="${invitedUser.id}" /></td>
-                        <td><c:out value="${invitedUser.name}" /></td>
-                        <td><c:out value="${invitedUser.password}" /></td>
-                        <c:if test="${not empty canInvite}">
-                            <td><a href="${context}${Path.REDIRECT_REMOVE_INVITED}&user_id=${invitedUser.id}&story_id=${story.id}"> Remove </a></td>
-                        </c:if>
-                    </tr>
-                </c:forEach>
-            </table>
-        </section>
-        <section>
-            <table>
-                <caption><h2>List of paragraphes</h2></caption>
                 <thead>
                     <tr>
                         <th>Paragraphe Id</th>

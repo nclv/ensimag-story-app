@@ -18,20 +18,17 @@
 <body>
     <header>
         <nav>
-            <a href="${context}${Path.REDIRECT_HOME}"><img alt="Logo" src="https://via.placeholder.com/200x70?text=Logo" height="70"></a>
+            <a href="${context}${Path.REDIRECT_HOME}"><img alt="Logo" src="${context}/logo.png" height="70"></a>
             <ul>
                 <%-- Un utilisateur connecté --%>
                 <c:if test="${not empty user}">
                     <li><a href="${context}${Path.REDIRECT_CREATE_STORY}"> Create a Story </a></li>
-                    <%-- Story éditable (voir conditions dans l'action) --%>
-                    <%-- <c:if test="${not empty canEditStory}">
-                        <li><a href="${context}${Path.REDIRECT_EDIT_PARAGRAPHE}&story_id=${story.id}"> Edit Paragraphe </a><li>
-                    </c:if> --%>
                     <li><a href="${context}${Path.REDIRECT_LOGOUT}"> Logout </a></li>
                     <li> ${user.name} </li>
                 </c:if>
                 <%-- On peut lire le paragraphe donc on peut lire la story --%>
                 <li><a href="${context}${Path.REDIRECT_SHOW_STORY}&story_id=${story.id}"> Show Story </a><li>
+                <li><a href="${context}${Path.REDIRECT_CLEAR_HISTORY}&story_id=${story.id}"> Clear History </a><li>
             </ul>
         </nav>
         <h1> read_story.jsp </h1>
@@ -52,26 +49,22 @@
                 <caption><h2>Story</h2></caption>
                 <thead>
                     <tr>
-                        <th>Story Id</th>
                         <th>Title</th>
-                        <th>User Id</th>
                         <th>Open</th>
                         <th>Published</th>
                     </tr>
                 </thead>
                 <tr>
-                    <td><c:out value="${story.id}" /></td>
                     <td><c:out value="${story.title}" /></td>
-                    <td><c:out value="${story.user_id}" /></td>
                     <td><c:out value="${story.open}" /></td>
                     <td><c:out value="${story.published}" /></td>
                 </tr>
             </table>
         </section>
+        <hr>
         <p> Sélectionner un paragraphe de départ: </p>
         <section>
             <table>
-                <caption><h2>List of paragraphes</h2></caption>
                 <thead>
                     <tr>
                         <th>Paragraphe Id</th>
@@ -88,6 +81,17 @@
                 </c:forEach>
             </table>
         </section>
+        <c:if test="${not empty history}">
+            <hr>
+            <section>
+                <p> 
+                History: <br>
+                <c:forEach var="historic" items="${history}">
+                    <a href="${context}${Path.REDIRECT_SHOW_PARAGRAPHE}&story_id=${historic.story_id}&paragraphe_id=${historic.paragraphe_id}&previous_paragraphe_id=${paragraphe.id}&read=${read}"> <c:out value="${historic.paragraphe_id}" /></a> ${!loop.last ? ', ' : ''}
+                </c:forEach>
+                </p>
+            </section>
+        </c:if>
     </main>
     <footer>
         <hr>

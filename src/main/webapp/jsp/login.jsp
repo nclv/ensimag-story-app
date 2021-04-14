@@ -27,7 +27,7 @@
 <body>
     <header>
         <nav>
-            <a href="${context}${Path.REDIRECT_HOME}"><img alt="Logo" src="https://via.placeholder.com/200x70?text=Logo" height="70"></a>
+            <a href="${context}${Path.REDIRECT_HOME}"><img alt="Logo" src="${context}/logo.png" height="70"></a>
         </nav>
         <h1> login.jsp </h1>
     </header>

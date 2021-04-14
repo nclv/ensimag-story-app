@@ -17,6 +17,7 @@ public final class Path {
     public static final String PAGE_CREATE_STORY = JSP_PATH_ACCESSIBLE + "authenticated_user/create_story.jsp";
     public static final String PAGE_EDIT_PARAGRAPHE = JSP_PATH_ACCESSIBLE + "authenticated_user/edit_paragraphe.jsp";
     public static final String PAGE_UPDATE_PASSWORD = JSP_PATH_ACCESSIBLE + "authenticated_user/update_password.jsp";
+    
     /* Private files hidden in WEB-INF */
     public static final String PAGE_SHOW_STORY = JSP_PATH_PRIVATE + "show_story.jsp";
     public static final String PAGE_SHOW_USER_STORIES = JSP_PATH_PRIVATE + "authenticated_user/show_user_stories.jsp";
@@ -42,4 +43,5 @@ public final class Path {
     public static final String REDIRECT_REMOVE_PARAGRAPHE = "/controller?action=remove_paragraphe";
     public static final String REDIRECT_UNLOCK_PARAGRAPHE = "/controller?action=unlock_paragraphe";
     public static final String REDIRECT_SHOW_PARAGRAPHE = "/controller?action=show_paragraphe";
+    public static final String REDIRECT_CLEAR_HISTORY = "/controller?action=clear_history";
 }

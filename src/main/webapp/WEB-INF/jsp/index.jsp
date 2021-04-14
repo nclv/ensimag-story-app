@@ -24,7 +24,7 @@
 <body>
     <header>
         <nav>
-            <a href="${context}${Path.REDIRECT_HOME}"><img alt="Logo" src="https://via.placeholder.com/200x70?text=Logo" height="70"></a>
+            <a href="${context}${Path.REDIRECT_HOME}"><img alt="Logo" src="${context}/logo.png" height="70"></a>
             <ul>
                 <c:if test="${not empty user}">
                     <li><a href="${context}${Path.REDIRECT_CREATE_STORY}"> Create a Story </a></li>
@@ -38,32 +38,12 @@
     </header>
     <main>
         <hr>
+        <h2>Open and published stories</h2>
         <section>
             <table>
-                <caption><h2>List of users</h2></caption>
                 <thead>
                     <tr>
-                        <th>Id</th>
-                        <th>Name</th>
-                        <th>Password</th>
-                    </tr>
-                </thead>
-                <c:forEach var="user" items="${listUsers.rows}">
-                    <tr>
-                        <td><c:out value="${user.user_id}" /></td>
-                        <td><c:out value="${user.username}" /></td>
-                        <td><c:out value="${user.password}" /></td>
-                    </tr>
-                </c:forEach>
-            </table>
-        </section>
-        <section>
-            <table>
-                <caption><h2>List of open and published stories</h2></caption>
-                <thead>
-                    <tr>
-                        <th>Story Id</th>
-                        <th>User Id</th>
+                        <th>Story title</th>
                         <th>Open</th>
                         <th>Published</th>
                     </tr>
@@ -71,22 +51,21 @@
                 <c:forEach var="story" items="${stories}">
                     <tr>
                         <td>
-                            <a href="${context}${Path.REDIRECT_SHOW_STORY}&story_id=${story.id}"> <c:out value="${story.id}" /></a>
+                            <a href="${context}${Path.REDIRECT_SHOW_STORY}&story_id=${story.id}"> <c:out value="${story.title}" /></a>
                         </td>
-                        <td><c:out value="${story.user_id}" /></td>
                         <td><c:out value="${story.open}" /></td>
                         <td><c:out value="${story.published}" /></td>
                     </tr>
                 </c:forEach>
             </table>
         </section>
+        <hr>
+        <h2>Published stories</h2>
         <section>
             <table>
-                <caption><h2>List of published stories</h2></caption>
                 <thead>
                     <tr>
-                        <th>Story Id</th>
-                        <th>User Id</th>
+                        <th>Story Title</th>
                         <th>Open</th>
                         <th>Published</th>
                     </tr>
@@ -94,9 +73,8 @@
                 <c:forEach var="story" items="${published_stories}">
                     <tr>
                         <td>
-                            <a href="${context}${Path.REDIRECT_SHOW_STORY}&story_id=${story.id}"> <c:out value="${story.id}" /></a>
+                            <a href="${context}${Path.REDIRECT_SHOW_STORY}&story_id=${story.id}"> <c:out value="${story.title}" /></a>
                         </td>
-                        <td><c:out value="${story.user_id}" /></td>
                         <td><c:out value="${story.open}" /></td>
                         <td><c:out value="${story.published}" /></td>
                     </tr>
