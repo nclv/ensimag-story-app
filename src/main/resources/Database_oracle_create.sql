@@ -68,16 +68,16 @@ CREATE TABLE "Historique" (
 	"story_id" NUMBER(10) NOT NULL,
 	"para_id" NUMBER(10) NOT NULL,
 	"historic_id" NUMBER(10) NOT NULL,
-	constraint HISTORIQUE_PK PRIMARY KEY ("user_id","story_id","para_id","historic_id"));
+	constraint HISTORIQUE_PK PRIMARY KEY ("user_id","story_id","para_id"));
 
-CREATE sequence "HISTORIQUE_HISTORIC_ID_SEQ";
+-- CREATE sequence "HISTORIQUE_HISTORIC_ID_SEQ";
 
-CREATE trigger "BI_HISTORIQUE_HISTORIC_ID"
-  before insert on "Historique"
-  for each row
-begin
-  select "HISTORIQUE_HISTORIC_ID_SEQ".nextval into :NEW."historic_id" from dual;
-end;
+-- CREATE trigger "BI_HISTORIQUE_HISTORIC_ID"
+--   before insert on "Historique"
+--   for each row
+-- begin
+--   select "HISTORIQUE_HISTORIC_ID_SEQ".nextval into :NEW."historic_id" from dual;
+-- end;
 
 /
 CREATE TABLE "Invited" (

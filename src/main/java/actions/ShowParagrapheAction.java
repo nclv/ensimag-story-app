@@ -84,7 +84,7 @@ public class ShowParagrapheAction implements Action {
                 history = new LinkedList<Historic>();
             }
 
-            Historic historic = Historic.builder().story_id(storyId).paragraphe_id(paragrapheId).build();
+            Historic historic = Historic.builder().story_id(storyId).paragraphe_id(paragrapheId).id(0).build();
             if (connectedUser != null) {
                 historic.setUser_id(connectedUser.getId());
             }

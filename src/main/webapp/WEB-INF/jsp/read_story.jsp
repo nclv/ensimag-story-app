@@ -23,6 +23,7 @@
                 <%-- Un utilisateur connecté --%>
                 <c:if test="${not empty user}">
                     <li><a href="${context}${Path.REDIRECT_CREATE_STORY}"> Create a Story </a></li>
+                    <li><a href="${context}${Path.REDIRECT_SAVE_HISTORY}&story_id=${story.id}"> Save History </a><li>
                     <li><a href="${context}${Path.REDIRECT_LOGOUT}"> Logout </a></li>
                     <li> ${user.name} </li>
                 </c:if>

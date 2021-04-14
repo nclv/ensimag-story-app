@@ -31,7 +31,7 @@ public class StoryIdValidationFilter implements Filter {
         boolean canFilter = actionName.equals("GET/invite_users") || actionName.equals("POST/invite_users")
                 || actionName.equals("GET/show_story") || actionName.equals("GET/show_paragraphe")
                 || actionName.equals("GET/remove_invited") || actionName.equals("GET/remove_paragraphe")
-                || actionName.equals("GET/read_story");
+                || actionName.equals("GET/read_story") || actionName.equals("GET/save_history");
         LOG.error(actionName);
         LOG.error(canFilter);
 

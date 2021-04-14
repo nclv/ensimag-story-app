@@ -17,10 +17,10 @@ public class HistoricDAOimpl implements HistoricDAO {
 
     private static final Logger LOG = LogManager.getLogger();
 
-    private final static String SQL_INSERT_HISTORIC = "INSERT INTO \"Historique\" (\"user_id\", \"story_id\", \"para_id\") VALUES (?, ?, ?)";
-    private final static String SQL_FIND_ALL_HISTORIC = "SELECT * FROM \"Historic\" WHERE \"user_id\"=? AND \"story_id\"=?";;
+    private final static String SQL_INSERT_HISTORIC = "INSERT INTO \"Historique\" (\"user_id\", \"story_id\", \"para_id\", \"historic_id\") VALUES (?, ?, ?, ?)";
+    private final static String SQL_FIND_ALL_HISTORIC = "SELECT * FROM \"Historique\" WHERE \"user_id\"=? AND \"story_id\"=? ORDER BY \"historic_id\"";
+    private final static String SQL_REMOVE_USER_STORY_HISTORY = "DELETE FROM \"Historique\" WHERE \"user_id\"=? AND \"story_id\"=?";
 
-    private final static String SQL_GET_HISTORIC_ID = "SELECT \"HISTORIQUE_HISTORIC_ID_SEQ\".currval FROM DUAL";
 
     private Connection connection = null;
 
@@ -29,24 +29,41 @@ public class HistoricDAOimpl implements HistoricDAO {
     }
 
     @Override
-    public long saveHistoric(Historic historic) throws SQLException {
-        long id = -1;
+    public void saveHistoric(Historic historic) throws SQLException {
         try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_INSERT_HISTORIC)) {
             preparedStatement.setLong(1, historic.getUser_id());
             preparedStatement.setLong(2, historic.getStory_id());
             preparedStatement.setLong(3, historic.getParagraphe_id());
+            preparedStatement.setLong(4, historic.getId());
 
             preparedStatement.executeUpdate();
-
-            try (PreparedStatement ps = connection.prepareStatement(SQL_GET_HISTORIC_ID);
-                    ResultSet resultSet = ps.executeQuery()) {
-                if (resultSet.next()) {
-                    id = resultSet.getLong(1);
-                }
-            }
         }
+    }
 
-        return id;
+    @Override
+    public void saveHistory(List<Historic> history) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_INSERT_HISTORIC)) {
+
+            for (Historic historic : history) {
+                preparedStatement.setLong(1, historic.getUser_id());
+                preparedStatement.setLong(2, historic.getStory_id());
+                preparedStatement.setLong(3, historic.getParagraphe_id());
+                preparedStatement.setLong(4, historic.getId());
+
+                preparedStatement.addBatch();
+            }
+            preparedStatement.executeBatch();
+        }
+    }
+
+    @Override
+    public void removeAllHistoric(long userId, long storyId) throws SQLException {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(SQL_REMOVE_USER_STORY_HISTORY)) {
+            preparedStatement.setLong(1, userId);
+            preparedStatement.setLong(2, storyId);
+
+            preparedStatement.executeUpdate();
+        }
     }
 
     @Override

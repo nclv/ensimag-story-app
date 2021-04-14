@@ -11,7 +11,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import models.Historic;
-import models.User;
 import utils.Path;
 
 public class ClearHistoryAction implements Action {

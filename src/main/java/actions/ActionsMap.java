@@ -33,6 +33,7 @@ public final class ActionsMap {
         actions.put("GET/unlock_paragraphe", new UnlockParagrapheAction());
         actions.put("GET/publish_story", new PublishStoryAction());
         actions.put("GET/clear_history", new ClearHistoryAction());
+        actions.put("GET/save_history", new SaveHistoryAction());
 
         actions.put("GET/login", (request, response) -> Path.PAGE_LOGIN); // PRG pattern
         actions.put("POST/login", new LoginAction());
@@ -60,6 +61,7 @@ public final class ActionsMap {
         authenticatedActions.add("remove_paragraphe");
         authenticatedActions.add("unlock_paragraphe");
         authenticatedActions.add("publish_story");
+        authenticatedActions.add("save_history");
 
         LOG.debug("Command container was successfully initialized");
         LOG.trace("Number of actions --> " + actions.size());

@@ -63,6 +63,7 @@ public final class ErrorMessage {
         errorMessages.put("paragraphe_has_children", "This paragraphe has children.");
         errorMessages.put("not_story_author", "You are not the author of the story.");
         errorMessages.put("no_final_paragraphe", "This story has no final paragraphe.");
+        errorMessages.put("empty_history", "Empty history.");
 
         LOG.debug("Command container was successfully initialized");
         LOG.trace("Number of errors --> " + errorMessages.size());

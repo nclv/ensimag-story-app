@@ -44,4 +44,5 @@ public final class Path {
     public static final String REDIRECT_UNLOCK_PARAGRAPHE = "/controller?action=unlock_paragraphe";
     public static final String REDIRECT_SHOW_PARAGRAPHE = "/controller?action=show_paragraphe";
     public static final String REDIRECT_CLEAR_HISTORY = "/controller?action=clear_history";
+    public static final String REDIRECT_SAVE_HISTORY = "/controller?action=save_history";
 }
