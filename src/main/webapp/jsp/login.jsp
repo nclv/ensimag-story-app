@@ -25,6 +25,7 @@
 </head>
 
 <body>
+    <script>0</script>
     <header>
         <nav>
             <a href="${context}${Path.REDIRECT_HOME}"><img alt="Logo" src="${context}/logo.png" height="70"></a>

@@ -38,6 +38,7 @@
 </head>
 
 <body>
+    <script>0</script>
     <header>
         <nav>
             <a href="${context}${Path.REDIRECT_HOME}"><img alt="Logo" src="${context}/logo.png" height="70"></a>
@@ -81,7 +82,7 @@
                 <select name="conditionnal" id="conditionnal">
                     <option value=""> NO CONDITIONNAL PARAGRAPHE </option>
                     <c:forEach var="existingParagraphe" items="${existingParagraphes}">
-                        <option value="${existingParagraphe}"><c:out value="${existingParagraphe}" /></option>
+                        <option value="${existingParagraphe}"><c:out value="${existingParagraphe.content}" /></option>
                     </c:forEach>
                 </select>
 
