@@ -1,4 +1,4 @@
-# Installation
+# Installation
 
 Dans notre choix de nos outils de développement, nous avons souhaité les dernières versions stables de Tomcat et Java, à savoir:
 - Apache Tomcat 10.0.2,
@@ -8,7 +8,7 @@ Vous allez surement rencontrer des problèmes si vous n'utilisez pas cette versi
 
 Après avoir configuré le serveur Tomcat, installez le projet avec Maven, chargez `story-app.war` sur le serveur et consultez le site.
 
-# L'application
+# L'application
 ## Design Patterns
 
 Dans notre application, l'utilisation du *pattern* MVC se fait à plusieurs échelles:
@@ -91,7 +91,7 @@ GET | `/controller?action=save_history` | SaveHistory
 L'historique est implémenté comme demandé dans le cahier des charges. Il est possible de vider l'historique et de le sauvegarder. Le chargement de l'historique sauvegardé (s'il existe) s'effectue après une suppression de l'historique actuel.
 Chaque session a un unique historique. Si l'utilisateur décide de lire une autre *story* alors son historique actuel est vidé. Il est donc conseillé de sauvegarder son historique avant d'entamer la lecture d'une autre histoire.
 
-### Paragraphes en cours d'édition
+### Paragraphes en cours d'édition
 
 Un utilisateur connecté ne peut éditer qu'un unique paragraphe sur tout le site. S'il commence l'édition d'un paragraphe sans valider le formulaire alors ce paragraphe apparaîtra en vert. Par ailleurs, il n'est pas possible d'éditer un paragraphe en cours d'édition par un autre utilisateur. Ces paragraphes apparaîtront en rouge.
 
@@ -101,7 +101,7 @@ Nous n'avons pas implémenté les choix conditionnels. Il est possible de choisi
 
 **L'ajoût d'un choix à la fin d'un paragraphe par un autre utilisateur est possible si et seulement si l'auteur du paragraphe a déverrouillé ce paragraphe.**
 
-## Refactoring
+## Refactoring
 
 - [ ] Remplacer `SELECT *` par les *fields* de la table. Utiliser `DatabaseFields` dans les requêtes SQL plutôt que de coder en dur.
 - [ ] Ajouter des DAOs pour les jointures et remplacer le code Java.
